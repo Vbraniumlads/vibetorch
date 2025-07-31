@@ -58,6 +58,8 @@ export default {
 					purple: 'hsl(var(--neon-purple))',
 					blue: 'hsl(var(--neon-blue))'
 				},
+				'panel-left': 'hsl(var(--panel-left))',
+				'panel-right': 'hsl(var(--panel-right))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
