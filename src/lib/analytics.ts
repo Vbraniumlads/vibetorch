@@ -1,8 +1,6 @@
-import { gtag } from 'gtag'
-
 declare global {
   interface Window {
-    gtag: typeof gtag
+    gtag: (...args: any[]) => void
   }
 }
 

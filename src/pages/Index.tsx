@@ -64,64 +64,70 @@ export default function InferenceExchange() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Navbar */}
-      <nav className="sticky top-0 z-50 h-16 border-b border-border bg-background/95 backdrop-blur-sm">
-        <div className="flex items-center justify-between h-full px-4 lg:px-6">
-          {/* Left: Brand Logo */}
-          <div className="flex items-center">
-            <a href="/" className="text-xl font-bold text-neon hover:opacity-80 transition-smooth">
-              Inference Exchange
-            </a>
-          </div>
+      {/* Floating Navbar */}
+      <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
+        <div className="bg-card/80 backdrop-blur-lg border border-border/50 rounded-2xl shadow-2xl">
+          <div className="px-6 py-3">
+            <div className="flex justify-between items-center">
+              {/* Brand */}
+              <div className="flex items-center">
+                <a href="/" className="text-xl font-bold text-neon hover:opacity-80 transition-smooth">
+                  Inference Exchange
+                </a>
+              </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth">
-              Docs
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth">
-              Pricing
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth">
-              Login
-            </a>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth">
-              Start Selling
-            </Button>
-          </div>
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-6">
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
+                  Docs
+                </a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
+                  Pricing
+                </a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
+                  Login
+                </a>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth text-sm font-medium">
+                  Start Selling
+                </Button>
+              </div>
 
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-foreground"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-sm">
-            <div className="px-4 py-2 space-y-2">
-              <a href="#" className="block py-2 text-muted-foreground hover:text-foreground transition-smooth">
-                Docs
-              </a>
-              <a href="#" className="block py-2 text-muted-foreground hover:text-foreground transition-smooth">
-                Pricing
-              </a>
-              <a href="#" className="block py-2 text-muted-foreground hover:text-foreground transition-smooth">
-                Login
-              </a>
-              <Button className="w-full mt-2 bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth">
-                Start Selling
-              </Button>
+              {/* Mobile menu button */}
+              <div className="md:hidden">
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+              </div>
             </div>
+
+            {/* Mobile Navigation */}
+            {isMenuOpen && (
+              <div className="md:hidden border-t border-border/50 mt-3 pt-3">
+                <div className="flex flex-col space-y-2">
+                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
+                    Docs
+                  </a>
+                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
+                    Pricing
+                  </a>
+                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
+                    Login
+                  </a>
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth text-left text-sm font-medium">
+                    Start Selling
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </nav>
 
       {/* Main Layout */}
-      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-4rem)]">
+      <div className="flex flex-col lg:flex-row min-h-screen pt-20">
         {/* Left Panel - Marketing */}
         <div className="lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center">
           {/* Logo Mark */}
