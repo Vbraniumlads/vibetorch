@@ -111,7 +111,7 @@ export default function VibetorchApp() {
           {/* GitHub Link */}
           <div className="absolute top-4 left-4 z-20">
             <a 
-              href="https://github.com/kangjihyeok/exchange-llm-ui" 
+              href="https://github.com/Vbraniumlads/exchange-llm-ui" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-800 transition-colors duration-200 font-medium"
