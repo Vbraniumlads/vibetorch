@@ -33,21 +33,21 @@ export function ThemeToggle() {
           className={`cursor-pointer ${theme === 'light' ? 'bg-accent' : ''}`}
         >
           <Sun className="mr-2 h-4 w-4" />
-          <span>라이트</span>
+          <span>Light</span>
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={setDarkTheme}
           className={`cursor-pointer ${theme === 'dark' ? 'bg-accent' : ''}`}
         >
           <Moon className="mr-2 h-4 w-4" />
-          <span>다크</span>
+          <span>Dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={setSystemTheme}
           className={`cursor-pointer ${theme === 'system' ? 'bg-accent' : ''}`}
         >
           <Monitor className="mr-2 h-4 w-4" />
-          <span>시스템</span>
+          <span>System</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
