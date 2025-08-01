@@ -9,23 +9,25 @@ import {
 import { useDarkMode } from "@/hooks/use-dark-mode";
 
 export function ThemeToggle() {
-  const { theme, setLightTheme, setDarkTheme, setSystemTheme, isDark } = useDarkMode();
+  const { theme, setLightTheme, setDarkTheme, setThemeToSystem, isDark } = useDarkMode();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="icon"
-          className="transition-all duration-200 hover:bg-accent"
-        >
+        <div className="p-2 -m-2">
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="transition-all duration-200 hover:bg-accent"
+          >
           {isDark ? (
             <Moon className="h-[1.2rem] w-[1.2rem]" />
           ) : (
             <Sun className="h-[1.2rem] w-[1.2rem]" />
           )}
           <span className="sr-only">테마 변경</span>
-        </Button>
+          </Button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
         <DropdownMenuItem 
@@ -43,7 +45,7 @@ export function ThemeToggle() {
           <span>Dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem 
-          onClick={setSystemTheme}
+          onClick={setThemeToSystem}
           className={`cursor-pointer ${theme === 'system' ? 'bg-accent' : ''}`}
         >
           <Monitor className="mr-2 h-4 w-4" />

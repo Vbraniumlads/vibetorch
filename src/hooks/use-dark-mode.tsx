@@ -3,11 +3,7 @@ import { useState, useEffect } from 'react';
 type Theme = 'light' | 'dark' | 'system';
 
 export function useDarkMode() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // 로컬 스토리지에서 저장된 테마 가져오기
-    const storedTheme = localStorage.getItem('vibetorch-theme') as Theme;
-    return storedTheme || 'system';
-  });
+  const [theme, setTheme] = useState<Theme>('system');
 
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(() => {
     // 시스템 다크모드 설정 확인
@@ -38,9 +34,6 @@ export function useDarkMode() {
     
     // 새 테마 클래스 추가
     root.classList.add(effectiveTheme);
-    
-    // 로컬 스토리지에 테마 저장
-    localStorage.setItem('vibetorch-theme', theme);
   }, [theme, effectiveTheme]);
 
   const setLightTheme = () => setTheme('light');
