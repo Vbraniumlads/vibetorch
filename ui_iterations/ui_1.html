@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibetorch - Connect Your GitHub</title>
+    <style>
+        /* Import monospace fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+        
+        /* Design System Variables */
+        :root {
+            /* CTA Scale */
+            --cta-50: #F8ECE7;
+            --cta-100: #EDCDBF;
+            --cta-200: #E2AE97;
+            --cta-300: #D88E6F;
+            --cta-400: #CD6F47;
+            --cta-500: #B05730;
+            --cta-600: #884325;
+            --cta-700: #602F1A;
+            --cta-800: #381C0F;
+            --cta-900: #100804;
+
+            /* Neutral Scale */
+            --neu-0: #FFFFFF;
+            --neu-500: #F0EEE5;
+            --neu-600: #DDD9C5;
+            --neu-700: #CBC4A4;
+            --neu-800: #B8AF84;
+            --neu-900: #A69A64;
+            --neu-950: #887D4E;
+
+            /* Accent Scale */
+            --acc-100: #E6E4F1;
+            --acc-200: #C8C2E0;
+            --acc-300: #A9A1CE;
+            --acc-400: #8A7FBD;
+            --acc-500: #6C5DAC;
+            --acc-600: #55498D;
+            --acc-700: #41376C;
+            --acc-800: #2D264A;
+            --acc-900: #181528;
+
+            /* Semantic Mappings */
+            --background: var(--neu-0);
+            --foreground: var(--neu-950);
+            --muted-foreground: var(--neu-900);
+            --primary: var(--cta-500);
+            --border: var(--neu-600);
+            --card-bg: var(--neu-0);
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 20px;
+            --spacing-xl: 24px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Fira Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-lg);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 10%;
+            left: 15%;
+            width: 200px;
+            height: 200px;
+            background: var(--cta-400);
+            border-radius: 50%;
+            opacity: 0.03;
+            filter: blur(60px);
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 20%;
+            right: 20%;
+            width: 150px;
+            height: 150px;
+            background: var(--acc-500);
+            border-radius: 50%;
+            opacity: 0.04;
+            filter: blur(40px);
+            animation: float 4s ease-in-out infinite reverse;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(2deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: linear-gradient(180deg, var(--card-bg) 0%, var(--neu-500) 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 32px;
+            background: linear-gradient(135deg, var(--cta-400), var(--cta-600));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(176, 87, 48, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .logo-text {
+            color: white;
+            font-weight: 700;
+            font-size: 32px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 8px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 32px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            color: var(--foreground);
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .description {
+            font-size: 16px;
+            color: var(--muted-foreground);
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .github-button {
+            width: 100%;
+            background: #24292e;
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .github-button:hover {
+            background: #2f363d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(36, 41, 46, 0.3);
+        }
+
+        .github-button:active {
+            transform: translateY(0);
+        }
+
+        .github-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .permissions-list {
+            text-align: left;
+            background: var(--neu-500);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 32px;
+            border: 1px solid var(--neu-600);
+        }
+
+        .permissions-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--muted-foreground);
+        }
+
+        .permission-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .permission-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .security-note {
+            font-size: 13px;
+            color: var(--muted-foreground);
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--acc-100);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--acc-500);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--neu-600);
+        }
+
+        .footer-link {
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.25s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .vibe-flow {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 12px;
+            color: var(--muted-foreground);
+            opacity: 0.6;
+            transform: rotate(-15deg);
+            font-weight: 300;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 32px 24px;
+                margin: 16px;
+            }
+            
+            .welcome-text {
+                font-size: 22px;
+            }
+            
+            .brand-name {
+                font-size: 24px;
+            }
+            
+            .tagline {
+                font-size: 16px;
+            }
+        }
+
+        /* Loading state animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <span class="logo-text">VT</span>
+        </div>
+        
+        <h1 class="brand-name">Vibetorch</h1>
+        <p class="tagline">vibe must flow</p>
+        
+        <h2 class="welcome-text">Connect Your GitHub</h2>
+        <p class="description">
+            Authorize Vibetorch to access your repositories and start sharing your AI vibe with the community.
+        </p>
+        
+        <button class="github-button" onclick="handleGitHubAuth()">
+            <svg class="github-icon" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            Continue with GitHub
+        </button>
+        
+        <div class="permissions-list">
+            <div class="permissions-title">Vibetorch will request access to:</div>
+            <div class="permission-item">
+                <svg class="permission-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Read access to your public repositories
+            </div>
+            <div class="permission-item">
+                <svg class="permission-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Your basic profile information
+            </div>
+            <div class="permission-item">
+                <svg class="permission-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Repository metadata for vibe sharing
+            </div>
+        </div>
+        
+        <div class="security-note">
+            <strong>🔒 Secure Connection:</strong> Vibetorch uses GitHub's official OAuth flow to ensure your credentials remain safe. We never store your GitHub password.
+        </div>
+        
+        <div class="footer-links">
+            <a href="#" class="footer-link">Privacy Policy</a>
+            <a href="#" class="footer-link">Terms of Service</a>
+            <a href="#" class="footer-link">Help</a>
+        </div>
+        
+        <div class="vibe-flow">✨ where vibe flows, creativity grows</div>
+    </div>
+
+    <script>
+        function handleGitHubAuth() {
+            const button = document.querySelector('.github-button');
+            
+            // Add loading state
+            button.classList.add('loading');
+            button.innerHTML = `
+                <svg class="github-icon" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                Connecting to GitHub...
+            `;
+            
+            // Simulate OAuth redirect (in real implementation, this would redirect to GitHub)
+            setTimeout(() => {
+                // This would typically be: window.location.href = 'https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID&scope=repo:public_only&redirect_uri=YOUR_CALLBACK_URL'
+                alert('In a real implementation, this would redirect to GitHub OAuth.\n\nExample URL:\nhttps://github.com/login/oauth/authorize?client_id=vibetorch_client_id&scope=repo:public_only&redirect_uri=https://vibetorch.com/auth/callback');
+                
+                // Reset button
+                button.classList.remove('loading');
+                button.innerHTML = `
+                    <svg class="github-icon" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    Continue with GitHub
+                `;
+            }, 2000);
+        }
+
+        // Add subtle interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            const logo = document.querySelector('.logo');
+            
+            // Add gentle hover effects
+            logo.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05) rotate(5deg)';
+            });
+            
+            logo.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+            
+            // Animate container on load
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 0.6s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

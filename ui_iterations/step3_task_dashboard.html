@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 3: Task Dashboard - Vibetorch</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --cta-500: #B05730;
+            --cta-600: #884325;
+            --neu-0: #FFFFFF;
+            --neu-500: #F0EEE5;
+            --neu-600: #DDD9C5;
+            --neu-950: #887D4E;
+            --acc-500: #6C5DAC;
+            --primary: var(--cta-500);
+            --background: var(--neu-0);
+            --foreground: var(--neu-950);
+            --muted-foreground: #A69A64;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background: var(--background);
+            color: var(--foreground);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, var(--neu-0) 0%, var(--neu-500) 100%);
+            border: 1px solid var(--neu-600);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--cta-500), var(--cta-600));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            margin-right: 16px;
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: var(--muted-foreground);
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--neu-500);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--cta-500);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted-foreground);
+        }
+
+        .tasks-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .task-list {
+            space-y: 12px;
+        }
+
+        .task-item {
+            background: var(--neu-0);
+            border: 1px solid var(--neu-600);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .task-repo {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .task-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-running {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-pending {
+            background: var(--neu-600);
+            color: var(--muted-foreground);
+        }
+
+        .task-description {
+            font-size: 13px;
+            color: var(--muted-foreground);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .task-metrics {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted-foreground);
+        }
+
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .token-usage {
+            background: var(--acc-500);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .usage-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .usage-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .usage-fill {
+            background: rgba(255, 255, 255, 0.8);
+            height: 100%;
+            width: 67%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .usage-text {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .vibe-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 12px;
+            color: var(--muted-foreground);
+            opacity: 0.6;
+        }
+
+        .refresh-button {
+            background: var(--cta-500);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-button:hover {
+            background: var(--cta-600);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">VT</div>
+            <div class="header-text">
+                <h1 class="title">Vibetorch Dashboard</h1>
+                <p class="subtitle">Agent is active in Maintainer mode</p>
+            </div>
+            <button class="refresh-button" onclick="refreshTasks()">Refresh</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">12.4K</div>
+                <div class="stat-label">Tokens Used</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Active Tasks</div>
+            </div>
+        </div>
+
+        <div class="tasks-section">
+            <div class="section-title">
+                <span class="status-dot"></span>
+                Current Tasks
+            </div>
+            
+            <div class="task-list">
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-repo">my-awesome-project</div>
+                        <div class="task-status status-running">Running</div>
+                    </div>
+                    <div class="task-description">
+                        Analyzing code patterns and suggesting performance optimizations for the main data processing pipeline
+                    </div>
+                    <div class="task-metrics">
+                        <div class="metric">
+                            <span>⚡</span>
+                            <span>2.1K tokens</span>
+                        </div>
+                        <div class="metric">
+                            <span>⏱️</span>
+                            <span>5 min ago</span>
+                        </div>
+                        <div class="metric">
+                            <span>💰</span>
+                            <span>$0.84</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-repo">data-pipeline-tool</div>
+                        <div class="task-status status-completed">Completed</div>
+                    </div>
+                    <div class="task-description">
+                        Fixed memory leak in batch processing function. Reduced memory usage by 40%
+                    </div>
+                    <div class="task-metrics">
+                        <div class="metric">
+                            <span>⚡</span>
+                            <span>4.2K tokens</span>
+                        </div>
+                        <div class="metric">
+                            <span>⏱️</span>
+                            <span>23 min ago</span>
+                        </div>
+                        <div class="metric">
+                            <span>💰</span>
+                            <span>$1.68</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item">
+                    <div class="task-header">
+                        <div class="task-repo">my-awesome-project</div>
+                        <div class="task-status status-pending">Queued</div>
+                    </div>
+                    <div class="task-description">
+                        Code review requested: Update error handling in authentication module
+                    </div>
+                    <div class="task-metrics">
+                        <div class="metric">
+                            <span>⚡</span>
+                            <span>Est. 1.5K tokens</span>
+                        </div>
+                        <div class="metric">
+                            <span>⏱️</span>
+                            <span>Pending</span>
+                        </div>
+                        <div class="metric">
+                            <span>💰</span>
+                            <span>~$0.60</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="token-usage">
+            <div class="usage-title">Monthly Claude Token Usage</div>
+            <div class="usage-bar">
+                <div class="usage-fill"></div>
+            </div>
+            <div class="usage-text">
+                12,400 / 18,500 tokens used this month • $4.96 spent
+            </div>
+        </div>
+    </div>
+
+    <div class="vibe-text">✨ step 3/3 • vibe flows</div>
+
+    <script>
+        function refreshTasks() {
+            const button = document.querySelector('.refresh-button');
+            const originalText = button.textContent;
+            
+            button.textContent = 'Refreshing...';
+            button.style.opacity = '0.7';
+            
+            // Simulate new task addition
+            setTimeout(() => {
+                const taskList = document.querySelector('.task-list');
+                const newTask = document.createElement('div');
+                newTask.className = 'task-item';
+                newTask.style.opacity = '0';
+                newTask.style.transform = 'translateY(10px)';
+                
+                newTask.innerHTML = `
+                    <div class="task-header">
+                        <div class="task-repo">data-pipeline-tool</div>
+                        <div class="task-status status-running">Running</div>
+                    </div>
+                    <div class="task-description">
+                        Refactoring database connection pooling for better concurrent performance
+                    </div>
+                    <div class="task-metrics">
+                        <div class="metric">
+                            <span>⚡</span>
+                            <span>1.8K tokens</span>
+                        </div>
+                        <div class="metric">
+                            <span>⏱️</span>
+                            <span>Just now</span>
+                        </div>
+                        <div class="metric">
+                            <span>💰</span>
+                            <span>$0.72</span>
+                        </div>
+                    </div>
+                `;
+                
+                taskList.insertBefore(newTask, taskList.firstChild);
+                
+                // Animate in
+                setTimeout(() => {
+                    newTask.style.transition = 'all 0.3s ease';
+                    newTask.style.opacity = '1';
+                    newTask.style.transform = 'translateY(0)';
+                }, 50);
+                
+                // Update stats
+                document.querySelector('.stat-value').textContent = '14.2K';
+                document.querySelector('.stats-grid .stat-card:nth-child(2) .stat-value').textContent = '4';
+                
+                button.textContent = originalText;
+                button.style.opacity = '1';
+            }, 1500);
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            const runningTasks = document.querySelectorAll('.status-running');
+            if (runningTasks.length > 0 && Math.random() > 0.7) {
+                const randomTask = runningTasks[Math.floor(Math.random() * runningTasks.length)];
+                const timeElement = randomTask.closest('.task-item').querySelector('.task-metrics .metric:nth-child(2) span:last-child');
+                
+                const currentTime = parseInt(timeElement.textContent);
+                if (!isNaN(currentTime)) {
+                    timeElement.textContent = (currentTime + 1) + ' min ago';
+                }
+            }
+        }, 30000); // Update every 30 seconds
+
+        // Animate usage bar on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelector('.usage-fill').style.width = '67%';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
