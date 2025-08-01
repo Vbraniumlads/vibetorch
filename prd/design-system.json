@@ -1,0 +1,139 @@
+{
+  "name": "vibetorch Design System",
+  "version": "2.0.0",
+  "description": "Warm, human-centered design system inspired by Claude's aesthetic - where vibe should flow",
+  "philosophy": "vibe must flow - sharing unused AI credits so creative energy never stops",
+  
+  "colors": {
+    "cta": {
+      "50": "#F8ECE7",
+      "100": "#EDCDBF",
+      "200": "#E2AE97",
+      "300": "#D88E6F",
+      "400": "#CD6F47",
+      "500": "#B05730",
+      "600": "#884325",
+      "700": "#602F1A",
+      "800": "#381C0F",
+      "900": "#100804"
+    },
+    "neu": {
+      "0": "#FFFFFF",
+      "500": "#F0EEE5",
+      "600": "#DDD9C5",
+      "700": "#CBC4A4",
+      "800": "#B8AF84",
+      "900": "#A69A64",
+      "950": "#887D4E"
+    },
+    "acc": {
+      "100": "#E6E4F1",
+      "200": "#C8C2E0",
+      "300": "#A9A1CE",
+      "400": "#8A7FBD",
+      "500": "#6C5DAC",
+      "600": "#55498D",
+      "700": "#41376C",
+      "800": "#2D264A",
+      "900": "#181528",
+      "950": "#040307"
+    },
+    "status": {
+      "success": "#34C759",
+      "warning": "#FFCC00",
+      "error": "#FF5F56"
+    },
+    "brandPrimary": "#FF6E2F"
+  },
+  "typography": {
+    "fontFamilies": {
+      "display": "StyreneB, Styrene, sans-serif",
+      "body": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "serif": "Copernicus, Tiempos, Georgia, serif"
+    },
+    "fontWeights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600
+    },
+    "fontSizesPx": {
+      "xs": 12,
+      "sm": 14,
+      "base": 16,
+      "lg": 20,
+      "xl": 24,
+      "2xl": 32
+    },
+    "lineHeights": {
+      "body": 1.4,
+      "heading": 1.2
+    },
+    "letterSpacing": {
+      "display": "-0.01em",
+      "body": "0"
+    }
+  },
+  "spacingPx": {
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 20,
+    "xl": 24
+  },
+  "radiiPx": {
+    "sm": 6,
+    "md": 10,
+    "lg": 20
+  },
+  "shadows": {
+    "card": "0 1px 3px rgba(0,0,0,0.06)"
+  },
+  "layout": {
+    "sidebarWidthPx": 260,
+    "containerMaxWidthPx": 1024
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "background": "{colors.cta.500}",
+        "text": "#FFFFFF",
+        "hoverBackground": "{colors.cta.600}",
+        "radius": "{radiiPx.sm}"
+      },
+      "secondary": {
+        "border": "1px solid {colors.neu.700}",
+        "text": "{colors.neu.900}",
+        "hoverBackground": "{colors.neu.600}",
+        "radius": "{radiiPx.sm}"
+      }
+    },
+    "chatBubble": {
+      "assistant": {
+        "background": "{colors.neu.500}",
+        "text": "{colors.neu.900}",
+        "radius": "{radiiPx.md}"
+      },
+      "user": {
+        "background": "{colors.acc.100}",
+        "text": "{colors.neu.900}",
+        "radius": "{radiiPx.md}"
+      }
+    },
+    "card": {
+      "background": "linear-gradient(180deg, #FFFFFF 0%, #F9F8F4 100%)",
+      "border": "1px solid {colors.neu.100}",
+      "radius": "{radiiPx.md}",
+      "shadow": "{shadows.card}"
+    },
+    "divider": {
+      "color": "{colors.neu.100}",
+      "thicknessPx": 1
+    }
+  },
+  "darkModeOverrides": {
+    "background": "#181614",
+    "cardBackground": "#24221F",
+    "text": "#EAE6DA",
+    "mutedText": "#AAA58D"
+  }
+}

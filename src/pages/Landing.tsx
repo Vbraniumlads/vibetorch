@@ -6,41 +6,41 @@ import { useNavigate } from "react-router-dom";
 const features = [
   {
     icon: Shield,
-    title: "Secure Key Vault",
-    description: "Your API keys are encrypted and stored securely. Only you have access to your credentials."
+    title: "Secure Vibe Vault",
+    description: "Your API keys flow through encrypted channels. Your credentials stay yours, always."
   },
   {
     icon: BarChart3,
-    title: "Token Metering",
-    description: "Real-time tracking of token usage with detailed analytics and billing breakdowns."
+    title: "Flow Analytics",
+    description: "Watch your vibe flow in real-time with beautiful analytics showing your creative impact."
   },
   {
-    icon: DollarSign,
-    title: "Flexible Pricing",
-    description: "Set your own hourly rates or token-based pricing. You control your earning potential."
+    icon: Users,
+    title: "Community Powered",
+    description: "Join a community where everyone shares their vibe - together we keep creativity flowing."
   },
   {
     icon: Zap,
-    title: "Instant Access",
-    description: "Buyers get immediate access to LLM compute without long setup processes."
+    title: "Instant Flow",
+    description: "No waiting, no setup - just pure, immediate access to AI creativity when you need it."
   }
 ];
 
 const steps = [
   {
     number: "01",
-    title: "Upload Your API Key",
-    description: "Securely store your LLM API keys in our encrypted vault. Your credentials remain private."
+    title: "Share Your Vibe",
+    description: "Connect your unused AI credits to the vibetorch - your keys stay secure and private."
   },
   {
     number: "02", 
-    title: "Set Your Pricing",
-    description: "Define hourly rates or token-based pricing for your compute resources."
+    title: "Let It Flow",
+    description: "When you're not creating, others can use your credits to keep their creative energy flowing."
   },
   {
     number: "03",
-    title: "Earn From Usage",
-    description: "Others use your keys through our platform and you earn fees automatically."
+    title: "Keep the Torch Burning",
+    description: "Earn automatically while helping maintain the continuous flow of creative AI access."
   }
 ];
 
@@ -55,10 +55,10 @@ export default function Landing() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-neon flex items-center justify-center">
-                  <span className="text-background font-bold text-sm">IE</span>
+                <div className="w-8 h-8 rounded-lg bg-cta-gradient flex items-center justify-center">
+                  <span className="text-white font-bold text-sm font-display">VT</span>
                 </div>
-                <span className="text-xl font-bold text-neon">Inference Exchange</span>
+                <span className="text-xl font-display font-medium text-brand">vibetorch</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -71,9 +71,9 @@ export default function Landing() {
               </Button>
               <Button 
                 onClick={() => navigate("/dashboard")}
-                className="bg-gradient-neon text-background hover:opacity-90 neon-glow"
+                className="ds-btn-primary"
               >
-                Get Started
+                Join the Flow
               </Button>
             </div>
           </div>
@@ -84,30 +84,29 @@ export default function Landing() {
       <section className="relative py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-              Monetize Your
-              <span className="block text-neon animate-pulse-neon">Unused LLM Credits</span>
+            <h1 className="text-4xl lg:text-6xl font-display font-medium text-foreground mb-6">
+              vibe should
+              <span className="block text-brand vibe-flow">flow</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Turn your idle OpenAI, Claude, and Gemini API credits into revenue. 
-              Connect with buyers who need compute instantly.
+              Share your unused AI credits so creative energy never stops flowing. 
+              When you're not vibing, someone else is - keep the torch burning.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
                 onClick={() => navigate("/dashboard")}
-                className="bg-gradient-neon text-background hover:opacity-90 neon-glow px-8 py-4 text-lg"
+                className="ds-btn-primary px-8 py-4 text-lg"
               >
-                Start Selling
+                Share My Vibe
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button 
                 size="lg" 
-                variant="outline"
                 onClick={() => navigate("/dashboard")}
-                className="border-neon text-primary hover:bg-primary/10 px-8 py-4 text-lg"
+                className="ds-btn-secondary px-8 py-4 text-lg"
               >
-                Start Buying
+                Get Some Vibe
               </Button>
             </div>
           </div>
@@ -118,11 +117,11 @@ export default function Landing() {
       <section className="py-20 bg-card/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              How It Works
+            <h2 className="text-3xl lg:text-4xl font-display font-medium text-foreground mb-4">
+              How Vibe Flows
             </h2>
             <p className="text-xl text-muted-foreground">
-              Simple steps to start earning from your API credits
+              Three simple steps to keep the creative energy flowing
             </p>
           </div>
 
@@ -131,8 +130,8 @@ export default function Landing() {
               <Card key={index} className="card-elevated bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-all duration-300">
                 <CardHeader>
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-neon flex items-center justify-center">
-                      <span className="text-background font-bold">{step.number}</span>
+                    <div className="w-12 h-12 rounded-full bg-cta-gradient flex items-center justify-center">
+                      <span className="text-white font-bold font-display">{step.number}</span>
                     </div>
                     <CardTitle className="text-xl text-foreground">{step.title}</CardTitle>
                   </div>
@@ -150,11 +149,11 @@ export default function Landing() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              Why Choose Inference Exchange?
+            <h2 className="text-3xl lg:text-4xl font-display font-medium text-foreground mb-4">
+              Why vibetorch?
             </h2>
             <p className="text-xl text-muted-foreground">
-              Built for the modern AI economy
+              Built for creators, by creators - where vibe must flow
             </p>
           </div>
 
@@ -179,16 +178,16 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-neon mb-2">$2M+</div>
-              <div className="text-muted-foreground">Total Earnings Paid</div>
+              <div className="text-4xl font-display font-medium text-brand mb-2">∞</div>
+              <div className="text-muted-foreground">Vibe Flowing</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-neon-cyan mb-2">50K+</div>
-              <div className="text-muted-foreground">Active Users</div>
+              <div className="text-4xl font-display font-medium text-cta mb-2">50K+</div>
+              <div className="text-muted-foreground">Creative Minds</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-neon-purple mb-2">99.9%</div>
-              <div className="text-muted-foreground">Uptime</div>
+              <div className="text-4xl font-display font-medium text-cta mb-2">24/7</div>
+              <div className="text-muted-foreground">Never Stopping</div>
             </div>
           </div>
         </div>
@@ -197,18 +196,18 @@ export default function Landing() {
       {/* CTA */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
-            Ready to Start Earning?
+          <h2 className="text-3xl lg:text-4xl font-display font-medium text-foreground mb-6">
+            Ready to Keep the Vibe Flowing?
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Join thousands of developers already monetizing their LLM credits
+            Join thousands of creators sharing their vibe so creativity never stops
           </p>
           <Button 
             size="lg"
             onClick={() => navigate("/dashboard")}
-            className="bg-gradient-neon text-background hover:opacity-90 neon-glow px-8 py-4 text-lg"
+            className="ds-btn-primary px-8 py-4 text-lg"
           >
-            Get Started Today
+            Light the Torch
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
@@ -218,7 +217,7 @@ export default function Landing() {
       <footer className="border-t border-border/50 bg-card/30 backdrop-blur-sm py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center text-muted-foreground">
-            <p>&copy; 2024 Inference Exchange. All rights reserved.</p>
+            <p>&copy; 2024 vibetorch. where vibe must flow ✨</p>
           </div>
         </div>
       </footer>

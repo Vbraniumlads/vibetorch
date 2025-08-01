@@ -11,10 +11,10 @@ export function Layout() {
             {/* Logo */}
             <div className="p-6 border-b border-border">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-neon flex items-center justify-center">
-                  <span className="text-background font-bold text-sm">IE</span>
+                <div className="w-8 h-8 rounded-lg bg-cta-gradient flex items-center justify-center">
+                  <span className="text-white font-bold text-sm font-display">VT</span>
                 </div>
-                <span className="text-xl font-bold text-neon">Inference Exchange</span>
+                <span className="text-xl font-display font-medium text-brand">vibetorch</span>
               </div>
             </div>
 

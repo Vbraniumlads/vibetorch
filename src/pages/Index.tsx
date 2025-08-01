@@ -11,6 +11,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import FontExample from "@/components/FontExample";
 
 // Dummy data for fee history
 const feeHistory = [
@@ -58,7 +59,7 @@ const feeHistory = [
   }
 ];
 
-export default function InferenceExchange() {
+export default function VibetorchApp() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
@@ -66,13 +67,13 @@ export default function InferenceExchange() {
     <div className="min-h-screen bg-background">
       {/* Floating Navbar */}
       <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
-        <div className="bg-card/80 backdrop-blur-lg border border-border/50 rounded-2xl shadow-2xl">
+        <div className="bg-card/80 backdrop-blur-lg border border-border/50 rounded-3xl shadow-lg">
           <div className="px-6 py-3">
             <div className="flex justify-between items-center">
               {/* Brand */}
               <div className="flex items-center">
-                <a href="/" className="text-xl font-bold text-neon hover:opacity-80 transition-smooth">
-                  Inference Exchange
+                <a href="/" className="text-xl font-serif font-bold text-foreground hover:opacity-80 transition-smooth">
+                  Vibetorch
                 </a>
               </div>
 
@@ -87,8 +88,8 @@ export default function InferenceExchange() {
                 <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
                   Login
                 </a>
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth text-sm font-medium">
-                  Start Selling
+                <Button className="ds-btn-primary text-sm font-medium">
+                  Share Vibe
                 </Button>
               </div>
 
@@ -116,8 +117,8 @@ export default function InferenceExchange() {
                   <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
                     Login
                   </a>
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth text-left text-sm font-medium">
-                    Start Selling
+                  <Button className="ds-btn-primary text-left text-sm font-medium">
+                    Share Vibe
                   </Button>
                 </div>
               </div>
@@ -127,68 +128,79 @@ export default function InferenceExchange() {
       </nav>
 
       {/* Main Layout */}
-      <div className="flex flex-col lg:flex-row min-h-screen pt-20">
+      <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Left Panel - Marketing */}
-        <div className="lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center">
+        <div className="lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden">
+          {/* Decorative Background Elements */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-20 left-10 w-32 h-32 bg-cta-500 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-10 w-24 h-24 bg-accent rounded-full blur-2xl"></div>
+          </div>
+          
           {/* Logo Mark */}
-          <div className="mb-8">
-            <div className="w-16 h-16 rounded-lg bg-gradient-neon flex items-center justify-center">
-              <span className="text-background font-bold text-xl">IE</span>
+          <div className="mb-8 relative z-10">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cta-400 to-cta-600 flex items-center justify-center shadow-lg animate-float">
+              <span className="text-white font-bold text-2xl font-mono">VT</span>
             </div>
           </div>
 
           {/* Headlines */}
-          <div className="mb-8">
-            <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4 leading-tight">
-              Monetize your idle LLM credits
+          <div className="mb-8 relative z-10">
+            <h1 className="text-4xl lg:text-5xl font-mono font-bold text-foreground mb-6 leading-[1.1] tracking-tight" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+              Vibe must flow
             </h1>
-            <p className="text-lg text-muted-foreground mb-6">
-              List your API key, set a price, earn automatically.
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed opacity-90" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+              Share your unused AI credits so the creative energy never stops flowing.
             </p>
 
             {/* Benefits List */}
-            <ul className="space-y-3 text-muted-foreground">
-              <li className="flex items-center">
-                <div className="w-2 h-2 rounded-full bg-primary mr-3"></div>
-                Secure vault storage
+            <ul className="space-y-4 text-lg text-muted-foreground" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+              <li className="flex items-center group">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cta-400 to-cta-600 mr-4 shadow-sm group-hover:scale-110 transition-transform"></div>
+                <span>Share unused credits effortlessly</span>
               </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 rounded-full bg-primary mr-3"></div>
-                Real-time metering & payouts
+              <li className="flex items-center group">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cta-400 to-cta-600 mr-4 shadow-sm group-hover:scale-110 transition-transform"></div>
+                <span>Keep the creative vibe alive</span>
               </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 rounded-full bg-primary mr-3"></div>
-                Zero code to start
+              <li className="flex items-center group">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cta-400 to-cta-600 mr-4 shadow-sm group-hover:scale-110 transition-transform"></div>
+                <span>Community-powered AI access</span>
               </li>
             </ul>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth flex-1">
-              Start Selling
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 relative z-10">
+            <Button className="ds-btn-primary flex-1 text-lg py-3 shadow-lg hover:shadow-xl transition-shadow" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+              Share My Vibe
             </Button>
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary/10 transition-smooth flex-1">
-              Start Buying
+            <Button className="ds-btn-secondary flex-1 text-lg py-3 shadow-lg hover:shadow-xl transition-shadow" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+              Get Some Vibe
             </Button>
           </div>
 
           {/* Footer Note */}
-          <p className="text-xs text-muted-foreground">
-            Inspired by inference.net
+          <p className="text-sm text-muted-foreground opacity-80 relative z-10" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+            where vibe flows, creativity grows ✨
           </p>
         </div>
 
         {/* Right Panel - Dashboard */}
-        <div className="lg:w-3/5 panel-right p-6 lg:p-8 overflow-y-auto">
+        <div className="lg:w-3/5 lg:ml-[40%] panel-right px-6 lg:px-8 pt-10 pb-5 overflow-y-auto min-h-screen flex flex-col justify-center">
+          {/* Font Example */}
+          {/* <div className="mb-6">
+            <FontExample />
+          </div> */}
+
           {/* API Key Card */}
-          <Card className="glass-card mb-6">
+          <Card className="ds-card mb-6">
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-foreground">
-                Steve's Anthropic Key
+              <CardTitle className="text-lg font-display font-bold text-foreground uppercase">
+                Steve's Anthropic Vibe
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                claude-3-sonnet - thinking
+                claude-3-sonnet - sharing the flow
               </p>
             </CardHeader>
             <CardContent>
@@ -219,11 +231,11 @@ export default function InferenceExchange() {
           </Card>
 
           {/* Fee History Table */}
-          <Card className="glass-card">
+          <Card className="ds-card">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-foreground">
-                  Fee History
+                <CardTitle className="text-lg font-display font-bold text-foreground uppercase">
+                  Vibe Flow History
                 </CardTitle>
                 <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-primary/10 transition-smooth">
                   <Download className="h-4 w-4 mr-2" />

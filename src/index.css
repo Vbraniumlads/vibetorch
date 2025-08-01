@@ -2,56 +2,128 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Inference Exchange Design System - Modern dark mode with neon accents */
+/* vibetorch Design System - Warm, human-centered theme inspired by Claude */
+
+/* Font Face Declarations */
+@font-face {
+  font-family: 'StyreneB';
+  src: url('/fonts/StyreneB.woff2') format('woff2'),
+       url('/fonts/StyreneB.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Copernicus';
+  src: url('/fonts/Copernicus-Regular.woff2') format('woff2'),
+       url('/fonts/Copernicus-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Copernicus';
+  src: url('/fonts/Copernicus-Medium.woff2') format('woff2'),
+       url('/fonts/Copernicus-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   :root {
-    /* Dark theme base colors */
-    --background: 220 13% 6%;          /* #0f0f0f */
-    --foreground: 210 40% 98%;
+    /* Design System Colors - CTA Scale */
+    --cta-50: 248 236 231;    /* #F8ECE7 */
+    --cta-100: 237 205 191;   /* #EDCDBF */
+    --cta-200: 226 174 151;   /* #E2AE97 */
+    --cta-300: 216 142 111;   /* #D88E6F */
+    --cta-400: 205 111 71;    /* #CD6F47 */
+    --cta-500: 176 87 48;     /* #B05730 */
+    --cta-600: 136 67 37;     /* #884325 */
+    --cta-700: 96 47 26;      /* #602F1A */
+    --cta-800: 56 28 15;      /* #381C0F */
+    --cta-900: 16 8 4;        /* #100804 */
 
-    --card: 220 13% 9%;                /* #181818 */
-    --card-foreground: 210 40% 98%;
+    /* Design System Colors - Neutral Scale */
+    --neu-0: 255 255 255;     /* #FFFFFF */
+    --neu-500: 240 238 229;   /* #F0EEE5 */
+    --neu-600: 221 217 197;   /* #DDD9C5 */
+    --neu-700: 203 196 164;   /* #CBC4A4 */
+    --neu-800: 184 175 132;   /* #B8AF84 */
+    --neu-900: 166 154 100;   /* #A69A64 */
+    --neu-950: 136 125 78;    /* #887D4E */
 
-    --panel-left: 220 13% 9%;          /* #181818 */
-    --panel-right: 220 13% 12%;        /* #202020 */
+    /* Design System Colors - Accent Scale */
+    --acc-100: 230 228 241;   /* #E6E4F1 */
+    --acc-200: 200 194 224;   /* #C8C2E0 */
+    --acc-300: 169 161 206;   /* #A9A1CE */
+    --acc-400: 138 127 189;   /* #8A7FBD */
+    --acc-500: 108 93 172;    /* #6C5DAC */
+    --acc-600: 85 73 141;     /* #55498D */
+    --acc-700: 65 55 108;     /* #41376C */
+    --acc-800: 45 38 74;      /* #2D264A */
+    --acc-900: 24 21 40;      /* #181528 */
+    --acc-950: 4 3 7;         /* #040307 */
 
-    --popover: 220 13% 9%;
-    --popover-foreground: 210 40% 98%;
+    /* Status Colors */
+    --success: 52 199 89;     /* #34C759 */
+    --warning: 255 204 0;     /* #FFCC00 */
+    --error: 255 95 86;       /* #FF5F56 */
 
-    /* Neon accent system */
-    --primary: 158 100% 50%;
-    --primary-foreground: 220 13% 6%;
-    --primary-glow: 158 100% 60%;
+    /* Brand Primary */
+    --brand-primary: 255 110 47; /* #FF6E2F */
 
-    --secondary: 220 13% 15%;
-    --secondary-foreground: 210 40% 98%;
+    /* Semantic Color Mappings */
+    --background: var(--neu-0);
+    --foreground: var(--neu-950);
 
-    --muted: 220 13% 15%;
-    --muted-foreground: 210 20% 65%;
+    --card: var(--neu-0);
+    --card-foreground: var(--neu-950);
 
-    --accent: 220 13% 18%;
-    --accent-foreground: 210 40% 98%;
+    --panel-left: var(--neu-500);
+    --panel-right: var(--neu-0);
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --popover: var(--neu-0);
+    --popover-foreground: var(--neu-950);
 
-    --border: 220 13% 18%;
-    --input: 220 13% 15%;
-    --ring: 158 100% 50%;
+    --primary: var(--cta-500);
+    --primary-foreground: var(--neu-0);
 
-    /* Custom design tokens */
-    --neon-cyan: 180 100% 50%;
-    --neon-purple: 270 100% 70%;
-    --neon-blue: 220 100% 60%;
+    --secondary: var(--neu-600);
+    --secondary-foreground: var(--neu-950);
+
+    --muted: var(--neu-500);
+    --muted-foreground: var(--neu-900);
+
+    --accent: var(--acc-100);
+    --accent-foreground: var(--neu-950);
+
+    --destructive: var(--error);
+    --destructive-foreground: var(--neu-0);
+
+    --border: var(--neu-600);
+    --input: var(--neu-0);
+    --ring: var(--cta-500);
+
+    /* Spacing (converted to unitless for HSL) */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 20px;
+    --spacing-xl: 24px;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 20px;
     
-    /* Gradients */
-    --gradient-neon: linear-gradient(135deg, hsl(var(--neon-cyan)) 0%, hsl(var(--primary)) 50%, hsl(var(--neon-purple)) 100%);
-    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
-    
+    /* Default radius for backwards compatibility */
+    --radius: var(--radius-sm);
+
     /* Shadows */
-    --shadow-neon: 0 0 20px hsl(var(--primary) / 0.3);
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.06);
     
     --radius: 0.125rem;
 
@@ -96,53 +168,110 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground antialiased;
-    background: hsl(var(--background));
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 14px;
+  html {
+    font-family: 'Inter', sans-serif;
+    color: rgb(var(--neu-800));
+    line-height: 1.4;
   }
 
-  /* Glass card effect */
-  .glass-card {
-    background: var(--gradient-glass);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Dark mode support */
+  .dark html {
+    color: #EAE6DA; /* --text-dark */
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased font-body;
+    background: rgb(var(--background));
+    font-size: 16px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'StyreneB', sans-serif;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  blockquote, .prose-serif {
+    font-family: 'Copernicus', serif;
+  }
+
+  /* Design System Card */
+  .ds-card {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F9F8F4 100%);
+    border: 1px solid rgb(var(--neu-600));
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-card);
   }
 
   /* Panel backgrounds */
   .panel-left {
-    background: hsl(var(--panel-left));
+    background: rgb(var(--panel-left));
   }
 
   .panel-right {
-    background: hsl(var(--panel-right));
-  }
-
-  /* Neon glow effects */
-  .neon-glow {
-    box-shadow: var(--shadow-neon);
+    background: rgb(var(--panel-right));
   }
 }
 
 /* Custom utilities */
 @layer utilities {
-  .gradient-neon {
-    background: var(--gradient-neon);
+  /* Design System Button Styles */
+  .ds-btn-primary {
+    background: rgb(var(--cta-500));
+    color: rgb(var(--neu-0));
+    border-radius: var(--radius-sm);
+    transition: all 0.25s ease;
   }
   
-  .text-neon {
-    color: hsl(var(--primary));
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+  .ds-btn-primary:hover {
+    background: rgb(var(--cta-600));
+  }
+  
+  .ds-btn-secondary {
+    border: 1px solid rgb(var(--neu-700));
+    color: rgb(var(--neu-900));
+    border-radius: var(--radius-sm);
+    transition: all 0.25s ease;
+  }
+  
+  .ds-btn-secondary:hover {
+    background: rgb(var(--neu-600));
   }
 
-  .border-neon {
-    border-color: hsl(var(--primary));
-    box-shadow: 0 0 10px hsl(var(--primary) / 0.2);
+  /* Brand Colors */
+  .text-brand {
+    color: rgb(var(--brand-primary));
   }
 
+  .text-cta {
+    color: rgb(var(--cta-500));
+  }
+
+  .bg-cta {
+    background: rgb(var(--cta-500));
+  }
+
+  .bg-cta-gradient {
+    background: linear-gradient(135deg, rgb(var(--cta-400)), rgb(var(--cta-600)));
+  }
+
+  /* Font Utility Classes */
+  .font-display {
+    font-family: 'StyreneB', sans-serif;
+    font-weight: 500;
+  }
+
+  .font-serif {
+    font-family: 'Copernicus', serif;
+  }
+
+  /* Utility Classes */
   .transition-smooth {
     transition: all 0.25s ease;
+  }
+
+  .vibe-flow {
+    animation: float 3s ease-in-out infinite;
   }
 }
