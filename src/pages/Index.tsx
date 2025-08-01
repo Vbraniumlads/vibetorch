@@ -181,10 +181,11 @@ export default function VibetorchApp() {
                 className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 -left-20 transform -translate-y-1/2 rounded-3xl cursor-grab"
                 style={{
                   animation: isDragging || hasInitialAnimationPlayed ? 'none' : 'panLeft 1s ease-in-out',
-                  transform: `translateX(${-20 + (dragOffset.x * 0.03)}px) translateY(${-50 + (dragOffset.y * 0.03)}%)`,
+                  transform: `translateX(${-20 + (dragOffset.x * 0.03)}px) translateY(${-50 + (dragOffset.y * 0.03)}%) scaleX(${1 + Math.abs(dragOffset.x) * 0.003})`,
                   transition: isDragging ? 'none' : 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)',
                   cursor: isDragging ? 'grabbing' : 'grab',
-                  zIndex: isDragging ? 50 : 10
+                  zIndex: isDragging ? 50 : 10,
+                  transformOrigin: dragOffset.x > 0 ? 'left center' : 'right center'
                 }}
                 onMouseDown={handleDragStart}
                 onTouchStart={handleDragStart}
