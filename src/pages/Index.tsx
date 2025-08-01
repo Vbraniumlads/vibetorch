@@ -147,7 +147,7 @@ export default function VibetorchApp() {
           {/* Headlines */}
           <div className="mb-8 relative z-10">
             <h1 className="text-4xl lg:text-5xl font-mono font-bold text-foreground mb-6 leading-[1.1] tracking-tight" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
-              Vibe must flow
+              Vibe must flow.
             </h1>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed opacity-90" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
               Share your unused AI credits so the creative energy never stops flowing.
