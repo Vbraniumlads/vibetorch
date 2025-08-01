@@ -138,61 +138,30 @@ export default function VibetorchApp() {
           </div>
           
           {/* Logo Mark */}
+          <img 
+            src="/torch.png" 
+            alt="Vibetorch" 
+            className="w-full h-96 lg:h-[32rem] object-contain mb-6"
+          />
+
+          {/* Torch Image */}
           <div className="mb-8 relative z-10">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cta-400 to-cta-600 flex items-center justify-center shadow-lg animate-float">
-              <span className="text-white font-bold text-2xl font-mono">VT</span>
-            </div>
+            
           </div>
 
           {/* Headlines */}
           <div className="mb-8 relative z-10">
-            <h1 className="text-4xl lg:text-5xl font-mono font-bold text-foreground mb-6 leading-[1.1] tracking-tight" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+            <h1 className="text-4xl lg:text-5xl font-mono font-bold text-black mb-6 leading-[1.1] tracking-tight" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
               Vibe must flow.
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed opacity-90" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
-              Share your unused AI credits so the creative energy never stops flowing.
+            <p className="text-xl text-black mb-8 leading-relaxed" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+              Rest easy, AI's got the night shift.
             </p>
-
-            {/* Benefits List */}
-            <ul className="space-y-4 text-lg text-muted-foreground" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
-              <li className="flex items-center group">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cta-400 to-cta-600 mr-4 shadow-sm group-hover:scale-110 transition-transform"></div>
-                <span>Share unused credits effortlessly</span>
-              </li>
-              <li className="flex items-center group">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cta-400 to-cta-600 mr-4 shadow-sm group-hover:scale-110 transition-transform"></div>
-                <span>Keep the creative vibe alive</span>
-              </li>
-              <li className="flex items-center group">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cta-400 to-cta-600 mr-4 shadow-sm group-hover:scale-110 transition-transform"></div>
-                <span>Community-powered AI access</span>
-              </li>
-            </ul>
           </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-8 relative z-10">
-            <Button className="ds-btn-primary flex-1 text-lg py-3 shadow-lg hover:shadow-xl transition-shadow" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
-              Share My Vibe
-            </Button>
-            <Button className="ds-btn-secondary flex-1 text-lg py-3 shadow-lg hover:shadow-xl transition-shadow" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
-              Get Some Vibe
-            </Button>
-          </div>
-
-          {/* Footer Note */}
-          <p className="text-sm text-muted-foreground opacity-80 relative z-10" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
-            where vibe flows, creativity grows ✨
-          </p>
         </div>
 
         {/* Right Panel - Dashboard */}
         <div className="lg:w-3/5 lg:ml-[40%] panel-right px-6 lg:px-8 pt-10 pb-5 overflow-y-auto min-h-screen flex flex-col justify-center">
-          {/* Font Example */}
-          {/* <div className="mb-6">
-            <FontExample />
-          </div> */}
-
           {/* API Key Card */}
           <Card className="ds-card mb-6">
             <CardHeader className="pb-4">
