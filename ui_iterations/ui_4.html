@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management Table - Vibetorch</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            /* CTA Scale */
+            --cta-50: #F8ECE7;
+            --cta-100: #EDCDBF;
+            --cta-200: #E2AE97;
+            --cta-300: #D88E6F;
+            --cta-400: #CD6F47;
+            --cta-500: #B05730;
+            --cta-600: #884325;
+            --cta-700: #602F1A;
+            --cta-800: #381C0F;
+            --cta-900: #100804;
+
+            /* Neutral Scale */
+            --neu-0: #FFFFFF;
+            --neu-500: #F0EEE5;
+            --neu-600: #DDD9C5;
+            --neu-700: #CBC4A4;
+            --neu-800: #B8AF84;
+            --neu-900: #A69A64;
+            --neu-950: #887D4E;
+
+            /* Accent Scale */
+            --acc-100: #E6E4F1;
+            --acc-200: #C8C2E0;
+            --acc-300: #A9A1CE;
+            --acc-400: #8A7FBD;
+            --acc-500: #6C5DAC;
+            --acc-600: #55498D;
+            --acc-700: #41376C;
+            --acc-800: #2D264A;
+            --acc-900: #181528;
+
+            /* Status Colors */
+            --status-success: #34C759;
+            --status-warning: #FFCC00;
+            --status-error: #FF5F56;
+            --status-pending: #6C5DAC;
+
+            /* Semantic Mappings */
+            --background: var(--neu-0);
+            --foreground: var(--neu-950);
+            --muted-foreground: var(--neu-900);
+            --primary: var(--cta-500);
+            --border: var(--neu-600);
+            --card-bg: var(--neu-0);
+
+            /* Typography */
+            --font-display: 'StyreneB', 'Styrene', sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 20px;
+            --spacing-xl: 24px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 20px;
+
+            /* Shadows */
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-elevated: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.4;
+            min-height: 100vh;
+            padding: var(--spacing-xl);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, var(--neu-0) 0%, #F9F8F4 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--neu-600);
+            background: var(--neu-0);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--muted-foreground);
+        }
+
+        .add-task-btn {
+            background: var(--cta-500);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-task-btn:hover {
+            background: var(--cta-600);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-elevated);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--neu-0);
+        }
+
+        .table-header {
+            background: var(--neu-500);
+            border-bottom: 2px solid var(--neu-600);
+        }
+
+        .table-header th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-header th:first-child {
+            width: 120px;
+        }
+
+        .table-header th:nth-child(2) {
+            width: auto;
+        }
+
+        .table-header th:nth-child(3) {
+            width: 140px;
+        }
+
+        .table-header th:last-child {
+            width: 80px;
+            text-align: center;
+        }
+
+        .table-row {
+            border-bottom: 1px solid var(--neu-600);
+            transition: all 0.2s ease;
+        }
+
+        .table-row:hover {
+            background: var(--neu-500);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-cell {
+            padding: 16px 20px;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .date-cell {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--muted-foreground);
+        }
+
+        .task-cell {
+            font-weight: 500;
+            color: var(--foreground);
+            line-height: 1.4;
+        }
+
+        .task-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--foreground);
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .task-input:focus {
+            outline: none;
+            border-bottom-color: var(--cta-500);
+        }
+
+        .date-input {
+            background: transparent;
+            border: none;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--muted-foreground);
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-bottom-color: var(--cta-500);
+        }
+
+        .status-cell {
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-pending {
+            background: var(--acc-100);
+            color: var(--acc-700);
+        }
+
+        .status-in-progress {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-blocked {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .action-cell {
+            text-align: center;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            color: var(--muted-foreground);
+        }
+
+        .edit-btn:hover {
+            background: var(--neu-500);
+            color: var(--foreground);
+        }
+
+        .edit-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .footer {
+            padding: var(--spacing-lg);
+            background: var(--neu-500);
+            border-top: 1px solid var(--neu-600);
+            text-align: center;
+        }
+
+        .task-count {
+            font-size: 14px;
+            color: var(--muted-foreground);
+        }
+
+        .task-count strong {
+            color: var(--foreground);
+        }
+
+        /* Modal for adding new tasks */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--neu-0);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-elevated);
+        }
+
+        .modal-header {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--foreground);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--neu-600);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: var(--neu-0);
+            color: var(--foreground);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cta-500);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--neu-700);
+            color: var(--foreground);
+            border-radius: var(--radius-sm);
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--neu-500);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .header {
+                padding: var(--spacing-lg);
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                align-items: flex-start;
+            }
+
+            .table-header th,
+            .table-cell {
+                padding: 12px 16px;
+            }
+
+            .table-header th:first-child {
+                width: 100px;
+            }
+
+            .modal-content {
+                margin: var(--spacing-lg);
+            }
+        }
+
+        /* Animation for new rows */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .new-row {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1 class="title">Task Management</h1>
+                    <p class="subtitle">에이전트 실행 전 작업 계획 및 추적</p>
+                </div>
+                <button class="add-task-btn" onclick="openModal()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    새 태스크 추가
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="task-table">
+                <thead class="table-header">
+                    <tr>
+                        <th>날짜</th>
+                        <th>태스크</th>
+                        <th>상태</th>
+                        <th>편집</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody">
+                    <tr class="table-row">
+                        <td class="table-cell">
+                            <input type="date" class="date-input" value="2024-08-01" readonly>
+                        </td>
+                        <td class="table-cell task-cell">
+                            <input type="text" class="task-input" value="GitHub OAuth 연동 기능 구현" readonly>
+                        </td>
+                        <td class="table-cell status-cell">
+                            <span class="status-badge status-in-progress" onclick="toggleStatus(this)">진행중</span>
+                        </td>
+                        <td class="table-cell action-cell">
+                            <button class="edit-btn" onclick="toggleEdit(this)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="table-cell">
+                            <input type="date" class="date-input" value="2024-08-02" readonly>
+                        </td>
+                        <td class="table-cell task-cell">
+                            <input type="text" class="task-input" value="사용자 대시보드 UI 컴포넌트 개발" readonly>
+                        </td>
+                        <td class="table-cell status-cell">
+                            <span class="status-badge status-pending" onclick="toggleStatus(this)">대기</span>
+                        </td>
+                        <td class="table-cell action-cell">
+                            <button class="edit-btn" onclick="toggleEdit(this)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="table-cell">
+                            <input type="date" class="date-input" value="2024-07-30" readonly>
+                        </td>
+                        <td class="table-cell task-cell">
+                            <input type="text" class="task-input" value="API 엔드포인트 성능 최적화" readonly>
+                        </td>
+                        <td class="table-cell status-cell">
+                            <span class="status-badge status-completed" onclick="toggleStatus(this)">완료</span>
+                        </td>
+                        <td class="table-cell action-cell">
+                            <button class="edit-btn" onclick="toggleEdit(this)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="table-cell">
+                            <input type="date" class="date-input" value="2024-08-05" readonly>
+                        </td>
+                        <td class="table-cell task-cell">
+                            <input type="text" class="task-input" value="토큰 사용량 모니터링 시스템 구축" readonly>
+                        </td>
+                        <td class="table-cell status-cell">
+                            <span class="status-badge status-blocked" onclick="toggleStatus(this)">차단됨</span>
+                        </td>
+                        <td class="table-cell action-cell">
+                            <button class="edit-btn" onclick="toggleEdit(this)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <div class="task-count">
+                총 <strong id="totalTasks">4</strong>개 태스크 | 
+                완료: <strong id="completedTasks">1</strong>개 | 
+                진행중: <strong id="inProgressTasks">1</strong>개 | 
+                대기: <strong id="pendingTasks">1</strong>개 | 
+                차단됨: <strong id="blockedTasks">1</strong>개
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding new task -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">새 태스크 추가</h2>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label class="form-label" for="taskDate">날짜</label>
+                    <input type="date" id="taskDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="taskDescription">태스크 설명</label>
+                    <textarea id="taskDescription" class="form-input form-textarea" placeholder="태스크 내용을 입력하세요..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="taskStatus">상태</label>
+                    <select id="taskStatus" class="form-input">
+                        <option value="pending">대기</option>
+                        <option value="in-progress">진행중</option>
+                        <option value="completed">완료</option>
+                        <option value="blocked">차단됨</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">취소</button>
+                    <button type="submit" class="add-task-btn">추가</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date as default for new tasks
+        document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+
+        function openModal() {
+            document.getElementById('taskModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').classList.remove('show');
+            document.getElementById('taskForm').reset();
+            document.getElementById('taskDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function toggleEdit(button) {
+            const row = button.closest('tr');
+            const dateInput = row.querySelector('.date-input');
+            const taskInput = row.querySelector('.task-input');
+            
+            if (dateInput.readOnly) {
+                // Enable editing
+                dateInput.readOnly = false;
+                taskInput.readOnly = false;
+                dateInput.focus();
+                
+                // Change button icon to save
+                button.innerHTML = `
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                `;
+            } else {
+                // Save and disable editing
+                dateInput.readOnly = true;
+                taskInput.readOnly = true;
+                
+                // Change button icon back to edit
+                button.innerHTML = `
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                `;
+                
+                // Show brief feedback that changes were saved
+                button.style.color = 'var(--status-success)';
+                setTimeout(() => {
+                    button.style.color = '';
+                }, 1000);
+            }
+        }
+
+        function toggleStatus(badge) {
+            const statuses = [
+                { key: 'pending', text: '대기', class: 'status-pending' },
+                { key: 'in-progress', text: '진행중', class: 'status-in-progress' },
+                { key: 'completed', text: '완료', class: 'status-completed' },
+                { key: 'blocked', text: '차단됨', class: 'status-blocked' }
+            ];
+            
+            let currentIndex = 0;
+            for (let i = 0; i < statuses.length; i++) {
+                if (badge.classList.contains(statuses[i].class)) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+            
+            // Remove current status class
+            badge.classList.remove(statuses[currentIndex].class);
+            
+            // Move to next status (cycle back to beginning if at end)
+            const nextIndex = (currentIndex + 1) % statuses.length;
+            badge.classList.add(statuses[nextIndex].class);
+            badge.textContent = statuses[nextIndex].text;
+            
+            updateTaskCounts();
+        }
+
+        function updateTaskCounts() {
+            const rows = document.querySelectorAll('#taskTableBody tr');
+            let counts = { total: 0, completed: 0, inProgress: 0, pending: 0, blocked: 0 };
+            
+            rows.forEach(row => {
+                counts.total++;
+                const statusBadge = row.querySelector('.status-badge');
+                if (statusBadge.classList.contains('status-completed')) counts.completed++;
+                else if (statusBadge.classList.contains('status-in-progress')) counts.inProgress++;
+                else if (statusBadge.classList.contains('status-pending')) counts.pending++;
+                else if (statusBadge.classList.contains('status-blocked')) counts.blocked++;
+            });
+            
+            document.getElementById('totalTasks').textContent = counts.total;
+            document.getElementById('completedTasks').textContent = counts.completed;
+            document.getElementById('inProgressTasks').textContent = counts.inProgress;
+            document.getElementById('pendingTasks').textContent = counts.pending;
+            document.getElementById('blockedTasks').textContent = counts.blocked;
+        }
+
+        function addNewTask(date, description, status) {
+            const tbody = document.getElementById('taskTableBody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'table-row new-row';
+            
+            const statusClasses = {
+                'pending': 'status-pending',
+                'in-progress': 'status-in-progress',
+                'completed': 'status-completed',
+                'blocked': 'status-blocked'
+            };
+            
+            const statusTexts = {
+                'pending': '대기',
+                'in-progress': '진행중',
+                'completed': '완료',
+                'blocked': '차단됨'
+            };
+            
+            newRow.innerHTML = `
+                <td class="table-cell">
+                    <input type="date" class="date-input" value="${date}" readonly>
+                </td>
+                <td class="table-cell task-cell">
+                    <input type="text" class="task-input" value="${description}" readonly>
+                </td>
+                <td class="table-cell status-cell">
+                    <span class="status-badge ${statusClasses[status]}" onclick="toggleStatus(this)">${statusTexts[status]}</span>
+                </td>
+                <td class="table-cell action-cell">
+                    <button class="edit-btn" onclick="toggleEdit(this)">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </button>
+                </td>
+            `;
+            
+            tbody.insertBefore(newRow, tbody.firstChild);
+            updateTaskCounts();
+        }
+
+        // Handle form submission
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const date = document.getElementById('taskDate').value;
+            const description = document.getElementById('taskDescription').value;
+            const status = document.getElementById('taskStatus').value;
+            
+            addNewTask(date, description, status);
+            closeModal();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('taskModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            if (e.key === 'n' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                openModal();
+            }
+        });
+
+        // Initialize task counts on page load
+        updateTaskCounts();
+    </script>
+</body>
+</html>

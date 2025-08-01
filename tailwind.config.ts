@@ -22,6 +22,8 @@ export default {
 			serif: ['Copernicus', 'Georgia', 'serif'],
 			display: ['StyreneB', 'Styrene', 'sans-serif'],
 			body: ['Inter', 'sans-serif'],
+			times: ['Times New Roman', 'Times', 'serif'],
+			tiempos: ['Playfair Display', 'Times New Roman', 'serif'],
 		},
 		extend: {
 			colors: {
