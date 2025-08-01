@@ -1,8 +1,90 @@
 import { Button } from "@/components/ui/button";
 import VibetorchSteps from "@/components/VibetorchSteps";
+import { useState, useEffect } from "react";
 
 
 export default function VibetorchApp() {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+  const [currentSection, setCurrentSection] = useState(0);
+  const [hasInitialAnimationPlayed, setHasInitialAnimationPlayed] = useState(false);
+
+  // Mark initial animation as played after component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHasInitialAnimationPlayed(true);
+    }, 1000); // Match the animation duration
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Handle global mouse/touch events for dragging
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (isDragging) {
+        const newOffset = {
+          x: e.clientX - startPosition.x,
+          y: e.clientY - startPosition.y
+        };
+        setDragOffset(newOffset);
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (isDragging) {
+        setIsDragging(false);
+        // Animate back to original position
+        setDragOffset({ x: 0, y: 0 });
+      }
+    };
+
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const newOffset = {
+          x: touch.clientX - startPosition.x,
+          y: touch.clientY - startPosition.y
+        };
+        setDragOffset(newOffset);
+      }
+    };
+
+    const handleGlobalTouchEnd = () => {
+      if (isDragging) {
+        setIsDragging(false);
+        // Animate back to original position
+        setDragOffset({ x: 0, y: 0 });
+      }
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
+      document.addEventListener('touchend', handleGlobalTouchEnd);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('touchmove', handleGlobalTouchMove);
+      document.removeEventListener('touchend', handleGlobalTouchEnd);
+    };
+  }, [isDragging, startPosition]);
+
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    
+    if ('touches' in e) {
+      const touch = e.touches[0];
+      setStartPosition({ x: touch.clientX, y: touch.clientY });
+    } else {
+      setStartPosition({ x: e.clientX, y: e.clientY });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <style>{`
@@ -13,6 +95,13 @@ export default function VibetorchApp() {
           100% {
             transform: translateX(0%) translateY(-50%);
           }
+        }
+        .panel-right::-webkit-scrollbar {
+          display: none;
+        }
+        .panel-right {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
       {/* Floating Navbar */}
@@ -89,10 +178,17 @@ export default function VibetorchApp() {
               <img 
                 src="/torch.png" 
                 alt="Vibetorch" 
-                className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 -left-20 transform -translate-y-1/2 rounded-3xl"
+                className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 -left-20 transform -translate-y-1/2 rounded-3xl cursor-grab"
                 style={{
-                  animation: 'panLeft 1s ease-in-out'
+                  animation: isDragging || hasInitialAnimationPlayed ? 'none' : 'panLeft 1s ease-in-out',
+                  transform: `translateX(${-20 + (dragOffset.x * 0.03)}px) translateY(${-50 + (dragOffset.y * 0.03)}%)`,
+                  transition: isDragging ? 'none' : 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)',
+                  cursor: isDragging ? 'grabbing' : 'grab',
+                  zIndex: isDragging ? 50 : 10
                 }}
+                onMouseDown={handleDragStart}
+                onTouchStart={handleDragStart}
+                draggable={false}
               />
             </div>
           </div>
@@ -126,8 +222,46 @@ export default function VibetorchApp() {
         </div>
 
         {/* Right Panel - Vibetorch Steps */}
-        <div className="lg:w-3/5 lg:ml-[40%] panel-right overflow-y-auto min-h-screen">
+        <div 
+          className="lg:w-3/5 lg:ml-[40%] panel-right overflow-y-auto"
+          style={{ 
+            height: '100vh',
+            scrollSnapType: 'y mandatory',
+            scrollBehavior: 'smooth',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
+          }}
+          onScroll={(e) => {
+            const scrollTop = e.currentTarget.scrollTop;
+            const sectionIndex = Math.round(scrollTop / window.innerHeight);
+            setCurrentSection(sectionIndex);
+          }}
+        >
           <VibetorchSteps />
+          {/* Dot Navigation */}
+          <div className="fixed right-2 top-1/2 transform -translate-y-1/2 z-50 space-y-2 flex flex-col">
+          {/* <div className="right-8 top-1/2 transform space-y-4"> */}
+            {[0, 1, 2, 3].map((index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  const container = document.querySelector('.panel-right');
+                  if (container) {
+                    container.scrollTo({
+                      top: index * window.innerHeight,
+                      behavior: 'smooth'
+                    });
+                  }
+                }}
+                className="w-1.5 h-1.5 rounded-full border transition-all duration-300 hover:scale-110"
+                style={{
+                  backgroundColor: currentSection === index ? '#B05730' : 'transparent',
+                  borderColor: '#B05730',
+                  opacity: currentSection === index ? 1 : 0.5
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -34,7 +34,7 @@ const VibetorchSteps: React.FC = () => {
     }
   ]);
 
-  const stepRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
+  const stepRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const modes = [
@@ -183,12 +183,17 @@ const VibetorchSteps: React.FC = () => {
     setTasks([newTask, ...tasks]);
   };
 
+
   return (
     <div className="h-full font-body" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }}>
       {/* Step 1: GitHub Login */}
       <div 
         ref={stepRefs[0]}
-        className="min-h-screen flex items-center justify-center p-8"
+        className="flex items-center justify-center p-8"
+        style={{ 
+          height: '100vh',
+          scrollSnapAlign: 'start'
+        }}
       >
         <div className="max-w-md w-full">
           <div 
@@ -254,7 +259,11 @@ const VibetorchSteps: React.FC = () => {
       {/* Step 2: Mode Selection */}
       <div 
         ref={stepRefs[1]}
-        className="min-h-screen flex items-center justify-center p-8"
+        className="flex items-center justify-center p-8"
+        style={{ 
+          height: '100vh',
+          scrollSnapAlign: 'start'
+        }}
       >
         <div className="w-full">
           <div 
@@ -423,7 +432,10 @@ const VibetorchSteps: React.FC = () => {
       </div>
 
       {/* Step 2.5: Task Management */}
-      <div className="min-h-screen flex items-center justify-center p-8">
+      <div ref={stepRefs[2]} className="flex items-center justify-center p-8" style={{ 
+        height: '100vh',
+        scrollSnapAlign: 'start' 
+      }}>
         <div className="w-full">
           <TaskManagement />
         </div>
@@ -431,8 +443,12 @@ const VibetorchSteps: React.FC = () => {
 
       {/* Step 3: Task Dashboard */}
       <div 
-        ref={stepRefs[2]}
-        className="min-h-screen flex items-center justify-center p-8"
+        ref={stepRefs[3]}
+        className="flex items-center justify-center p-8"
+        style={{ 
+          height: '100vh',
+          scrollSnapAlign: 'start'
+        }}
       >
         <div className="w-full">
           <div 
