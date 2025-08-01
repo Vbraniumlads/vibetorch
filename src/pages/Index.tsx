@@ -65,6 +65,16 @@ export default function VibetorchApp() {
 
   return (
     <div className="min-h-screen bg-background">
+      <style>{`
+        @keyframes panLeft {
+          0% {
+            transform: translateX(-33%) translateY(-50%);
+          }
+          100% {
+            transform: translateX(0%) translateY(-50%);
+          }
+        }
+      `}</style>
       {/* Floating Navbar */}
       <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
         <div className="bg-card/80 backdrop-blur-lg border border-border/50 rounded-3xl shadow-lg">
@@ -138,20 +148,24 @@ export default function VibetorchApp() {
           </div>
           
           {/* Logo Mark */}
-          <img 
-            src="/torch.png" 
-            alt="Vibetorch" 
-            className="w-full h-96 lg:h-[32rem] object-contain mb-6"
-          />
-
-          {/* Torch Image */}
-          <div className="mb-8 relative z-10">
-            
+          <div className="relative mb-6 group">
+            <div className="w-full h-96 lg:h-[32rem] relative overflow-hidden">
+              <img 
+                src="/torch.png" 
+                alt="Vibetorch" 
+                className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 left-0 transform -translate-y-1/2 transition-all duration-500 filter hover:brightness-110 hover:drop-shadow-2xl"
+                style={{
+                  animation: 'panLeft 8s ease-in-out infinite alternate'
+                }}
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-cta-400/20 via-transparent to-cta-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+            <div className="absolute -inset-4 bg-gradient-to-r from-cta-400/30 via-cta-500/30 to-cta-600/30 rounded-3xl blur-xl opacity-0 group-hover:opacity-60 transition-all duration-500 -z-10"></div>
           </div>
 
           {/* Headlines */}
           <div className="mb-8 relative z-10">
-            <h1 className="text-4xl lg:text-5xl font-mono font-bold text-black mb-6 leading-[1.1] tracking-tight" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
+            <h1 className="text-4xl lg:text-5xl font-mono font-bold text-amber-800 mb-6 leading-[1.1] tracking-tight" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
               Vibe must flow.
             </h1>
             <p className="text-xl text-black mb-8 leading-relaxed" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
