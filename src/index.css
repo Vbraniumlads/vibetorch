@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbar for webkit browsers */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* vibetorch Design System - Warm, human-centered theme inspired by Claude */
 
 /* Font Face Declarations */

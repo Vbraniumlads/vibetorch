@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import TaskManagement from "./TaskManagement";
 
 const VibetorchSteps: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -256,11 +256,11 @@ const VibetorchSteps: React.FC = () => {
         ref={stepRefs[1]}
         className="min-h-screen flex items-center justify-center p-8"
       >
-        <div className="max-w-2xl w-full">
+        <div className="w-full">
           <div 
-            className="border rounded-2xl p-10 shadow-sm"
+            className="border-t border-b p-10 shadow-sm"
             style={{ 
-              background: 'linear-gradient(180deg, #FFFFFF 0%, #F9F8F4 100%)',
+              background: 'transparent',
               borderColor: '#DDD9C5'
             }}
           >
@@ -422,16 +422,23 @@ const VibetorchSteps: React.FC = () => {
         </div>
       </div>
 
+      {/* Step 2.5: Task Management */}
+      <div className="min-h-screen flex items-center justify-center p-8">
+        <div className="w-full">
+          <TaskManagement />
+        </div>
+      </div>
+
       {/* Step 3: Task Dashboard */}
       <div 
         ref={stepRefs[2]}
         className="min-h-screen flex items-center justify-center p-8"
       >
-        <div className="max-w-2xl w-full">
+        <div className="w-full">
           <div 
-            className="border rounded-2xl p-8 shadow-sm"
+            className="border-t border-b p-8 shadow-sm"
             style={{ 
-              background: 'linear-gradient(180deg, #FFFFFF 0%, #F9F8F4 100%)',
+              background: 'transparent',
               borderColor: '#DDD9C5'
             }}
           >
@@ -522,74 +529,118 @@ const VibetorchSteps: React.FC = () => {
                 Current Tasks
               </div>
               
-              <div className="space-y-3">
-                {tasks.map((task, index) => (
-                  <Card 
-                    key={index} 
-                    className="hover:shadow-md transition-all duration-200 hover:transform hover:-translate-y-0.5"
-                    style={{ 
-                      background: '#FFFFFF',
-                      borderColor: '#DDD9C5'
-                    }}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <div 
-                          className="font-medium text-sm"
-                          style={{ color: '#887D4E' }}
-                        >
-                          {task.repo}
+              <div 
+                className="border rounded-lg overflow-hidden"
+                style={{ 
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#DDD9C5'
+                }}
+              >
+                {/* Table Header */}
+                <div 
+                  className="px-4 py-3 border-b"
+                  style={{ 
+                    backgroundColor: '#F0EEE5',
+                    borderColor: '#DDD9C5'
+                  }}
+                >
+                  <div className="grid grid-cols-12 gap-4 text-xs font-semibold uppercase tracking-wide" style={{ color: '#887D4E' }}>
+                    <div className="col-span-2">Repository</div>
+                    <div className="col-span-1">Status</div>
+                    <div className="col-span-5">Description</div>
+                    <div className="col-span-1">Tokens</div>
+                    <div className="col-span-1">Time</div>
+                    <div className="col-span-2">Cost</div>
+                  </div>
+                </div>
+
+                {/* Table Rows */}
+                <div className="max-h-60 overflow-y-auto">
+                  {tasks.map((task, index) => (
+                    <div
+                      key={index} 
+                      className="px-4 py-3 border-b last:border-b-0 transition-all duration-150"
+                      style={{ borderColor: '#DDD9C5' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0EEE5'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <div className="grid grid-cols-12 gap-4 items-center">
+                        {/* Repository */}
+                        <div className="col-span-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium" style={{ color: '#887D4E' }}>
+                              {task.repo}
+                            </span>
+                            {task.status === 'running' && (
+                              <div className="w-3 h-3 border border-blue-300 border-t-blue-500 rounded-full animate-spin"></div>
+                            )}
+                          </div>
                         </div>
-                        <div 
-                          className={`text-xs px-2 py-1 rounded-full uppercase tracking-wide`}
-                          style={{
-                            backgroundColor: task.status === 'running' ? '#FEF3C7' :
-                                           task.status === 'completed' ? '#D1FAE5' : '#F0EEE5',
-                            color: task.status === 'running' ? '#D97706' :
-                                  task.status === 'completed' ? '#059669' : '#A69A64'
-                          }}
-                        >
-                          {task.status}
+
+                        {/* Status */}
+                        <div className="col-span-1">
+                          <span 
+                            className="inline-block text-xs px-2 py-1 rounded-full font-medium uppercase tracking-wide"
+                            style={{
+                              backgroundColor: task.status === 'running' ? '#FEF3C7' :
+                                             task.status === 'completed' ? '#D1FAE5' : '#F0EEE5',
+                              color: task.status === 'running' ? '#D97706' :
+                                    task.status === 'completed' ? '#059669' : '#A69A64'
+                            }}
+                          >
+                            {task.status}
+                          </span>
+                        </div>
+
+                        {/* Description */}
+                        <div className="col-span-5">
+                          <p 
+                            className="text-sm leading-relaxed overflow-hidden"
+                            style={{
+                              color: '#A69A64',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              wordBreak: 'break-word'
+                            }}
+                          >
+                            {task.description}
+                          </p>
+                        </div>
+
+                        {/* Tokens */}
+                        <div className="col-span-1 text-sm" style={{ color: '#A69A64' }}>
+                          {task.tokens}
+                        </div>
+
+                        {/* Time */}
+                        <div className="col-span-1 text-sm" style={{ color: '#A69A64' }}>
+                          {task.time}
+                        </div>
+
+                        {/* Cost */}
+                        <div className="col-span-2 text-sm" style={{ color: '#A69A64' }}>
+                          {task.cost}
                         </div>
                       </div>
-                      <div 
-                        className="text-sm mb-3 leading-relaxed"
-                        style={{ color: '#A69A64' }}
-                      >
-                        {task.description}
-                      </div>
-                      <div 
-                        className="flex justify-between text-xs"
-                        style={{ color: '#A69A64' }}
-                      >
-                        <div className="flex items-center gap-1">
-                          <span>⚡</span>
-                          <span>{task.tokens} tokens</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>⏱️</span>
-                          <span>{task.time}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>💰</span>
-                          <span>{task.cost}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
             <div 
-              className="text-white rounded-xl p-4"
-              style={{ backgroundColor: '#6C5DAC' }}
+              className="rounded-lg p-4 border"
+              style={{ 
+                backgroundColor: '#F0EEE5',
+                borderColor: '#DDD9C5'
+              }}
             >
-              <div className="text-sm font-medium mb-3">Monthly Claude Token Usage</div>
-              <div className="bg-white bg-opacity-20 h-2 rounded-full overflow-hidden mb-2">
-                <div className="bg-white bg-opacity-80 h-full w-2/3 rounded-full transition-all duration-500" />
+              <div className="text-sm font-medium mb-3" style={{ color: '#887D4E' }}>Monthly Claude Token Usage</div>
+              <div className="bg-gray-200 h-2 rounded-full overflow-hidden mb-2">
+                <div className="h-full w-2/3 rounded-full transition-all duration-500" style={{ backgroundColor: '#B05730' }} />
               </div>
-              <div className="text-xs opacity-90">
+              <div className="text-xs" style={{ color: '#A69A64' }}>
                 12,400 / 18,500 tokens used this month • $4.96 spent
               </div>
             </div>

@@ -1,73 +1,195 @@
-# Welcome to your Lovable project
+# VibeTorch 🔥
 
-## Project info
+**AI-Powered Autonomous Code Agent Platform**
 
-**URL**: https://lovable.dev/projects/d3dad040-d72a-45f4-89b0-da198da4b3a7
+VibeTorch is an intelligent development automation platform that provides 24/7 AI agents to enhance your coding workflow. With the tagline "Vibe must flow. Rest easy, AI's got the night shift," VibeTorch offers automated code maintenance, optimization, and feature development when you're not around.
 
-## How can I edit this code?
+## 🚀 Core Features
 
-There are several ways of editing your application.
+### 🤖 **Intelligent Agent Modes**
+- **Maintainer Mode**: Focuses on bug fixes, code optimization, and maintenance tasks
+- **Visionary Mode**: Suggests new features, architecture improvements, and innovations  
+- **Both Mode**: Full AI capabilities combining maintenance and visionary features
+- **Off Mode**: Disable AI agent for all repositories
 
-**Use Lovable**
+### 📋 **Task Management System**
+- Plan and track work before agent execution
+- Interactive task table with status tracking (Pending, In Progress, Completed, Blocked)
+- Real-time task editing and status updates
+- Task analytics and progress monitoring
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d3dad040-d72a-45f4-89b0-da198da4b3a7) and start prompting.
+### 📊 **Real-time Dashboard**
+- Live monitoring of AI agent activities
+- Token usage tracking and cost analysis
+- Repository status indicators
+- Performance metrics and optimization insights
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🔗 **GitHub Integration**
+- Seamless OAuth authentication
+- Multi-repository support
+- Automatic code analysis and suggestions
+- Pull request automation
 
-**Use your preferred IDE**
+## 🛠 User Flow
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 1. **Authentication & Setup**
+```
+User visits VibeTorch → GitHub OAuth → Repository Access Granted
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 2. **Agent Configuration**
+```
+Select Agent Mode → Configure Activity Level → Connect Repositories
+```
 
-Follow these steps:
+### 3. **Task Planning**
+```
+Create Tasks → Set Priorities → Define Success Criteria
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 4. **Autonomous Execution**
+```
+AI Agent Analyzes Code → Executes Tasks → Reports Results
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 5. **Monitoring & Review**
+```
+Real-time Dashboard → Review Changes → Approve/Reject → Iterate
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🏗 System Architecture
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        A[React UI] --> B[VibeTorch Steps]
+        B --> C[Task Management]
+        B --> D[Agent Dashboard]
+    end
+    
+    subgraph "Authentication"
+        E[GitHub OAuth] --> F[Repository Access]
+    end
+    
+    subgraph "Agent Core"
+        G[Mode Selector] --> H{Agent Type}
+        H -->|Maintainer| I[Bug Fixes & Optimization]
+        H -->|Visionary| J[Feature Development]
+        H -->|Both| K[Full Capabilities]
+        H -->|Off| L[Disabled]
+    end
+    
+    subgraph "Task Engine"
+        M[Task Planner] --> N[Priority Queue]
+        N --> O[Execution Engine]
+        O --> P[Status Tracker]
+    end
+    
+    subgraph "External Services"
+        Q[GitHub API] --> R[Code Repository]
+        S[Claude API] --> T[Token Management]
+        U[Cost Tracker] --> V[Usage Analytics]
+    end
+    
+    A --> E
+    F --> G
+    C --> M
+    I --> Q
+    J --> Q
+    K --> Q
+    O --> S
+    P --> D
+    T --> U
+    V --> D
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style G fill:#bbf,stroke:#333,stroke-width:2px
+    style O fill:#bfb,stroke:#333,stroke-width:2px
+    style Q fill:#ffb,stroke:#333,stroke-width:2px
+```
+
+## 📈 Technical Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as VibeTorch UI
+    participant Auth as GitHub OAuth
+    participant Agent as AI Agent
+    participant Repo as GitHub Repo
+    participant API as Claude API
+    
+    U->>UI: Access Platform
+    UI->>Auth: Initiate OAuth
+    Auth->>U: Authentication Flow
+    U->>Auth: Grant Permissions
+    Auth->>UI: Access Token
+    
+    U->>UI: Configure Agent Mode
+    UI->>Agent: Set Activity Level
+    U->>UI: Create Tasks
+    UI->>Agent: Queue Tasks
+    
+    loop Autonomous Execution
+        Agent->>Repo: Analyze Code
+        Agent->>API: Generate Solutions
+        API->>Agent: Code Suggestions
+        Agent->>Repo: Apply Changes
+        Agent->>UI: Update Status
+    end
+    
+    UI->>U: Display Results
+    U->>UI: Review & Approve
+```
+
+## 🎯 Key Benefits
+
+- **24/7 Automation**: AI works while you sleep
+- **Smart Task Management**: Organized workflow with status tracking
+- **Cost Transparency**: Real-time token usage and cost monitoring
+- **Flexible Modes**: Customize AI behavior to your needs
+- **GitHub Integration**: Seamless repository management
+
+## 🔧 Tech Stack
+
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **UI Components**: shadcn/ui
+- **State Management**: React Hooks
+- **Authentication**: GitHub OAuth
+- **AI Provider**: Claude API
+- **Build Tool**: Vite
+- **Styling**: Custom design system with consistent color palette
+
+## 🚦 Getting Started
+
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd vibetorch
+```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Start development server**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. **Visit the application**
+```
+http://localhost:5173
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📊 Usage Metrics
 
-**Use GitHub Codespaces**
+- **Token Tracking**: Monitor Claude API usage
+- **Cost Analysis**: Real-time spending insights  
+- **Task Analytics**: Success rates and completion times
+- **Repository Health**: Code quality improvements
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/d3dad040-d72a-45f4-89b0-da198da4b3a7) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+*VibeTorch - Where AI meets productivity. Let your code vibe while you rest.* 🌙✨
