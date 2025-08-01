@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import TaskManagement from "./TaskManagement";
 
 const VibetorchSteps: React.FC = () => {
@@ -50,15 +51,12 @@ const VibetorchSteps: React.FC = () => {
         const rect = sliderRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-        
-        // Update position smoothly during drag
         setDragPosition(percentage);
       }
     };
 
     const handleGlobalMouseUp = () => {
       if (isDragging && sliderRef.current) {
-        // Find closest mode and snap to it when drag ends
         let closestIndex = 0;
         let minDistance = Math.abs(dragPosition - modes[0].pos);
         
@@ -81,15 +79,12 @@ const VibetorchSteps: React.FC = () => {
         const rect = sliderRef.current.getBoundingClientRect();
         const x = e.touches[0].clientX - rect.left;
         const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-        
-        // Update position smoothly during drag
         setDragPosition(percentage);
       }
     };
 
     const handleGlobalTouchEnd = () => {
       if (isDragging && sliderRef.current) {
-        // Find closest mode and snap to it when drag ends
         let closestIndex = 0;
         let minDistance = Math.abs(dragPosition - modes[0].pos);
         
@@ -183,9 +178,8 @@ const VibetorchSteps: React.FC = () => {
     setTasks([newTask, ...tasks]);
   };
 
-
   return (
-    <div className="h-full font-body" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+    <div className="h-full font-body">
       {/* Step 1: GitHub Login */}
       <div 
         ref={stepRefs[0]}
@@ -196,63 +190,27 @@ const VibetorchSteps: React.FC = () => {
         }}
       >
         <div className="max-w-md w-full">
-          <div 
-            className="border rounded-2xl p-10 shadow-sm"
-            style={{ 
-              background: 'linear-gradient(180deg, #FFFFFF 0%, #F9F8F4 100%)',
-              borderColor: '#DDD9C5'
-            }}
-          >
-            
-            <h1 
-              className="text-2xl font-display font-bold mb-2"
-              style={{ 
-                fontFamily: 'StyreneB, Styrene, sans-serif',
-                color: '#887D4E',
-                letterSpacing: '-0.01em'
-              }}
-            >
+          <Card className="ds-card p-10 text-center shadow-sm">
+            <h1 className="text-2xl font-display font-bold mb-2 text-foreground">
               Welcome to
             </h1>
-                         <h1 
-               className="text-3xl font-tiempos font-bold mb-2 text-black"
-               style={{ 
-                 letterSpacing: '-0.01em'
-               }}
-            >
+            <h1 className="text-3xl font-tiempos font-bold mb-2 text-foreground">
               VibeTorch
             </h1>
-            <p className="text-sm mb-6">  
+            <p className="text-sm mb-6 text-muted-foreground">  
               Log in to your GitHub account to get started
             </p>
             
             <Button 
               onClick={handleGitHubConnect}
-              className="w-full py-4 px-6 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-3"
-              style={{ 
-                backgroundColor: '#24292e',
-                borderRadius: '6px',
-                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
-              }}
+              className="w-full py-4 px-6 bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 dark:text-gray-900 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-3"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
               </svg>
               Connect GitHub →
             </Button>
-
-            {/* <div 
-              className="mt-6 p-4 rounded-lg text-sm"
-              style={{ 
-                backgroundColor: '#F0EEE5',
-                color: '#A69A64'
-              }}
-            >
-              🎭 <strong>Demo Mode:</strong> Click to simulate GitHub OAuth login
-            </div> */}
-          </div>
-          
-
+          </Card>
         </div>
       </div>
 
@@ -266,72 +224,42 @@ const VibetorchSteps: React.FC = () => {
         }}
       >
         <div className="w-full">
-          <div 
-            className="border-t border-b p-10 shadow-sm"
-            style={{ 
-              background: 'transparent',
-              borderColor: '#DDD9C5'
-            }}
-          >
-
-            <h1
-              className="text-xl font-display font-bold mb-2"
-              style={{ 
-                fontFamily: 'StyreneB, Styrene, sans-serif',
-                color: 'black',
-                letterSpacing: '-0.01em'
-              }}
-            >
+          <div className="border-t border-b border-border p-10 bg-background">
+            <h1 className="text-xl font-display font-bold mb-2 text-foreground">
               Set your agent's Vibe Mode.
             </h1>
-            <p 
-              className="text-sm mb-8"
-              style={{ color: '#A69A64' }}
-            >
+            <p className="text-sm mb-8 text-muted-foreground">
               Set your AI agent activity level
             </p>
             
-            <div 
-              className="rounded-xl p-6 mb-6"
-            >
-              <div 
-                className="text-base font-medium mb-5"
-                style={{ color: '#887D4E' }}
-              >
+            <div className="mb-6">
+              <div className="text-base font-medium mb-5 text-foreground">
                 Agent Activity Level
               </div>
               
               <div className="relative mb-4">
                 <div 
                   ref={sliderRef}
-                  className="h-1.5 rounded-full relative cursor-pointer"
-                  style={{ 
-                    background: 'linear-gradient(90deg, #F0EEE5 0%, #DDD9C5 100%)',
-                    boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.05)'
-                  }}
+                  className="h-1.5 bg-muted rounded-full relative cursor-pointer shadow-sm"
                   onMouseDown={handleMouseDown}
                   onTouchStart={handleTouchStart}
                 >
                   {/* Progress fill */}
                   <div 
-                    className="h-full rounded-full absolute top-0 left-0"
+                    className={`h-full bg-gradient-to-r from-cta-500 to-cta-600 rounded-full absolute top-0 left-0 transition-all duration-300 ${sliderMode === 0 ? 'opacity-30' : 'opacity-80'}`}
                     style={{
-                      background: 'linear-gradient(90deg, #B05730, #884325)',
                       width: `${isDragging ? dragPosition : modes[sliderMode].pos}%`,
-                      transition: isDragging ? 'none' : 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      opacity: sliderMode === 0 ? 0.3 : 0.8
+                      transition: isDragging ? 'none' : 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                     }}
                   />
                   <div 
-                    className={`w-5 h-5 rounded-full absolute top-[-7px] cursor-grab shadow-lg border-2 border-white ${isDragging ? 'cursor-grabbing' : ''}`}
+                    className={`w-5 h-5 bg-gradient-to-br from-cta-500 to-cta-600 rounded-full absolute top-[-7px] cursor-grab shadow-lg border-2 border-background transform -translate-x-1/2 transition-all duration-300 ${isDragging ? 'cursor-grabbing scale-115' : ''} ${sliderMode === 0 ? 'opacity-50' : 'opacity-100'}`}
                     style={{ 
-                      background: 'linear-gradient(135deg, #B05730, #884325)',
-                      left: `${isDragging ? dragPosition : modes[sliderMode].pos}%`, 
-                      transform: 'translateX(-50%)',
-                      transition: isDragging ? 'none' : 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s ease-out, box-shadow 0.15s ease-out',
-                      opacity: sliderMode === 0 ? 0.5 : 1,
-                      boxShadow: isDragging ? '0 6px 20px rgba(176, 87, 48, 0.4), 0 0 0 3px rgba(176, 87, 48, 0.1)' : '0 3px 10px rgba(176, 87, 48, 0.3)',
-                      scale: isDragging ? '1.15' : '1'
+                      left: `${isDragging ? dragPosition : modes[sliderMode].pos}%`,
+                      transition: isDragging ? 'none' : 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: isDragging 
+                        ? '0 6px 20px rgb(var(--cta-500) / 0.4), 0 0 0 3px rgb(var(--cta-500) / 0.1)' 
+                        : '0 3px 10px rgb(var(--cta-500) / 0.3)'
                     }}
                     onMouseDown={(e) => {
                       e.stopPropagation();
@@ -349,85 +277,56 @@ const VibetorchSteps: React.FC = () => {
                 </div>
               </div>
               
-              <div 
-                className="flex justify-between text-xs mb-5"
-                style={{ color: '#A69A64' }}
-              >
-                <span className={sliderMode === 0 ? 'font-bold' : ''}>OFF</span>
-                <span className={sliderMode === 1 ? 'font-bold' : ''}>MAINTAINER</span>
-                <span className={sliderMode === 2 ? 'font-bold' : ''}>VISIONARY</span>
-                <span className={sliderMode === 3 ? 'font-bold' : ''}>BOTH</span>
+              <div className="flex justify-between text-xs mb-5 text-muted-foreground">
+                <span className={sliderMode === 0 ? 'font-bold text-foreground' : ''}>OFF</span>
+                <span className={sliderMode === 1 ? 'font-bold text-foreground' : ''}>MAINTAINER</span>
+                <span className={sliderMode === 2 ? 'font-bold text-foreground' : ''}>VISIONARY</span>
+                <span className={sliderMode === 3 ? 'font-bold text-foreground' : ''}>BOTH</span>
               </div>
               
-
-              <div 
-                className="text-sm leading-relaxed text-center"
-                style={{ 
-                  color: '#A69A64',
-                  height: '4.2rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
+              <div className="text-sm leading-relaxed text-center text-muted-foreground h-16 flex items-center justify-center">
                 {modes[sliderMode].desc}
               </div>
             </div>
 
-            <div 
-              className="rounded-lg p-4 mb-6 text-left"
-            >
-              <div 
-                className="text-sm font-medium mb-3"
-                style={{ color: '#887D4E' }}
-              >
+            <div className="bg-muted rounded-lg p-4 mb-6">
+              <div className="text-sm font-medium mb-3 text-foreground">
                 Repository Status (3 connected)
               </div>
               <div className="space-y-2">
-                <div className="flex items-center text-sm" style={{ color: '#A69A64' }}>
+                <div className="flex items-center text-sm text-muted-foreground">
                   <div 
-                    className="w-2 h-2 rounded-full mr-3" 
-                    style={{ 
-                      backgroundColor: sliderMode === 0 ? '#DDD9C5' : sliderMode === 1 ? '#FFCC00' : '#34C759'
-                    }} 
+                    className={`w-2 h-2 rounded-full mr-3 ${
+                      sliderMode === 0 ? 'bg-muted-foreground' : 
+                      sliderMode === 1 ? 'bg-amber-500' : 
+                      'bg-emerald-500'
+                    }`}
                   />
                   my-awesome-project
                 </div>
-                <div className="flex items-center text-sm" style={{ color: '#A69A64' }}>
+                <div className="flex items-center text-sm text-muted-foreground">
                   <div 
-                    className="w-2 h-2 rounded-full mr-3" 
-                    style={{ 
-                      backgroundColor: sliderMode === 0 ? '#DDD9C5' : sliderMode === 1 ? '#FFCC00' : '#34C759'
-                    }} 
+                    className={`w-2 h-2 rounded-full mr-3 ${
+                      sliderMode === 0 ? 'bg-muted-foreground' : 
+                      sliderMode === 1 ? 'bg-amber-500' : 
+                      'bg-emerald-500'
+                    }`}
                   />
                   data-pipeline-tool
                 </div>
-                <div className="flex items-center text-sm" style={{ color: '#A69A64' }}>
+                <div className="flex items-center text-sm text-muted-foreground">
                   <div 
-                    className="w-2 h-2 rounded-full mr-3" 
-                    style={{ 
-                      backgroundColor: sliderMode === 0 ? '#DDD9C5' : sliderMode < 3 ? '#DDD9C5' : '#FFCC00'
-                    }} 
+                    className={`w-2 h-2 rounded-full mr-3 ${
+                      sliderMode === 0 ? 'bg-muted-foreground' : 
+                      sliderMode < 3 ? 'bg-muted-foreground' : 
+                      'bg-amber-500'
+                    }`}
                   />
                   old-archive-repo
                 </div>
               </div>
             </div>
-
-            {/* <Button 
-              onClick={handleModeStart}
-              className="w-full py-4 px-6 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg"
-              style={{ 
-                backgroundColor: '#B05730',
-                borderRadius: '6px',
-                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
-              }}
-            >
-              Start Vibetorch Agent
-            </Button> */}
           </div>
-          
-
         </div>
       </div>
 
@@ -451,116 +350,54 @@ const VibetorchSteps: React.FC = () => {
         }}
       >
         <div className="w-full">
-          <div 
-            className="border-t border-b p-8 shadow-sm"
-            style={{ 
-              background: 'transparent',
-              borderColor: '#DDD9C5'
-            }}
-          >
+          <div className="border-t border-b border-border p-8 bg-background">
             <div className="flex items-center mb-8">
-              {/* <div 
-                className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-display font-semibold text-sm mr-4"
-                style={{ 
-                  background: 'linear-gradient(135deg, #B05730, #884325)',
-                  fontFamily: 'StyreneB, Styrene, sans-serif'
-                }}
-              >
-                VT
-              </div> */}
               <div className="flex-1">
-                <h1 
-                  className="text-2xl font-display font-semibold"
-                  style={{ 
-                    fontFamily: 'StyreneB, Styrene, sans-serif',
-                    color: 'black',
-                    letterSpacing: '-0.01em'
-                  }}
-                >
+                <h1 className="text-2xl font-display font-semibold text-foreground">
                   Vibetorch Dashboard
                 </h1>
-                <p 
-                  className="text-sm"
-                  style={{ color: '#A69A64' }}
-                >
+                <p className="text-sm text-muted-foreground">
                   Agent is active in {modes[sliderMode].name} mode
                 </p>
               </div>
               <Button 
                 size="sm" 
                 onClick={refreshTasks}
-                className="text-white font-medium"
-                style={{ 
-                  backgroundColor: '#B05730',
-                  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
-                }}
+                className="bg-cta-500 hover:bg-cta-600 text-white"
               >
                 Refresh
               </Button>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <div 
-                className="rounded-xl p-5"
-                style={{ backgroundColor: '#F0EEE5' }}
-              >
-                <div 
-                  className="text-2xl font-semibold mb-1"
-                  style={{ color: '#B05730' }}
-                >
+              <Card className="p-5 text-center bg-muted border-border">
+                <div className="text-2xl font-semibold mb-1 text-cta-500">
                   12.4K
                 </div>
-                <div 
-                  className="text-xs uppercase tracking-wide"
-                  style={{ color: '#A69A64' }}
-                >
+                <div className="text-xs uppercase tracking-wide text-muted-foreground">
                   Tokens Used
                 </div>
-              </div>
-              <div 
-                className="rounded-xl p-5"
-                style={{ backgroundColor: '#F0EEE5' }}
-              >
-                <div 
-                  className="text-2xl font-semibold mb-1"
-                  style={{ color: '#B05730' }}
-                >
+              </Card>
+              <Card className="p-5 text-center bg-muted border-border">
+                <div className="text-2xl font-semibold mb-1 text-cta-500">
                   {tasks.length}
                 </div>
-                <div 
-                  className="text-xs uppercase tracking-wide"
-                  style={{ color: '#A69A64' }}
-                >
+                <div className="text-xs uppercase tracking-wide text-muted-foreground">
                   Active Tasks
                 </div>
-              </div>
+              </Card>
             </div>
 
             <div className="mb-6">
-              <div 
-                className="flex items-center gap-2 mb-4 text-base font-medium"
-                style={{ color: '#887D4E' }}
-              >
-                <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#34C759' }} />
+              <div className="flex items-center gap-2 mb-4 text-base font-medium text-foreground">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                 Current Tasks
               </div>
               
-              <div 
-                className="border rounded-lg overflow-hidden"
-                style={{ 
-                  backgroundColor: '#FFFFFF',
-                  borderColor: '#DDD9C5'
-                }}
-              >
+              <Card className="overflow-hidden border-border">
                 {/* Table Header */}
-                <div 
-                  className="px-4 py-3 border-b"
-                  style={{ 
-                    backgroundColor: '#F0EEE5',
-                    borderColor: '#DDD9C5'
-                  }}
-                >
-                  <div className="grid grid-cols-12 gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: '#887D4E' }}>
+                <div className="px-4 py-3 border-b border-border bg-muted">
+                  <div className="grid grid-cols-12 gap-2 text-xs font-semibold uppercase tracking-wide text-foreground">
                     <div className="col-span-3">Repository</div>
                     <div className="col-span-1">Status</div>
                     <div className="col-span-5">Description</div>
@@ -575,15 +412,12 @@ const VibetorchSteps: React.FC = () => {
                   {tasks.map((task, index) => (
                     <div
                       key={index} 
-                      className="px-4 py-3 border-b last:border-b-0 transition-all duration-150"
-                      style={{ borderColor: '#DDD9C5' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0EEE5'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      className="px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/50 transition-all duration-150"
                     >
                       <div className="grid grid-cols-12 gap-2 items-center">
                         {/* Repository */}
                         <div className="col-span-3">
-                          <span className="text-sm font-medium overflow-hidden whitespace-nowrap text-ellipsis block" style={{ color: '#887D4E' }}>
+                          <span className="text-sm font-medium overflow-hidden whitespace-nowrap text-ellipsis block text-foreground">
                             {task.repo}
                           </span>
                         </div>
@@ -591,66 +425,52 @@ const VibetorchSteps: React.FC = () => {
                         {/* Status */}
                         <div className="col-span-1 flex justify-center">
                           <div 
-                            className="w-3 h-3 rounded-full"
-                            style={{
-                              backgroundColor: task.status === 'running' ? '#D97706' :
-                                             task.status === 'completed' ? '#059669' : 
-                                             task.status === 'pending' ? '#6C5DAC' : '#c53030'
-                            }}
+                            className={`w-3 h-3 rounded-full ${
+                              task.status === 'running' ? 'bg-amber-500' :
+                              task.status === 'completed' ? 'bg-emerald-500' : 
+                              task.status === 'pending' ? 'bg-violet-500' : 'bg-red-500'
+                            }`}
                           />
                         </div>
 
                         {/* Description */}
                         <div className="col-span-5">
-                          <p 
-                            className="text-sm overflow-hidden whitespace-nowrap text-ellipsis"
-                            style={{
-                              color: '#A69A64'
-                            }}
-                          >
+                          <p className="text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
                             {task.description}
                           </p>
                         </div>
 
                         {/* Tokens */}
-                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis" style={{ color: '#A69A64' }}>
+                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
                           {task.tokens}
                         </div>
 
                         {/* Time */}
-                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis" style={{ color: '#A69A64' }}>
+                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
                           {task.time}
                         </div>
 
                         {/* Cost */}
-                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis" style={{ color: '#A69A64' }}>
+                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
                           {task.cost}
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             </div>
 
-            <div 
-              className="rounded-lg p-4 border"
-              style={{ 
-                backgroundColor: '#F0EEE5',
-                borderColor: '#DDD9C5'
-              }}
-            >
-              <div className="text-sm font-medium mb-3" style={{ color: '#887D4E' }}>Monthly Claude Token Usage</div>
-              <div className="bg-gray-200 h-2 rounded-full overflow-hidden mb-2">
-                <div className="h-full w-2/3 rounded-full transition-all duration-500" style={{ backgroundColor: '#B05730' }} />
+            <Card className="p-4 bg-accent text-accent-foreground border-border">
+              <div className="text-sm font-medium mb-3">Monthly Claude Token Usage</div>
+              <div className="bg-accent-foreground/20 h-2 rounded-full overflow-hidden mb-2">
+                <div className="bg-accent-foreground/80 h-full w-2/3 rounded-full transition-all duration-500" />
               </div>
-              <div className="text-xs" style={{ color: '#A69A64' }}>
+              <div className="text-xs opacity-90">
                 12,400 / 18,500 tokens used this month • $4.96 spent
               </div>
-            </div>
+            </Card>
           </div>
-          
-
         </div>
       </div>
     </div>

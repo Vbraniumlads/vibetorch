@@ -44,13 +44,6 @@ const TaskManagement: React.FC = () => {
   });
   const [editingTask, setEditingTask] = useState<string | null>(null);
 
-  const statusClasses = {
-    pending: 'status-pending',
-    'in-progress': 'status-in-progress',
-    completed: 'status-completed',
-    blocked: 'status-blocked'
-  };
-
   const statusLabels = {
     pending: 'Pending',
     'in-progress': 'In Progress',
@@ -58,11 +51,14 @@ const TaskManagement: React.FC = () => {
     blocked: 'Blocked'
   };
 
-  const statusColors = {
-    pending: { bg: '#E6E4F1', color: '#41376C' },
-    'in-progress': { bg: '#fef3c7', color: '#d97706' },
-    completed: { bg: '#d1fae5', color: '#059669' },
-    blocked: { bg: '#fed7d7', color: '#c53030' }
+  const getStatusClasses = (status: Task['status']) => {
+    const statusStyles = {
+      pending: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
+      'in-progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+      completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+      blocked: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+    };
+    return statusStyles[status];
   };
 
   const updateTaskCounts = () => {
@@ -114,46 +110,24 @@ const TaskManagement: React.FC = () => {
   const counts = updateTaskCounts();
 
   return (
-    <div className="w-full" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }}>
-      <div 
-        className="border-t border-b overflow-hidden shadow-sm"
-        style={{ 
-          background: 'transparent',
-          borderColor: '#DDD9C5'
-        }}
-      >
+    <div className="w-full font-body">
+      <div className="border-t border-b border-border overflow-hidden shadow-sm bg-background">
         {/* Header */}
-        <div 
-          className="px-6 py-5 border-b"
-          style={{ 
-            backgroundColor: '#FFFFFF',
-            borderColor: '#DDD9C5'
-          }}
-        >
+        <div className="px-6 py-5 border-b border-border bg-card">
           <div className="flex justify-between items-center">
             <div>
-              <h1 
-                className="text-2xl font-semibold mb-1"
-                style={{ 
-                  color: '#887D4E',
-                  fontFamily: 'StyreneB, Styrene, sans-serif'
-                }}
-              >
+              <h1 className="text-2xl font-display font-semibold mb-1 text-foreground">
                 Task Management
               </h1>
-              <p className="text-sm" style={{ color: '#A69A64' }}>
+              <p className="text-sm text-muted-foreground">
                 Plan and track work before agent execution
               </p>
             </div>
             <Button 
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg"
-              style={{ 
-                backgroundColor: '#B05730',
-                borderRadius: '6px'
-              }}
+              className="bg-cta-500 hover:bg-cta-600 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg"
             >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" className="mr-2">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
               </svg>
               Add New Task
@@ -163,19 +137,19 @@ const TaskManagement: React.FC = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse" style={{ backgroundColor: '#FFFFFF' }}>
-            <thead style={{ backgroundColor: '#F0EEE5', borderBottom: '2px solid #DDD9C5' }}>
+          <table className="w-full border-collapse bg-card">
+            <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide" style={{ color: '#887D4E', width: '120px' }}>
+                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide text-foreground w-32">
                   Date
                 </th>
-                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide" style={{ color: '#887D4E' }}>
+                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide text-foreground">
                   Task
                 </th>
-                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide" style={{ color: '#887D4E', width: '140px' }}>
+                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide text-foreground w-36">
                   Status
                 </th>
-                <th className="px-5 py-4 text-center text-sm font-semibold uppercase tracking-wide" style={{ color: '#887D4E', width: '80px' }}>
+                <th className="px-5 py-4 text-center text-sm font-semibold uppercase tracking-wide text-foreground w-20">
                   Edit
                 </th>
               </tr>
@@ -184,13 +158,7 @@ const TaskManagement: React.FC = () => {
               {tasks.map((task, index) => (
                 <tr 
                   key={task.id} 
-                  className="border-b transition-all duration-200 hover:bg-opacity-50"
-                  style={{ 
-                    borderColor: '#DDD9C5',
-                    ':hover': { backgroundColor: '#F0EEE5' }
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0EEE5'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  className="border-b border-border transition-all duration-200 hover:bg-muted/50"
                 >
                   <td className="px-5 py-4">
                     <input
@@ -198,13 +166,11 @@ const TaskManagement: React.FC = () => {
                       value={task.date}
                       onChange={(e) => updateTask(task.id, 'date', e.target.value)}
                       readOnly={editingTask !== task.id}
-                      className="bg-transparent border-none text-sm"
-                      style={{
-                        fontFamily: 'Fira Code, Fira Mono, Menlo, Consolas, monospace',
-                        color: '#A69A64',
-                        borderBottom: editingTask === task.id ? '2px solid #B05730' : '2px solid transparent',
-                        transition: 'border-color 0.2s ease'
-                      }}
+                      className={`bg-transparent border-none text-sm font-mono text-muted-foreground transition-all duration-200 ${
+                        editingTask === task.id 
+                          ? 'border-b-2 border-cta-500 text-foreground' 
+                          : 'border-b-2 border-transparent'
+                      }`}
                     />
                   </td>
                   <td className="px-5 py-4">
@@ -213,21 +179,16 @@ const TaskManagement: React.FC = () => {
                       value={task.description}
                       onChange={(e) => updateTask(task.id, 'description', e.target.value)}
                       readOnly={editingTask !== task.id}
-                      className="w-full bg-transparent border-none text-sm font-medium"
-                      style={{
-                        color: '#887D4E',
-                        borderBottom: editingTask === task.id ? '2px solid #B05730' : '2px solid transparent',
-                        transition: 'border-color 0.2s ease'
-                      }}
+                      className={`w-full bg-transparent border-none text-sm font-medium text-foreground transition-all duration-200 ${
+                        editingTask === task.id 
+                          ? 'border-b-2 border-cta-500' 
+                          : 'border-b-2 border-transparent'
+                      }`}
                     />
                   </td>
                   <td className="px-5 py-4 text-center">
                     <span 
-                      className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-200"
-                      style={{
-                        backgroundColor: statusColors[task.status].bg,
-                        color: statusColors[task.status].color
-                      }}
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-200 hover:scale-105 ${getStatusClasses(task.status)}`}
                       onClick={() => toggleStatus(task.id)}
                     >
                       {statusLabels[task.status]}
@@ -236,19 +197,7 @@ const TaskManagement: React.FC = () => {
                   <td className="px-5 py-4 text-center">
                     <button
                       onClick={() => setEditingTask(editingTask === task.id ? null : task.id)}
-                      className="p-2 rounded transition-all duration-200 hover:bg-opacity-80"
-                      style={{ 
-                        color: '#A69A64',
-                        ':hover': { backgroundColor: '#F0EEE5', color: '#887D4E' }
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#F0EEE5';
-                        e.currentTarget.style.color = '#887D4E';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.color = '#A69A64';
-                      }}
+                      className="p-2 rounded transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted"
                     >
                       <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         {editingTask === task.id ? (
@@ -266,19 +215,13 @@ const TaskManagement: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div 
-          className="px-6 py-4 border-t text-center"
-          style={{ 
-            backgroundColor: '#F0EEE5',
-            borderColor: '#DDD9C5'
-          }}
-        >
-          <div className="text-sm" style={{ color: '#A69A64' }}>
-            Total <strong style={{ color: '#887D4E' }}>{counts.total}</strong> tasks | 
-            Completed: <strong style={{ color: '#887D4E' }}>{counts.completed}</strong> | 
-            In Progress: <strong style={{ color: '#887D4E' }}>{counts.inProgress}</strong> | 
-            Pending: <strong style={{ color: '#887D4E' }}>{counts.pending}</strong> | 
-            Blocked: <strong style={{ color: '#887D4E' }}>{counts.blocked}</strong>
+        <div className="px-6 py-4 border-t border-border text-center bg-muted">
+          <div className="text-sm text-muted-foreground">
+            Total <strong className="text-foreground">{counts.total}</strong> tasks | 
+            Completed: <strong className="text-foreground">{counts.completed}</strong> | 
+            In Progress: <strong className="text-foreground">{counts.inProgress}</strong> | 
+            Pending: <strong className="text-foreground">{counts.pending}</strong> | 
+            Blocked: <strong className="text-foreground">{counts.blocked}</strong>
           </div>
         </div>
       </div>
@@ -286,74 +229,49 @@ const TaskManagement: React.FC = () => {
       {/* Modal */}
       {isModalOpen && (
         <div 
-          className="fixed inset-0 flex items-center justify-center z-50"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black/50"
           onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
         >
-          <div 
-            className="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl"
-            style={{ backgroundColor: '#FFFFFF' }}
-          >
+          <div className="bg-card rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl border border-border">
             <div className="mb-5">
-              <h2 
-                className="text-xl font-semibold"
-                style={{ 
-                  color: '#887D4E',
-                  fontFamily: 'StyreneB, Styrene, sans-serif'
-                }}
-              >
+              <h2 className="text-xl font-display font-semibold text-foreground">
                 Add New Task
               </h2>
             </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: '#887D4E' }}>
+                <label className="block text-sm font-medium mb-2 text-foreground">
                   Date
                 </label>
                 <input
                   type="date"
                   value={newTask.date}
                   onChange={(e) => setNewTask({ ...newTask, date: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-md text-sm"
-                  style={{ 
-                    borderColor: '#DDD9C5',
-                    backgroundColor: '#FFFFFF',
-                    color: '#887D4E'
-                  }}
+                  className="w-full px-3 py-2 border border-border rounded-md text-sm bg-card text-foreground focus:border-cta-500 focus:ring-1 focus:ring-cta-500"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: '#887D4E' }}>
+                <label className="block text-sm font-medium mb-2 text-foreground">
                   Task Description
                 </label>
                 <textarea
                   value={newTask.description}
                   onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                   placeholder="Enter task description..."
-                  className="w-full px-3 py-2 border rounded-md text-sm resize-vertical min-h-[80px]"
-                  style={{ 
-                    borderColor: '#DDD9C5',
-                    backgroundColor: '#FFFFFF',
-                    color: '#887D4E'
-                  }}
+                  className="w-full px-3 py-2 border border-border rounded-md text-sm resize-vertical min-h-[80px] bg-card text-foreground placeholder:text-muted-foreground focus:border-cta-500 focus:ring-1 focus:ring-cta-500"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: '#887D4E' }}>
+                <label className="block text-sm font-medium mb-2 text-foreground">
                   Status
                 </label>
                 <select
                   value={newTask.status}
                   onChange={(e) => setNewTask({ ...newTask, status: e.target.value as Task['status'] })}
-                  className="w-full px-3 py-2 border rounded-md text-sm"
-                  style={{ 
-                    borderColor: '#DDD9C5',
-                    backgroundColor: '#FFFFFF',
-                    color: '#887D4E'
-                  }}
+                  className="w-full px-3 py-2 border border-border rounded-md text-sm bg-card text-foreground focus:border-cta-500 focus:ring-1 focus:ring-cta-500"
                 >
                   <option value="pending">Pending</option>
                   <option value="in-progress">In Progress</option>
@@ -364,23 +282,16 @@ const TaskManagement: React.FC = () => {
             </div>
             
             <div className="flex gap-3 justify-end mt-6">
-              <button
+              <Button
                 onClick={() => setIsModalOpen(false)}
-                className="px-5 py-2 border rounded-md text-sm font-medium transition-all duration-200"
-                style={{ 
-                  borderColor: '#CBC4A4',
-                  color: '#887D4E',
-                  ':hover': { backgroundColor: '#F0EEE5' }
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0EEE5'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                variant="outline"
+                className="border-border text-foreground hover:bg-muted"
               >
                 Cancel
-              </button>
+              </Button>
               <Button 
                 onClick={addNewTask}
-                className="px-5 py-2 text-white font-medium"
-                style={{ backgroundColor: '#B05730' }}
+                className="bg-cta-500 hover:bg-cta-600 text-white"
               >
                 Add Task
               </Button>

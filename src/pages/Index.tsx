@@ -197,10 +197,10 @@ export default function VibetorchApp() {
 
           {/* Headlines */}
           <div className="mb-8 relative z-10">
-            <h1 className="text-4xl lg:text-5xl font-sans font-bold text-amber-800 mb-6 leading-[1.1] tracking-tight" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
+            <h1 className="text-4xl lg:text-5xl font-sans font-bold text-cta-700 mb-6 leading-[1.1] tracking-tight" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
               Vibe must flow.
             </h1>
-            <p className="text-xl text-black mb-8 leading-relaxed font-sans" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
+            <p className="text-xl text-foreground mb-8 leading-relaxed font-sans" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
               Rest easy, AI's got the night shift.
               Automated Vibe Coding when you're not around.
             </p>
@@ -213,7 +213,7 @@ export default function VibetorchApp() {
               href="https://github.com/Vbraniumlads/exchange-llm-ui" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-800 transition-colors duration-200 font-medium"
+              className="inline-flex items-center gap-2 text-cta-600 hover:text-cta-700 transition-colors duration-200 font-medium"
               style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -256,12 +256,11 @@ export default function VibetorchApp() {
                     });
                   }
                 }}
-                className="w-1.5 h-1.5 rounded-full border transition-all duration-300 hover:scale-110"
-                style={{
-                  backgroundColor: currentSection === index ? '#B05730' : 'transparent',
-                  borderColor: '#B05730',
-                  opacity: currentSection === index ? 1 : 0.5
-                }}
+                className={`w-1.5 h-1.5 rounded-full border transition-all duration-300 hover:scale-110 ${
+                  currentSection === index 
+                    ? 'bg-cta-500 border-cta-500 opacity-100' 
+                    : 'bg-transparent border-cta-500 opacity-50'
+                }`}
               />
             ))}
           </div>

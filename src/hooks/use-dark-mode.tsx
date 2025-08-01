@@ -45,6 +45,7 @@ export function useDarkMode() {
 
   const setLightTheme = () => setTheme('light');
   const setDarkTheme = () => setTheme('dark');
+  const setThemeToSystem = () => setTheme('system');
 
   return {
     theme,
@@ -53,7 +54,7 @@ export function useDarkMode() {
     setTheme,
     setLightTheme,
     setDarkTheme,
-    setSystemTheme,
+    setThemeToSystem,
     isDark: effectiveTheme === 'dark',
     isLight: effectiveTheme === 'light'
   };
