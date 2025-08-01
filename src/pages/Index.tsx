@@ -104,6 +104,7 @@ export default function VibetorchApp() {
           scrollbar-width: none;
         }
       `}</style>
+      
       {/* Floating Navbar */}
       {/* <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
         <div className="bg-card/80 backdrop-blur-lg border border-border/50 rounded-3xl shadow-lg">
@@ -181,11 +182,10 @@ export default function VibetorchApp() {
                 className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 -left-20 transform -translate-y-1/2 rounded-3xl cursor-grab"
                 style={{
                   animation: isDragging || hasInitialAnimationPlayed ? 'none' : 'panLeft 1s ease-in-out',
-                  transform: `translateX(${-20 + (dragOffset.x * 0.03)}px) translateY(${-50 + (dragOffset.y * 0.03)}%) scaleX(${1 + Math.abs(dragOffset.x) * 0.003})`,
+                  transform: `translateX(${-20 + (dragOffset.x * 0.1)}px) translateY(${-50 + (dragOffset.y * 0.03)}%)`,
                   transition: isDragging ? 'none' : 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)',
                   cursor: isDragging ? 'grabbing' : 'grab',
-                  zIndex: isDragging ? 50 : 10,
-                  transformOrigin: dragOffset.x > 0 ? 'left center' : 'right center'
+                  zIndex: isDragging ? 50 : 10
                 }}
                 onMouseDown={handleDragStart}
                 onTouchStart={handleDragStart}
