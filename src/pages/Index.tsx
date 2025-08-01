@@ -148,14 +148,14 @@ export default function VibetorchApp() {
           </div>
           
           {/* Logo Mark */}
-          <div className="relative mb-6 group">
+          <div className="relative mb-2 group">
             <div className="w-full h-96 lg:h-[32rem] relative overflow-hidden">
               <img 
                 src="/torch.png" 
                 alt="Vibetorch" 
-                className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 left-0 transform -translate-y-1/2 transition-all duration-500 filter hover:brightness-110 hover:drop-shadow-2xl"
+                className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 -left-20 transform -translate-y-1/2 transition-all duration-500 filter hover:brightness-110 hover:drop-shadow-2xl rounded-3xl"
                 style={{
-                  animation: 'panLeft 8s ease-in-out infinite alternate'
+                  animation: 'panLeft 1s ease-in-out'
                 }}
               />
             </div>
@@ -170,6 +170,7 @@ export default function VibetorchApp() {
             </h1>
             <p className="text-xl text-black mb-8 leading-relaxed" style={{fontFamily: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace'}}>
               Rest easy, AI's got the night shift.
+              Automated Vibe Coding when you're not around.
             </p>
           </div>
         </div>
