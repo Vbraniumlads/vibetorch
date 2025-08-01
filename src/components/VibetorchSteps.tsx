@@ -544,13 +544,13 @@ const VibetorchSteps: React.FC = () => {
                     borderColor: '#DDD9C5'
                   }}
                 >
-                  <div className="grid grid-cols-12 gap-4 text-xs font-semibold uppercase tracking-wide" style={{ color: '#887D4E' }}>
-                    <div className="col-span-2">Repository</div>
+                  <div className="grid grid-cols-12 gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: '#887D4E' }}>
+                    <div className="col-span-3">Repository</div>
                     <div className="col-span-1">Status</div>
                     <div className="col-span-5">Description</div>
                     <div className="col-span-1">Tokens</div>
                     <div className="col-span-1">Time</div>
-                    <div className="col-span-2">Cost</div>
+                    <div className="col-span-1">Cost</div>
                   </div>
                 </div>
 
@@ -564,44 +564,32 @@ const VibetorchSteps: React.FC = () => {
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0EEE5'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      <div className="grid grid-cols-12 gap-4 items-center">
+                      <div className="grid grid-cols-12 gap-2 items-center">
                         {/* Repository */}
-                        <div className="col-span-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium" style={{ color: '#887D4E' }}>
-                              {task.repo}
-                            </span>
-                            {task.status === 'running' && (
-                              <div className="w-3 h-3 border border-blue-300 border-t-blue-500 rounded-full animate-spin"></div>
-                            )}
-                          </div>
+                        <div className="col-span-3">
+                          <span className="text-sm font-medium overflow-hidden whitespace-nowrap text-ellipsis block" style={{ color: '#887D4E' }}>
+                            {task.repo}
+                          </span>
                         </div>
 
                         {/* Status */}
-                        <div className="col-span-1">
-                          <span 
-                            className="inline-block text-xs px-2 py-1 rounded-full font-medium uppercase tracking-wide"
+                        <div className="col-span-1 flex justify-center">
+                          <div 
+                            className="w-3 h-3 rounded-full"
                             style={{
-                              backgroundColor: task.status === 'running' ? '#FEF3C7' :
-                                             task.status === 'completed' ? '#D1FAE5' : '#F0EEE5',
-                              color: task.status === 'running' ? '#D97706' :
-                                    task.status === 'completed' ? '#059669' : '#A69A64'
+                              backgroundColor: task.status === 'running' ? '#D97706' :
+                                             task.status === 'completed' ? '#059669' : 
+                                             task.status === 'pending' ? '#6C5DAC' : '#c53030'
                             }}
-                          >
-                            {task.status}
-                          </span>
+                          />
                         </div>
 
                         {/* Description */}
                         <div className="col-span-5">
                           <p 
-                            className="text-sm leading-relaxed overflow-hidden"
+                            className="text-sm overflow-hidden whitespace-nowrap text-ellipsis"
                             style={{
-                              color: '#A69A64',
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              wordBreak: 'break-word'
+                              color: '#A69A64'
                             }}
                           >
                             {task.description}
@@ -609,17 +597,17 @@ const VibetorchSteps: React.FC = () => {
                         </div>
 
                         {/* Tokens */}
-                        <div className="col-span-1 text-sm" style={{ color: '#A69A64' }}>
+                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis" style={{ color: '#A69A64' }}>
                           {task.tokens}
                         </div>
 
                         {/* Time */}
-                        <div className="col-span-1 text-sm" style={{ color: '#A69A64' }}>
+                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis" style={{ color: '#A69A64' }}>
                           {task.time}
                         </div>
 
                         {/* Cost */}
-                        <div className="col-span-2 text-sm" style={{ color: '#A69A64' }}>
+                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis" style={{ color: '#A69A64' }}>
                           {task.cost}
                         </div>
                       </div>
