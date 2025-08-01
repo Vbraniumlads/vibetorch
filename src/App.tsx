@@ -9,6 +9,7 @@ import { ReactPlugin } from "@21st-extension/react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { initGA, pageview } from "./lib/analytics";
+import { useDarkMode } from "./hooks/use-dark-mode";
 
 const queryClient = new QueryClient();
 
@@ -26,9 +27,12 @@ const Analytics = () => {
   return null;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+const AppContent = () => {
+  // 다크모드 초기화
+  useDarkMode();
+  
+  return (
+    <>
       <Toaster />
       <Sonner />
       <TwentyFirstToolbar
@@ -44,6 +48,14 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+    </>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <AppContent />
     </TooltipProvider>
   </QueryClientProvider>
 );

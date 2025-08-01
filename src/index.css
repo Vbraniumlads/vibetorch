@@ -151,22 +151,38 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .light {
-    /* Light mode fallback - we'll use dark as default */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 4%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 4%;
-    --primary: 158 100% 40%;
-    --border: 222 47% 90%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  .dark {
+    /* Dark Mode Overrides from design-system.json */
+    --background: 24 22 20;       /* #181614 */
+    --foreground: 234 230 218;    /* #EAE6DA */
+    
+    --card: 36 34 31;             /* #24221F */
+    --card-foreground: 234 230 218; /* #EAE6DA */
+    
+    --panel-left: 36 34 31;       /* #24221F */
+    --panel-right: 24 22 20;      /* #181614 */
+    
+    --popover: 36 34 31;          /* #24221F */
+    --popover-foreground: 234 230 218; /* #EAE6DA */
+    
+    --muted: 36 34 31;            /* #24221F */
+    --muted-foreground: 170 165 141; /* #AAA58D */
+    
+    --accent: var(--acc-800);     /* Darker accent for dark mode */
+    --accent-foreground: 234 230 218; /* #EAE6DA */
+    
+    --border: var(--neu-800);     /* Darker border */
+    --input: 36 34 31;            /* #24221F */
+    
+    /* Sidebar dark mode */
+    --sidebar-background: 24 22 20;
+    --sidebar-foreground: 234 230 218;
+    --sidebar-primary: var(--cta-500);
+    --sidebar-primary-foreground: 255 255 255;
+    --sidebar-accent: 36 34 31;
+    --sidebar-accent-foreground: 234 230 218;
+    --sidebar-border: var(--neu-800);
+    --sidebar-ring: var(--cta-500);
   }
 }
 
@@ -183,7 +199,7 @@
 
   /* Dark mode support */
   .dark html {
-    color: #EAE6DA; /* --text-dark */
+    color: #EAE6DA; /* Design system dark text */
   }
 
   body {
@@ -209,6 +225,12 @@
     border: 1px solid rgb(var(--neu-600));
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-card);
+  }
+
+  /* Dark mode card */
+  .dark .ds-card {
+    background: linear-gradient(180deg, #24221F 0%, #1F1D1A 100%);
+    border: 1px solid rgb(var(--neu-800));
   }
 
   /* Panel backgrounds */

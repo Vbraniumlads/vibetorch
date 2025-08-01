@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import VibetorchSteps from "@/components/VibetorchSteps";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useState, useEffect } from "react";
 
 
@@ -205,9 +206,10 @@ export default function VibetorchApp() {
             </p>
           </div>
 
-          {/* GitHub Link */}
-          <div className="absolute top-4 left-4 z-20">
-            <a 
+        {/* GitHub Link & Theme Toggle */}
+        <div className="absolute top-4 left-4 z-20 flex items-center gap-4">  
+          <ThemeToggle />
+          <a 
               href="https://github.com/Vbraniumlads/exchange-llm-ui" 
               target="_blank" 
               rel="noopener noreferrer"
