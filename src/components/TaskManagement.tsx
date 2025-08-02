@@ -113,10 +113,10 @@ const TaskManagement: React.FC = () => {
     <div className="w-full font-body">
       <div className="border-t border-b border-border overflow-hidden shadow-sm bg-background">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-border bg-card">
-          <div className="flex justify-between items-center">
+        <div className="px-4 sm:px-6 py-5 border-b border-border bg-card">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-display font-semibold mb-1 text-foreground">
+              <h1 className="text-xl sm:text-2xl font-display font-semibold mb-1 text-foreground">
                 Task Management
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -125,7 +125,7 @@ const TaskManagement: React.FC = () => {
             </div>
             <Button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-cta-500 hover:bg-cta-600 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg"
+              className="bg-cta-500 hover:bg-cta-600 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg w-full sm:w-auto"
             >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" className="mr-2">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
@@ -137,19 +137,19 @@ const TaskManagement: React.FC = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse bg-card">
+          <table className="w-full min-w-[480px] border-collapse bg-card">
             <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide text-foreground w-32">
+                <th className="px-2 sm:px-5 py-4 text-left text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground w-24 sm:w-32">
                   Date
                 </th>
-                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide text-foreground">
+                <th className="px-2 sm:px-5 py-4 text-left text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground">
                   Task
                 </th>
-                <th className="px-5 py-4 text-left text-sm font-semibold uppercase tracking-wide text-foreground w-36">
+                <th className="px-2 sm:px-5 py-4 text-left text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground w-28 sm:w-36">
                   Status
                 </th>
-                <th className="px-5 py-4 text-center text-sm font-semibold uppercase tracking-wide text-foreground w-20">
+                <th className="px-2 sm:px-5 py-4 text-center text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground w-16 sm:w-20">
                   Edit
                 </th>
               </tr>
@@ -160,46 +160,51 @@ const TaskManagement: React.FC = () => {
                   key={task.id} 
                   className="border-b border-border transition-all duration-200 hover:bg-muted/50"
                 >
-                  <td className="px-5 py-4">
+                  <td className="px-2 sm:px-5 py-4">
                     <input
                       type="date"
                       value={task.date}
                       onChange={(e) => updateTask(task.id, 'date', e.target.value)}
                       readOnly={editingTask !== task.id}
-                      className={`bg-transparent border-none text-sm font-mono text-muted-foreground transition-all duration-200 ${
+                      className={`bg-transparent border-none text-xs sm:text-sm font-mono text-muted-foreground transition-all duration-200 w-full ${
                         editingTask === task.id 
                           ? 'border-b-2 border-cta-500 text-foreground' 
                           : 'border-b-2 border-transparent'
                       }`}
                     />
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="px-2 sm:px-5 py-4">
                     <input
                       type="text"
                       value={task.description}
                       onChange={(e) => updateTask(task.id, 'description', e.target.value)}
                       readOnly={editingTask !== task.id}
-                      className={`w-full bg-transparent border-none text-sm font-medium text-foreground transition-all duration-200 ${
+                      className={`w-full bg-transparent border-none text-xs sm:text-sm font-medium text-foreground transition-all duration-200 ${
                         editingTask === task.id 
                           ? 'border-b-2 border-cta-500' 
                           : 'border-b-2 border-transparent'
                       }`}
                     />
                   </td>
-                  <td className="px-5 py-4 text-center">
+                  <td className="px-2 sm:px-5 py-4 text-center">
                     <span 
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-200 hover:scale-105 ${getStatusClasses(task.status)}`}
+                      className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-200 hover:scale-105 ${getStatusClasses(task.status)}`}
                       onClick={() => toggleStatus(task.id)}
                     >
-                      {statusLabels[task.status]}
+                      <span className="hidden sm:inline">{statusLabels[task.status]}</span>
+                      <span className="sm:hidden">
+                        {task.status === 'pending' ? 'P' : 
+                         task.status === 'in-progress' ? 'IP' : 
+                         task.status === 'completed' ? 'C' : 'B'}
+                      </span>
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-center">
+                  <td className="px-2 sm:px-5 py-4 text-center">
                     <button
                       onClick={() => setEditingTask(editingTask === task.id ? null : task.id)}
-                      className="p-2 rounded transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted"
+                      className="p-1 sm:p-2 rounded transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted"
                     >
-                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg width="14" height="14" className="sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         {editingTask === task.id ? (
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
                         ) : (
@@ -215,13 +220,19 @@ const TaskManagement: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-border text-center bg-muted">
-          <div className="text-sm text-muted-foreground">
-            Total <strong className="text-foreground">{counts.total}</strong> tasks | 
-            Completed: <strong className="text-foreground">{counts.completed}</strong> | 
-            In Progress: <strong className="text-foreground">{counts.inProgress}</strong> | 
-            Pending: <strong className="text-foreground">{counts.pending}</strong> | 
-            Blocked: <strong className="text-foreground">{counts.blocked}</strong>
+        <div className="px-4 sm:px-6 py-4 border-t border-border text-center bg-muted">
+          <div className="text-xs sm:text-sm text-muted-foreground">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+              <span>Total <strong className="text-foreground">{counts.total}</strong> tasks</span>
+              <span className="hidden sm:inline">|</span>
+              <span>Completed: <strong className="text-foreground">{counts.completed}</strong></span>
+              <span className="hidden sm:inline">|</span>
+              <span>In Progress: <strong className="text-foreground">{counts.inProgress}</strong></span>
+              <span className="hidden sm:inline">|</span>
+              <span>Pending: <strong className="text-foreground">{counts.pending}</strong></span>
+              <span className="hidden sm:inline">|</span>
+              <span>Blocked: <strong className="text-foreground">{counts.blocked}</strong></span>
+            </div>
           </div>
         </div>
       </div>
