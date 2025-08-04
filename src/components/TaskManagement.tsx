@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 
 interface Task {
@@ -7,6 +7,23 @@ interface Task {
   description: string;
   status: 'pending' | 'in-progress' | 'completed' | 'blocked';
 }
+
+const statusLabels = {
+  pending: 'Pending',
+  'in-progress': 'In Progress',
+  completed: 'Completed',
+  blocked: 'Blocked'
+};
+
+const getStatusClasses = (status: Task['status']) => {
+  const statusStyles = {
+    pending: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
+    'in-progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+    completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+    blocked: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+  };
+  return statusStyles[status];
+};
 
 const TaskManagement: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([
@@ -44,24 +61,7 @@ const TaskManagement: React.FC = () => {
   });
   const [editingTask, setEditingTask] = useState<string | null>(null);
 
-  const statusLabels = {
-    pending: 'Pending',
-    'in-progress': 'In Progress',
-    completed: 'Completed',
-    blocked: 'Blocked'
-  };
-
-  const getStatusClasses = (status: Task['status']) => {
-    const statusStyles = {
-      pending: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
-      'in-progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-      completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
-      blocked: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-    };
-    return statusStyles[status];
-  };
-
-  const updateTaskCounts = () => {
+  const updateTaskCounts = useCallback(() => {
     const counts = {
       total: tasks.length,
       completed: tasks.filter(t => t.status === 'completed').length,
@@ -70,9 +70,9 @@ const TaskManagement: React.FC = () => {
       blocked: tasks.filter(t => t.status === 'blocked').length
     };
     return counts;
-  };
+  }, [tasks]);
 
-  const toggleStatus = (taskId: string) => {
+  const toggleStatus = useCallback((taskId: string) => {
     const statuses: Task['status'][] = ['pending', 'in-progress', 'completed', 'blocked'];
     setTasks(tasks.map(task => {
       if (task.id === taskId) {
@@ -82,15 +82,15 @@ const TaskManagement: React.FC = () => {
       }
       return task;
     }));
-  };
+  }, [tasks]);
 
-  const updateTask = (taskId: string, field: 'date' | 'description', value: string) => {
+  const updateTask = useCallback((taskId: string, field: 'date' | 'description', value: string) => {
     setTasks(tasks.map(task => 
       task.id === taskId ? { ...task, [field]: value } : task
     ));
-  };
+  }, [tasks]);
 
-  const addNewTask = () => {
+  const addNewTask = useCallback(() => {
     if (!newTask.description.trim()) return;
     
     const task: Task = {
@@ -105,9 +105,9 @@ const TaskManagement: React.FC = () => {
       status: 'pending'
     });
     setIsModalOpen(false);
-  };
+  }, [newTask, tasks]);
 
-  const counts = updateTaskCounts();
+  const counts = useMemo(() => updateTaskCounts(), [updateTaskCounts]);
 
   return (
     <div className="w-full font-body">
@@ -314,4 +314,4 @@ const TaskManagement: React.FC = () => {
   );
 };
 
-export default TaskManagement;
+export default React.memo(TaskManagement);
