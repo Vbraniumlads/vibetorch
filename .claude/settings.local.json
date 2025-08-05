@@ -7,7 +7,12 @@
       "Bash(npm run dev:*)",
       "Bash(rg:*)",
       "Bash(ls:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:docs.github.com)",
+      "Bash(node:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npx tsx:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
