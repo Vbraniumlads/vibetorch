@@ -210,7 +210,7 @@ export default function VibetorchApp() {
         <div className="absolute top-4 left-4 z-20 flex items-center gap-4">  
           <ThemeToggle />
           <a 
-              href="https://github.com/Vbraniumlads/exchange-llm-ui" 
+              href="https://github.com/Vbraniumlads/vibetorch" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-cta-600 hover:text-cta-700 transition-colors duration-200 font-medium"
