@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import VibetorchSteps from "@/components/VibetorchSteps";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import FloatingNavBar from "@/components/FloatingNavBar";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -90,6 +91,7 @@ export default function VibetorchApp() {
 
   return (
     <div className="min-h-screen bg-background">
+      <FloatingNavBar />
       <style>{`
         @keyframes panLeft {
           0% {
@@ -138,64 +140,6 @@ export default function VibetorchApp() {
         }
       `}</style>
       
-      {/* Floating Navbar */}
-      {/* <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
-        <div className="bg-card/80 backdrop-blur-lg border border-border/50 rounded-3xl shadow-lg">
-          <div className="px-6 py-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <a href="/" className="text-xl font-serif font-bold text-foreground hover:opacity-80 transition-smooth">
-                  Vibetorch
-                </a>
-              </div>
-
-              <div className="hidden md:flex items-center space-x-6">
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
-                  Docs
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
-                  Pricing
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
-                  Login
-                </a>
-                <Button className="ds-btn-primary text-sm font-medium">
-                  Share Vibe
-                </Button>
-              </div>
-
-              <div className="md:hidden">
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                </button>
-              </div>
-            </div>
-
-            {isMenuOpen && (
-              <div className="md:hidden border-t border-border/50 mt-3 pt-3">
-                <div className="flex flex-col space-y-2">
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
-                    Docs
-                  </a>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
-                    Pricing
-                  </a>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
-                    Login
-                  </a>
-                  <Button className="ds-btn-primary text-left text-sm font-medium">
-                    Share Vibe
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav> */}
-
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Left Panel - Marketing */}
