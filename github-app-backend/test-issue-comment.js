@@ -5,18 +5,20 @@ const WEBHOOK_SECRET = "torchtorch";
 const SERVER_URL = "http://localhost:3001/webhook";
 
 const payload = {
+  action: "created",
   repository: {
     full_name: "Vbraniumlads/vibetorch",
     name: "vibetorch",
     owner: { login: "Vbraniumlads" },
   },
   installation: { id: 1734153 },
-  commits: [
-    {
-      added: ["TODO.md"],
-      modified: [],
-    },
-  ],
+  issue: {
+    number: 1,
+    title: "Test Issue for Claude Bot",
+    body: "Hey @claude, can you help me understand this codebase?",
+    html_url: "https://github.com/Vbraniumlads/vibetorch/issues/1",
+    user: { login: "alphanonce" },
+  },
 };
 
 const payloadString = JSON.stringify(payload);
@@ -31,16 +33,16 @@ try {
   const response = await axios.post(SERVER_URL, payload, {
     headers: {
       "X-Hub-Signature-256": signature,
-      "X-GitHub-Event": "push",
+      "X-GitHub-Event": "issues",
       "X-GitHub-Delivery": "12345678-1234-1234-1234-123456789abc",
       "Content-Type": "application/json",
     },
   });
 
-  console.log("✅ Webhook test successful:", response.status);
+  console.log("✅ Issue webhook test successful:", response.status);
 } catch (error) {
   console.error(
-    "❌ Webhook test failed:",
+    "❌ Issue webhook test failed:",
     error.response?.data || error.message
   );
 }

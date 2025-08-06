@@ -5,7 +5,7 @@ type Octokit = OctokitInstance;
 
 class ClaudeService {
   async handleClaudeMention(
-    octokit: Octokit, 
+    octokit: any, 
     repository: GitHubRepository, 
     issue: GitHubIssue
   ): Promise<void> {
@@ -15,7 +15,7 @@ class ClaudeService {
       const claudeResponse = await this.generateClaudeResponse(issue);
       
       // Post comment with Claude's response
-      await octokit.rest.issues.createComment({
+      await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
         owner: repository.owner.login,
         repo: repository.name,
         issue_number: issue.number,
@@ -27,14 +27,18 @@ class ClaudeService {
       console.error('❌ Error handling Claude mention:', error);
       
       // Post error comment
-      await octokit.rest.issues.createComment({
-        owner: repository.owner.login,
-        repo: repository.name,
-        issue_number: issue.number,
-        body: `❌ I encountered an error processing your request. Please try again or check the logs.
+      try {
+        await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+          owner: repository.owner.login,
+          repo: repository.name,
+          issue_number: issue.number,
+          body: `❌ I encountered an error processing your request. Please try again or check the logs.
         
 *Error: ${error instanceof Error ? error.message : 'Unknown error'}*`
-      });
+        });
+      } catch (commentError) {
+        console.error('❌ Failed to post error comment:', commentError);
+      }
     }
   }
   
