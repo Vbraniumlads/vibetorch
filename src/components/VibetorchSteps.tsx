@@ -141,14 +141,14 @@ const VibetorchSteps: React.FC = () => {
       document.removeEventListener('touchmove', handleGlobalTouchMove);
       document.removeEventListener('touchend', handleGlobalTouchEnd);
     };
-  }, [isDragging, dragPosition]);
+  }, [isDragging, dragPosition, modes]);
 
   // Sync dragPosition with sliderMode when not dragging
   useEffect(() => {
     if (!isDragging) {
       setDragPosition(modes[sliderMode].pos);
     }
-  }, [sliderMode, isDragging]);
+  }, [sliderMode, isDragging, modes]);
 
   const scrollToStep = (stepIndex: number) => {
     setCurrentStep(stepIndex);
