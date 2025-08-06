@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import TaskManagement from "./TaskManagement";
+import { useAuth } from "@/contexts/AuthContext";
 
 const VibetorchSteps: React.FC = () => {
+  const { setIsAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [sliderMode, setSliderMode] = useState(1); // 0: Off, 1: Maintainer, 2: Visionary, 3: Both
   const [isDragging, setIsDragging] = useState(false);
@@ -133,6 +135,7 @@ const VibetorchSteps: React.FC = () => {
   };
 
   const handleGitHubConnect = () => {
+    setIsAuthenticated(true);
     setTimeout(() => scrollToStep(1), 1000);
   };
 

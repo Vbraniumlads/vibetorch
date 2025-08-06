@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import VibetorchSteps from "@/components/VibetorchSteps";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 export default function VibetorchApp() {
+  const { isAuthenticated } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
@@ -97,12 +99,38 @@ export default function VibetorchApp() {
             transform: translateX(0%) translateY(-50%);
           }
         }
+        @keyframes slideOutLeft {
+          0% {
+            transform: translateX(0%);
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+        }
+        @keyframes expandRight {
+          0% {
+            margin-left: 40%;
+            width: 60%;
+          }
+          100% {
+            margin-left: 0%;
+            width: 100%;
+          }
+        }
         .panel-right::-webkit-scrollbar {
           display: none;
         }
         .panel-right {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        .slide-out-left {
+          animation: slideOutLeft 0.8s ease-in-out forwards;
+        }
+        .expand-right {
+          animation: expandRight 0.8s ease-in-out forwards;
         }
       `}</style>
       
@@ -167,7 +195,7 @@ export default function VibetorchApp() {
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Left Panel - Marketing */}
-        <div className="lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden">
+        <div className={`lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden ${isAuthenticated ? 'slide-out-left' : ''}`} style={{ display: isAuthenticated ? 'none' : 'flex' }}>
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 opacity-5 flex items-center justify-center">
             <div className="absolute top-20 left-10 w-32 h-32 bg-cta-500 rounded-full blur-3xl"></div>
@@ -226,7 +254,7 @@ export default function VibetorchApp() {
 
         {/* Right Panel - Vibetorch Steps */}
         <div 
-          className="lg:w-3/5 lg:ml-[40%] panel-right overflow-y-auto"
+          className={`panel-right overflow-y-auto ${isAuthenticated ? 'lg:w-full lg:ml-0 expand-right' : 'lg:w-3/5 lg:ml-[40%]'}`}
           style={{ 
             height: '100vh',
             scrollSnapType: 'y mandatory',
