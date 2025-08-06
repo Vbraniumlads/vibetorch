@@ -60,15 +60,15 @@ export function issueGeneratorController(githubApp: App) {
         message: 'Issue created successfully'
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Issue generation error:', error);
       
-      if (error.status === 404) {
+      if (error?.status === 404) {
         res.status(404).json({ 
           error: 'Repository not found or app not installed',
           message: 'Make sure the GitHub App is installed on the repository'
         });
-      } else if (error.status === 403) {
+      } else if (error?.status === 403) {
         res.status(403).json({ 
           error: 'Permission denied',
           message: 'The app does not have permission to create issues in this repository'
@@ -76,7 +76,7 @@ export function issueGeneratorController(githubApp: App) {
       } else {
         res.status(500).json({ 
           error: 'Issue generation failed',
-          message: error.message || 'Unknown error occurred'
+          message: error?.message || 'Unknown error occurred'
         });
       }
     }

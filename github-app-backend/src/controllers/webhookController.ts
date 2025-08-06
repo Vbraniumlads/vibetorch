@@ -84,8 +84,8 @@ async function handlePushEvent(payload: WebhookPayload, githubApp: App): Promise
       for (const file of todoFiles) {
         try {
           await processTodoFile(octokit, repository, file);
-        } catch (error) {
-          console.error(`❌ Error processing todo file ${file}:`, error.message);
+        } catch (error: any) {
+          console.error(`❌ Error processing todo file ${file}:`, error?.message);
         }
       }
     }

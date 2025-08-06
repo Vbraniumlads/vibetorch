@@ -95,6 +95,9 @@ export interface AppConfig {
   port: number;
   nodeEnv: string;
   claudeApiKey: string | undefined;
+  githubClientId: string;
+  githubClientSecret: string;
+  frontendUrl: string;
 }
 
 // GitHub Octokit instance type with REST API

@@ -1,25 +1,57 @@
-import { Button } from "@/components/ui/button";
 import VibetorchSteps from "@/components/VibetorchSteps";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { FloatingNavbar } from "@/features/navigation";
 
 
 export default function VibetorchApp() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, logout, isLoading } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
   const [currentSection, setCurrentSection] = useState(0);
   const [hasInitialAnimationPlayed, setHasInitialAnimationPlayed] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(false);
+  const [initialAuthState, setInitialAuthState] = useState<boolean | null>(null);
 
-  // Mark initial animation as played after component mounts
+  // Capture initial auth state when loading completes
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setHasInitialAnimationPlayed(true);
-    }, 1000); // Match the animation duration
-    return () => clearTimeout(timer);
-  }, []);
+    if (!isLoading && initialAuthState === null) {
+      setInitialAuthState(isAuthenticated);
+      console.log('📋 Initial auth state captured:', isAuthenticated);
+      
+      // If user is already logged in, show navbar immediately and skip animations
+      if (isAuthenticated) {
+        setShowNavbar(true);
+        setHasInitialAnimationPlayed(true);
+        console.log('✅ User already authenticated, skipping intro animation');
+      }
+    }
+  }, [isLoading, isAuthenticated, initialAuthState]);
+
+  // Mark initial animation as played after component mounts (only for new users)
+  useEffect(() => {
+    if (initialAuthState === false) { // Only for users who weren't logged in initially
+      const timer = setTimeout(() => {
+        setHasInitialAnimationPlayed(true);
+      }, 1000); // Match the animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [initialAuthState]);
+
+  // Show navbar after login animation completes (only for fresh logins)
+  useEffect(() => {
+    if (isAuthenticated && initialAuthState === false) {
+      // Fresh login - show navbar after animation
+      const timer = setTimeout(() => {
+        setShowNavbar(true);
+      }, 1700); // 1.2s slide-out animation + 0.5s buffer
+      return () => clearTimeout(timer);
+    } else if (!isAuthenticated) {
+      setShowNavbar(false);
+    }
+  }, [isAuthenticated, initialAuthState]);
 
   // Handle global mouse/touch events for dragging
   useEffect(() => {
@@ -88,6 +120,18 @@ export default function VibetorchApp() {
     }
   };
 
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-4 border-cta-200 border-t-cta-600 rounded-full animate-spin"></div>
+          <p className="text-muted-foreground text-sm">Loading VibeTorch...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <style>{`
@@ -136,70 +180,26 @@ export default function VibetorchApp() {
         .expand-right {
           animation: expandRight 1.2s ease-in-out forwards;
         }
+        @keyframes fadeInDown {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+        .navbar-fade-in {
+          animation: fadeInDown 0.5s ease-out forwards;
+        }
       `}</style>
-      
-      {/* Floating Navbar */}
-      {/* <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-4xl px-4">
-        <div className="bg-card/80 backdrop-blur-lg border border-border/50 rounded-3xl shadow-lg">
-          <div className="px-6 py-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <a href="/" className="text-xl font-serif font-bold text-foreground hover:opacity-80 transition-smooth">
-                  Vibetorch
-                </a>
-              </div>
-
-              <div className="hidden md:flex items-center space-x-6">
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
-                  Docs
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
-                  Pricing
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth text-sm">
-                  Login
-                </a>
-                <Button className="ds-btn-primary text-sm font-medium">
-                  Share Vibe
-                </Button>
-              </div>
-
-              <div className="md:hidden">
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                </button>
-              </div>
-            </div>
-
-            {isMenuOpen && (
-              <div className="md:hidden border-t border-border/50 mt-3 pt-3">
-                <div className="flex flex-col space-y-2">
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
-                    Docs
-                  </a>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
-                    Pricing
-                  </a>
-                  <a href="#" className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm">
-                    Login
-                  </a>
-                  <Button className="ds-btn-primary text-left text-sm font-medium">
-                    Share Vibe
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav> */}
 
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row min-h-screen">
-        {/* Left Panel - Marketing */}
-        <div className={`lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden ${isAuthenticated ? 'slide-out-left' : ''}`}>
+        {/* Left Panel - Marketing (hide for pre-authenticated users) */}
+        {!(initialAuthState === true) && (
+          <div className={`lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden ${isAuthenticated ? 'slide-out-left' : ''}`}>
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 opacity-5 flex items-center justify-center">
             <div className="absolute top-20 left-10 w-32 h-32 bg-cta-500 rounded-full blur-3xl"></div>
@@ -255,10 +255,17 @@ export default function VibetorchApp() {
             </a>
           </div>
         </div>
+        )}
 
         {/* Right Panel - Vibetorch Steps */}
         <div 
-          className={`panel-right overflow-y-auto ${isAuthenticated ? 'lg:w-full lg:ml-0 expand-right' : 'lg:w-3/5 lg:ml-[40%]'}`}
+          className={`panel-right overflow-y-auto ${
+            initialAuthState === true 
+              ? 'lg:w-full lg:ml-0' // Already authenticated - full width immediately
+              : isAuthenticated 
+                ? 'lg:w-full lg:ml-0 expand-right' // Fresh login - animate to full width
+                : 'lg:w-3/5 lg:ml-[40%]' // Not authenticated - partial width
+          }`}
           style={{ 
             height: '100vh',
             scrollSnapType: 'y mandatory',
@@ -272,6 +279,16 @@ export default function VibetorchApp() {
             setCurrentSection(sectionIndex);
           }}
         >
+          {/* Floating Navbar - Only show after login animation completes */}
+          {showNavbar && (
+            <div>
+              <FloatingNavbar 
+                user={user}
+                isAuthenticated={isAuthenticated}
+                onLogout={logout}
+              />
+            </div>
+          )}
           <VibetorchSteps />
           {/* Dot Navigation - Only show when not authenticated */}
           {!isAuthenticated && (

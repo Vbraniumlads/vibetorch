@@ -11,11 +11,14 @@ export function useAuth() {
 
   const login = useCallback(async (token: string, userData: User) => {
     authService.setToken(token);
+    authService.setUser(userData);
     setState(prev => ({
       ...prev,
       isAuthenticated: true,
       user: userData,
     }));
+    
+    console.log('✅ Login successful, data stored securely');
   }, []);
 
   const logout = useCallback(async () => {
@@ -24,12 +27,13 @@ export function useAuth() {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      authService.removeToken();
+      // AuthService.logout()에서 이미 clearAuthData()를 호출함
       setState(prev => ({
         ...prev,
         isAuthenticated: false,
         user: null,
       }));
+      console.log('👋 Logout successful, all data cleared');
     }
   }, []);
 
@@ -40,6 +44,18 @@ export function useAuth() {
       return;
     }
 
+    // 저장된 사용자 정보 먼저 로드
+    const savedUser = authService.getUser();
+    if (savedUser) {
+      setState(prev => ({
+        ...prev,
+        isAuthenticated: true,
+        user: savedUser,
+        isLoading: false,
+      }));
+    }
+
+    // 백그라운드에서 토큰 검증
     try {
       const response = await authService.getCurrentUser();
       setState(prev => ({
@@ -48,9 +64,12 @@ export function useAuth() {
         user: response.user,
         isLoading: false,
       }));
+      
+      // 사용자 정보 업데이트
+      authService.setUser(response.user);
     } catch (error) {
-      console.error('Auth check failed:', error);
-      authService.removeToken();
+      console.error('Auth verification failed:', error);
+      authService.clearAuthData();
       setState(prev => ({
         ...prev,
         isAuthenticated: false,
