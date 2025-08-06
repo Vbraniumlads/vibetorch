@@ -1,6 +1,8 @@
 import express from 'express';
+import cors from 'cors';
 import { config } from 'dotenv';
 import { Octokit } from '@octokit/rest';
+import { App } from '@octokit/app';
 import { Webhooks } from '@octokit/webhooks';
 import { setupRoutes } from './routes/index.js';
 import type { AppConfig } from './types/index.js';
@@ -14,44 +16,47 @@ const appConfig: AppConfig = {
   githubToken: githubToken,
   port: parseInt(process.env.PORT || '3001', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
-  claudeApiKey: process.env.CLAUDE_API_KEY
+  claudeApiKey: process.env.CLAUDE_API_KEY,
+  githubClientId: process.env.GITHUB_CLIENT_ID || '',
+  githubClientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173'
 };
 
-if (!appConfig.githubToken) {
-  console.error('❌ Missing required environment variables. Please check your .env file.');
+// OAuth 테스트를 위해 GitHub App 없이도 실행 가능하도록 수정
+if (!appConfig.githubClientId || !appConfig.githubClientSecret) {
+  console.error('❌ Missing required OAuth environment variables. Please check your .env file.');
+  console.error('Required: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET');
   process.exit(1);
 }
 
 const app = express();
 
-// GitHub API client with personal access token
-const github = new Octokit({
-  auth: appConfig.githubToken
-});
+// GitHub App configuration (optional for OAuth-only mode)
+let githubApp: App | null = null;
+let webhooks: Webhooks | null = null;
 
-// Validate GitHub token permissions on startup
-async function validateGitHubPermissions() {
-  try {
-    console.log('🔍 Validating GitHub token permissions...');
-    await github.rest.users.getAuthenticated();
-    console.log('✅ GitHub token is valid');
-  } catch (error: any) {
-    console.error('❌ GitHub token validation failed:', error.message);
-    if (error.status === 401) {
-      console.error('💡 Please check your GITHUB_TOKEN in the .env file');
-      console.error('💡 Ensure your token has the required scopes: issues (write)');
-      console.error('💡 Update token at: https://github.com/settings/tokens');
+if (appConfig.githubAppId && appConfig.githubPrivateKey && appConfig.githubWebhookSecret) {
+  githubApp = new App({
+    appId: appConfig.githubAppId,
+    privateKey: appConfig.githubPrivateKey,
+    webhooks: {
+      secret: appConfig.githubWebhookSecret
     }
-    process.exit(1);
-  }
+  });
+
+  webhooks = new Webhooks({
+    secret: appConfig.githubWebhookSecret
+  });
+  console.log('🔧 GitHub App configured');
+} else {
+  console.log('⚠️  GitHub App not configured, running in OAuth-only mode');
 }
 
-// Webhooks instance
-const webhooks = new Webhooks({
-  secret: appConfig.githubToken
-});
-
 // Middleware
+app.use(cors({
+  origin: appConfig.frontendUrl,
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.raw({ type: 'application/json' }));
 

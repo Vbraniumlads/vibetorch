@@ -1,8 +1,9 @@
 export interface User {
   id: number;
-  github_id: string;
   username: string;
+  name?: string;
   avatar_url?: string;
+  email?: string;
 }
 
 export interface AuthResponse {

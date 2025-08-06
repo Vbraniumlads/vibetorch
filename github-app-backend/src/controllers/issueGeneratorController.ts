@@ -59,7 +59,7 @@ export function issueGeneratorController(github: Octokit) {
     } catch (error: any) {
       console.error('❌ Issue generation error:', error);
       
-      if (error.status === 404) {
+      if (error?.status === 404) {
         res.status(404).json({ 
           error: 'Repository not found',
           message: 'Make sure the repository exists and you have access to it'
@@ -81,7 +81,7 @@ export function issueGeneratorController(github: Octokit) {
       } else {
         res.status(500).json({ 
           error: 'Issue generation failed',
-          message: error.message || 'Unknown error occurred'
+          message: error?.message || 'Unknown error occurred'
         });
       }
     }
