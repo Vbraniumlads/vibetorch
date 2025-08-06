@@ -8,6 +8,7 @@ import { TwentyFirstToolbar } from "@21st-extension/toolbar-react";
 import { ReactPlugin } from "@21st-extension/react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import AuthCallback from "./components/AuthCallback";
 import { initGA, pageview } from "./lib/analytics";
 import { useDarkMode } from "./hooks/use-dark-mode";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -45,6 +46,7 @@ const AppContent = () => {
         <Analytics />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

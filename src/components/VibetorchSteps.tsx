@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import TaskManagement from "./TaskManagement";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from 'sonner';
 
 const VibetorchSteps: React.FC = () => {
   const { setIsAuthenticated, setGithubUsername } = useAuth();
@@ -49,6 +50,26 @@ const VibetorchSteps: React.FC = () => {
     { name: 'Visionary', desc: 'AI suggests new features, architecture improvements, and innovations', pos: 66.66 },
     { name: 'Both', desc: 'Full AI capabilities: maintenance + visionary features combined', pos: 100 }
   ];
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authSuccess = urlParams.get('auth');
+    
+    if (authSuccess === 'success') {
+      setIsConnecting(false);
+      setShowGreeting(true);
+      
+      setTimeout(() => {
+        setIsConnected(true);
+        
+        setTimeout(() => {
+          scrollToStep(2);
+        }, 1000);
+      }, 2000);
+      
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
@@ -138,26 +159,21 @@ const VibetorchSteps: React.FC = () => {
   };
 
   const handleGitHubConnect = () => {
+    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+    
+    if (!clientId) {
+      toast.error('GitHub client ID not configured');
+      return;
+    }
+
     setIsConnecting(true);
     
-    // Simulate GitHub OAuth process
-    setTimeout(() => {
-      const mockGithubUsername = "vibetorch-user";
-      setGithubUsername(mockGithubUsername);
-      setIsConnecting(false);
-      setShowGreeting(true);
-      
-      // Show greeting for 2 seconds, then trigger left panel slide-out
-      setTimeout(() => {
-        setIsConnected(true);
-        setIsAuthenticated(true); // This triggers left panel slide-out
-        
-        // Navigate to task management after left panel animation completes
-        setTimeout(() => {
-          scrollToStep(2); // Jump to task management step
-        }, 1000); // Wait for slide-out animation to complete
-      }, 2000); // Show greeting for 2 seconds
-    }, 2000); // Simulate 2 second loading
+    const redirectUri = `${window.location.origin}/auth/callback`;
+    const scope = 'read:user,repo';
+    
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+    
+    window.location.href = githubAuthUrl;
   };
 
   const handleModeStart = () => {
