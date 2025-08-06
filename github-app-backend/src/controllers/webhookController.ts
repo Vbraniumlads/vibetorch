@@ -65,11 +65,6 @@ async function handlePushEvent(payload: WebhookPayload, githubApp: App): Promise
   try {
     // Get installation access token
     const octokit = await githubApp.getInstallationOctokit(installation.id);
-    console.log('🔍 Octokit structure:', Object.keys(octokit));
-    console.log('🔍 Octokit.rest exists:', !!octokit.rest);
-    if (octokit.rest) {
-      console.log('🔍 Octokit.rest keys:', Object.keys(octokit.rest));
-    }
     
     // Check for todo files in the push
     const modifiedFiles = payload.commits?.flatMap(commit => 
@@ -86,7 +81,11 @@ async function handlePushEvent(payload: WebhookPayload, githubApp: App): Promise
       console.log(`📋 Found ${todoFiles.length} potential todo files`);
       
       for (const file of todoFiles) {
-        await processTodoFile(octokit, repository, file);
+        try {
+          await processTodoFile(octokit, repository, file);
+        } catch (error) {
+          console.error(`❌ Error processing todo file ${file}:`, error.message);
+        }
       }
     }
   } catch (error) {
@@ -143,13 +142,13 @@ async function processTodoFile(
       return;
     }
     
-    // Get file content
-    if (!octokit || !octokit.rest || !octokit.rest.repos) {
+    // Get file content using direct request method
+    if (!octokit || !octokit.request) {
       console.error('❌ Invalid octokit instance');
       return;
     }
     
-    const { data: fileData } = await octokit.rest.repos.getContent({
+    const { data: fileData } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
       owner: repository.owner.login,
       repo: repository.name,
       path: filePath
