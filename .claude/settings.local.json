@@ -13,7 +13,8 @@
       "Bash(npm run type-check:*)",
       "Bash(npx tsx:*)",
       "Bash(cp:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }
