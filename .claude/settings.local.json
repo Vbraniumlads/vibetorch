@@ -7,7 +7,9 @@
       "Bash(npm run dev:*)",
       "Bash(rg:*)",
       "Bash(ls:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(rm:*)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

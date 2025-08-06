@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/auth/github.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}
