@@ -9,12 +9,9 @@ export class AuthService {
   async login(data: LoginRequest): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/login', data);
     
-    // 로그인 성공 시 토큰과 사용자 정보를 안전하게 저장
+    // 로그인 성공 시 토큰만 저장 (사용자 정보는 저장하지 않음)
     if (response.token) {
       this.setToken(response.token);
-      if (response.user) {
-        this.setUser(response.user);
-      }
     }
     
     return response;
@@ -58,17 +55,9 @@ export class AuthService {
     apiClient.removeToken();
   }
 
-  setUser(user: User): void {
-    secureStorage.setUser(user, this.TOKEN_EXPIRY_MINUTES);
-  }
-
-  getUser(): User | null {
-    return secureStorage.getUser();
-  }
-
   clearAuthData(): void {
     secureStorage.removeToken(this.TOKEN_KEY);
-    secureStorage.removeUser();
+    secureStorage.removeUser(); // 기존 사용자 데이터도 정리
     apiClient.removeToken();
   }
 

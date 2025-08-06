@@ -19,13 +19,13 @@ class SecureStorage {
     };
 
     try {
-      // sessionStorage 우선 시도 (보다 안전)
-      sessionStorage.setItem(`${this.prefix}${key}`, JSON.stringify(item));
-      console.log(`🔐 Token stored securely (expires in ${expiryMinutes} minutes)`);
-    } catch (error) {
-      // sessionStorage 실패 시 localStorage 사용
-      console.warn('⚠️ SessionStorage failed, falling back to localStorage');
+      // localStorage 우선 사용 (세션 유지를 위해)
       localStorage.setItem(`${this.prefix}${key}`, JSON.stringify(item));
+      console.log(`🔐 Token stored in localStorage (expires in ${expiryMinutes} minutes)`);
+    } catch (error) {
+      // localStorage 실패 시 sessionStorage 사용
+      console.warn('⚠️ LocalStorage failed, falling back to sessionStorage');
+      sessionStorage.setItem(`${this.prefix}${key}`, JSON.stringify(item));
     }
   }
 
@@ -34,12 +34,12 @@ class SecureStorage {
    */
   getToken(key: string): string | null {
     try {
-      // sessionStorage 먼저 확인
-      let itemStr = sessionStorage.getItem(`${this.prefix}${key}`);
+      // localStorage 먼저 확인 (세션 유지를 위해)
+      let itemStr = localStorage.getItem(`${this.prefix}${key}`);
       
-      // sessionStorage에 없으면 localStorage 확인
+      // localStorage에 없으면 sessionStorage 확인
       if (!itemStr) {
-        itemStr = localStorage.getItem(`${this.prefix}${key}`);
+        itemStr = sessionStorage.getItem(`${this.prefix}${key}`);
       }
 
       if (!itemStr) return null;
@@ -144,9 +144,9 @@ class SecureStorage {
    */
   getTokenExpiry(key: string): number | null {
     try {
-      let itemStr = sessionStorage.getItem(`${this.prefix}${key}`);
+      let itemStr = localStorage.getItem(`${this.prefix}${key}`);
       if (!itemStr) {
-        itemStr = localStorage.getItem(`${this.prefix}${key}`);
+        itemStr = sessionStorage.getItem(`${this.prefix}${key}`);
       }
 
       if (!itemStr) return null;

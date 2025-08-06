@@ -7,7 +7,7 @@ import { GitHubConnectButton } from "./GitHubConnectButton";
 import { toast } from 'sonner';
 
 const VibetorchSteps: React.FC = () => {
-  const { setIsAuthenticated, setGithubUsername, login } = useAuth();
+  const { login } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [sliderMode, setSliderMode] = useState(1); // 0: Off, 1: Maintainer, 2: Visionary, 3: Both
   const [isConnecting, setIsConnecting] = useState(false);
@@ -144,22 +144,26 @@ const VibetorchSteps: React.FC = () => {
     // The actual OAuth will be handled by GitHubLoginButton
   };
 
-  const handleLoginSuccess = (token: string, user: any) => {
-    login(token, user); // Use the new auth system
-    setGithubUsername(user.username);
-    setIsConnecting(false);
-    setShowGreeting(true);
-    
-    // Show greeting for 2 seconds, then trigger left panel slide-out
-    setTimeout(() => {
-      setIsConnected(true);
-      setIsAuthenticated(true); // This triggers left panel slide-out
+  const handleLoginSuccess = async (token: string, user: any) => {
+    try {
+      await login(token, user); // Use the new auth system
+      setIsConnecting(false);
+      setShowGreeting(true);
       
-      // Navigate to task management after left panel animation completes
+      // Show greeting for 2 seconds, then trigger left panel slide-out
       setTimeout(() => {
-        scrollToStep(2); // Jump to task management step
-      }, 1000); // Wait for slide-out animation to complete
-    }, 2000); // Show greeting for 2 seconds
+        setIsConnected(true);
+        
+        // Navigate to task management after left panel animation completes
+        setTimeout(() => {
+          scrollToStep(2); // Jump to task management step
+        }, 1000); // Wait for slide-out animation to complete
+      }, 2000); // Show greeting for 2 seconds
+    } catch (error) {
+      console.error('Login failed:', error);
+      setIsConnecting(false);
+      toast.error('Login failed. Please try again.');
+    }
   };
 
 

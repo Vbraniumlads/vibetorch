@@ -199,60 +199,65 @@ export default function VibetorchApp() {
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Left Panel - Marketing (hide for pre-authenticated users) */}
         {!(initialAuthState === true) && (
-          <div className={`lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden ${isAuthenticated ? 'slide-out-left' : ''}`}>
+          <div className={`lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col lg:fixed lg:h-screen relative overflow-hidden ${isAuthenticated ? 'slide-out-left' : ''}`}>
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 opacity-5 flex items-center justify-center">
             <div className="absolute top-20 left-10 w-32 h-32 bg-cta-500 rounded-full blur-3xl"></div>
             <div className="absolute bottom-20 right-10 w-24 h-24 bg-accent rounded-full blur-2xl"></div>
           </div>
-          
-          {/* Logo Mark */}
-          <div className="relative mb-2">
-            <div className="w-full h-96 lg:h-[32rem] relative overflow-hidden">
-              <img 
-                src="/torch.png" 
-                alt="Vibetorch" 
-                className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 -left-20 transform -translate-y-1/2 rounded-3xl cursor-grab"
-                style={{
-                  animation: isDragging || hasInitialAnimationPlayed ? 'none' : 'panLeft 1s ease-in-out',
-                  transform: `translateX(${-20 + (dragOffset.x * 0.1)}px) translateY(${-50 + (dragOffset.y * 0.03)}%)`,
-                  transition: isDragging ? 'none' : 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)',
-                  cursor: isDragging ? 'grabbing' : 'grab',
-                  zIndex: isDragging ? 50 : 10
-                }}
-                onMouseDown={handleDragStart}
-                onTouchStart={handleDragStart}
-                draggable={false}
-              />
+
+          {/* Top Navigation - GitHub Link & Theme Toggle */}
+          <div className="flex items-center justify-between mb-4 lg:mb-6 relative z-20">
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <a 
+                href="https://github.com/Vbraniumlads/exchange-llm-ui" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-cta-600 hover:text-cta-700 transition-colors duration-200 font-medium text-sm lg:text-base"
+                style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}
+              >
+                <svg className="w-4 h-4 lg:w-5 lg:h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                <span className="hidden sm:inline">View on GitHub</span>
+              </a>
             </div>
           </div>
+          
+          {/* Content Area - Center aligned */}
+          <div className="flex-1 flex flex-col justify-center">
+            {/* Logo Mark */}
+            <div className="relative mb-2">
+              <div className="w-full h-80 lg:h-[28rem] relative overflow-hidden">
+                <img 
+                  src="/torch.png" 
+                  alt="Vibetorch" 
+                  className="w-[150%] h-auto max-h-none object-contain absolute top-1/2 -left-20 transform -translate-y-1/2 rounded-3xl cursor-grab"
+                  style={{
+                    animation: isDragging || hasInitialAnimationPlayed ? 'none' : 'panLeft 1s ease-in-out',
+                    transform: `translateX(${-20 + (dragOffset.x * 0.1)}px) translateY(${-50 + (dragOffset.y * 0.03)}%)`,
+                    transition: isDragging ? 'none' : 'transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)',
+                    cursor: isDragging ? 'grabbing' : 'grab',
+                    zIndex: isDragging ? 50 : 10
+                  }}
+                  onMouseDown={handleDragStart}
+                  onTouchStart={handleDragStart}
+                  draggable={false}
+                />
+              </div>
+            </div>
 
-          {/* Headlines */}
-          <div className="mb-8 relative z-10">
-            <h1 className="text-4xl lg:text-5xl font-sans font-bold text-cta-700 mb-6 leading-[1.1] tracking-tight" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
-              Vibe must flow.
-            </h1>
-            <p className="text-xl text-foreground mb-8 leading-relaxed font-sans" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
-              Rest easy, AI's got the night shift.
-              Automated Vibe Coding when you're not around.
-            </p>
-          </div>
-
-        {/* GitHub Link & Theme Toggle */}
-        <div className="absolute top-4 left-4 z-20 flex items-center gap-4">  
-          <ThemeToggle />
-          <a 
-              href="https://github.com/Vbraniumlads/exchange-llm-ui" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-cta-600 hover:text-cta-700 transition-colors duration-200 font-medium"
-              style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              View on GitHub
-            </a>
+            {/* Headlines */}
+            <div className="mb-8 relative z-10">
+              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-sans font-bold text-cta-700 mb-4 lg:mb-6 leading-[1.1] tracking-tight" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
+                Vibe must flow.
+              </h1>
+              <p className="text-lg lg:text-xl text-foreground leading-relaxed font-sans" style={{fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
+                Rest easy, AI's got the night shift.
+                Automated Vibe Coding when you're not around.
+              </p>
+            </div>
           </div>
         </div>
         )}

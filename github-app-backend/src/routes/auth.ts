@@ -78,6 +78,9 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       {
         userId: user.id,
         username: user.login,
+        name: user.name,
+        avatar_url: user.avatar_url,
+        email: user.email,
         githubToken: access_token,
       },
       process.env.JWT_SECRET || 'your-jwt-secret',
@@ -132,10 +135,13 @@ router.get('/verify', (req: Request, res: Response): void => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-jwt-secret') as any;
     
     res.json({
-      valid: true,
       user: {
         id: decoded.userId,
         username: decoded.username,
+        login: decoded.username, // GitHub API 호환성
+        avatar_url: decoded.avatar_url || '',
+        name: decoded.name || decoded.username,
+        email: decoded.email || '',
       },
     });
 

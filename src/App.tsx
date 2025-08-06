@@ -14,6 +14,11 @@ import { initGA, pageview } from "./lib/analytics";
 import { useDarkMode } from "./hooks/use-dark-mode";
 import { AuthProvider } from "./contexts/AuthContext";
 
+// 개발 환경에서만 auth 테스트 유틸리티 로드
+if (import.meta.env.DEV) {
+  import("./utils/auth-test");
+}
+
 const queryClient = new QueryClient();
 
 const Analytics = () => {

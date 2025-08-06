@@ -10,19 +10,13 @@ console.log('🔧 API Configuration:', {
 class ApiClient {
   private token: string | null = null;
 
-  constructor() {
-    // 토큰은 필요할 때 동적으로 가져오도록 변경
-    this.token = localStorage.getItem('auth_token');
-  }
-
   private getValidToken(): string | null {
-    // 최신 토큰 상태를 동적으로 가져오기
+    // secureStorage 시스템과 일관성 있게 토큰 가져오기
     try {
-      // secureStorage를 직접 import하여 사용
       const storagePrefix = 'vibetorch_';
-      let itemStr = sessionStorage.getItem(`${storagePrefix}auth_token`);
+      let itemStr = localStorage.getItem(`${storagePrefix}auth_token`);
       if (!itemStr) {
-        itemStr = localStorage.getItem(`${storagePrefix}auth_token`);
+        itemStr = sessionStorage.getItem(`${storagePrefix}auth_token`);
       }
       
       if (itemStr) {
@@ -31,16 +25,15 @@ class ApiClient {
           return item.value;
         } else {
           // 만료된 토큰 정리
-          sessionStorage.removeItem(`${storagePrefix}auth_token`);
           localStorage.removeItem(`${storagePrefix}auth_token`);
+          sessionStorage.removeItem(`${storagePrefix}auth_token`);
         }
       }
     } catch (error) {
       console.error('Error getting valid token:', error);
     }
     
-    // 폴백으로 기존 토큰 반환
-    return this.token;
+    return null;
   }
 
   private async request<T>(
@@ -122,12 +115,12 @@ class ApiClient {
 
   setToken(token: string): void {
     this.token = token;
-    localStorage.setItem('auth_token', token);
+    // secureStorage에서 관리하므로 여기서는 직접 저장하지 않음
   }
 
   removeToken(): void {
     this.token = null;
-    localStorage.removeItem('auth_token');
+    // secureStorage에서 관리하므로 여기서는 직접 제거하지 않음
   }
 }
 

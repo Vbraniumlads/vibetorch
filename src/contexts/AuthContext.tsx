@@ -1,55 +1,34 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth as useNewAuth } from '../features/auth';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useAuth as useAuthHook } from '../features/auth';
 import type { User } from '../features/auth/types/auth.types';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   githubUsername: string | null;
   user: User | null;
-  setIsAuthenticated: (value: boolean) => void;
-  setGithubUsername: (username: string | null) => void;
-  login: (token: string, userData: User) => void;
-  logout: () => void;
+  login: (token: string, userData: User) => Promise<void>;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
   isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [legacyAuthenticated, setLegacyAuthenticated] = useState(false);
-  const [legacyUsername, setLegacyUsername] = useState<string | null>(null);
-  
-  // Use the new auth system
-  const newAuth = useNewAuth();
+  const auth = useAuthHook();
 
-  // Merge legacy and new auth states
-  const isAuthenticated = newAuth.isAuthenticated || legacyAuthenticated;
-  const user = newAuth.user;
-  const githubUsername = user?.username || legacyUsername;
-
-  const login = (token: string, userData: User) => {
-    newAuth.login(token, userData);
-    setLegacyAuthenticated(true);
-    setLegacyUsername(userData.username);
-  };
-
-  const logout = async () => {
-    await newAuth.logout();
-    setLegacyAuthenticated(false);
-    setLegacyUsername(null);
+  const contextValue: AuthContextType = {
+    isAuthenticated: auth.isAuthenticated,
+    githubUsername: auth.user?.username || null,
+    user: auth.user,
+    login: auth.login,
+    logout: auth.logout,
+    checkAuth: auth.checkAuth,
+    isLoading: auth.isLoading,
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      isAuthenticated, 
-      githubUsername, 
-      user,
-      setIsAuthenticated: setLegacyAuthenticated, 
-      setGithubUsername: setLegacyUsername,
-      login,
-      logout,
-      isLoading: newAuth.isLoading
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
