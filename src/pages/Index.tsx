@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import VibetorchSteps from "@/components/VibetorchSteps";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 export default function VibetorchApp() {
+  const { isAuthenticated } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
@@ -97,12 +99,42 @@ export default function VibetorchApp() {
             transform: translateX(0%) translateY(-50%);
           }
         }
+        @keyframes slideOutLeft {
+          0% {
+            transform: translateX(0%);
+            opacity: 1;
+          }
+          80% {
+            transform: translateX(-90%);
+            opacity: 0.2;
+          }
+          100% {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+        }
+        @keyframes expandRight {
+          0% {
+            margin-left: 40%;
+            width: 60%;
+          }
+          100% {
+            margin-left: 0%;
+            width: 100%;
+          }
+        }
         .panel-right::-webkit-scrollbar {
           display: none;
         }
         .panel-right {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        .slide-out-left {
+          animation: slideOutLeft 1.2s ease-in-out forwards;
+        }
+        .expand-right {
+          animation: expandRight 1.2s ease-in-out forwards;
         }
       `}</style>
       
@@ -167,7 +199,7 @@ export default function VibetorchApp() {
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Left Panel - Marketing */}
-        <div className="lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden">
+        <div className={`lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col justify-center lg:fixed lg:h-screen lg:pt-20 relative overflow-hidden ${isAuthenticated ? 'slide-out-left' : ''}`}>
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 opacity-5 flex items-center justify-center">
             <div className="absolute top-20 left-10 w-32 h-32 bg-cta-500 rounded-full blur-3xl"></div>
@@ -226,7 +258,7 @@ export default function VibetorchApp() {
 
         {/* Right Panel - Vibetorch Steps */}
         <div 
-          className="lg:w-3/5 lg:ml-[40%] panel-right overflow-y-auto"
+          className={`panel-right overflow-y-auto ${isAuthenticated ? 'lg:w-full lg:ml-0 expand-right' : 'lg:w-3/5 lg:ml-[40%]'}`}
           style={{ 
             height: '100vh',
             scrollSnapType: 'y mandatory',
@@ -241,29 +273,30 @@ export default function VibetorchApp() {
           }}
         >
           <VibetorchSteps />
-          {/* Dot Navigation */}
-          <div className="fixed right-2 top-1/2 transform -translate-y-1/2 z-50 space-y-2 flex flex-col">
-          {/* <div className="right-8 top-1/2 transform space-y-4"> */}
-            {[0, 1, 2, 3].map((index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  const container = document.querySelector('.panel-right');
-                  if (container) {
-                    container.scrollTo({
-                      top: index * window.innerHeight,
-                      behavior: 'smooth'
-                    });
-                  }
-                }}
-                className={`w-1.5 h-1.5 rounded-full border transition-all duration-300 hover:scale-110 ${
-                  currentSection === index 
-                    ? 'bg-cta-500 border-cta-500 opacity-100' 
-                    : 'bg-transparent border-cta-500 opacity-50'
-                }`}
-              />
-            ))}
-          </div>
+          {/* Dot Navigation - Only show when not authenticated */}
+          {!isAuthenticated && (
+            <div className="fixed right-2 top-1/2 transform -translate-y-1/2 z-50 space-y-2 flex flex-col">
+              {[0, 1, 2, 3].map((index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    const container = document.querySelector('.panel-right');
+                    if (container) {
+                      container.scrollTo({
+                        top: index * window.innerHeight,
+                        behavior: 'smooth'
+                      });
+                    }
+                  }}
+                  className={`w-1.5 h-1.5 rounded-full border transition-all duration-300 hover:scale-110 ${
+                    currentSection === index 
+                      ? 'bg-cta-500 border-cta-500 opacity-100' 
+                      : 'bg-transparent border-cta-500 opacity-50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
