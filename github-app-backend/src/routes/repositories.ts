@@ -1,40 +1,105 @@
 import { Router, Request, Response } from 'express';
 import { githubRepositoriesService } from '../services/githubRepositoriesService.js';
+import { repositoryService } from '../services/repositoryService';
+import jwt from 'jsonwebtoken';
+import { GitHubRepositoryData } from '../db/models/Repository';
 
 const router = Router();
 
-// Get user repositories
+// Get user repositories from database
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     
-    const page = parseInt(req.query.page as string) || 1;
-    const per_page = Math.min(parseInt(req.query.per_page as string) || 30, 100); // Max 100 per GitHub API
-    const sort = (req.query.sort as 'created' | 'updated' | 'pushed' | 'full_name') || 'updated';
-    const direction = (req.query.direction as 'asc' | 'desc') || 'desc';
-    const type = (req.query.type as 'all' | 'owner' | 'member') || 'owner';
-    const visibility = (req.query.visibility as 'all' | 'public' | 'private') || 'all';
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ error: 'Authorization header is required' });
+      return;
+    }
+
+    // Extract JWT token and get user ID
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-jwt-secret-change-this-in-production') as any;
+    const userId = decoded.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Invalid token: user ID not found' });
+      return;
+    }
+
+    // Get repositories from database
+    const repositories = await repositoryService.findByUserId(userId);
     
-    const result = await githubRepositoriesService.fetchRepositories(authHeader, {
-      page,
-      per_page,
-      sort,
-      direction,
-      type,
-      visibility,
-    });
-    
-    res.json(result);
+    res.json(repositories);
     
   } catch (error) {
     console.error('❌ Error in repositories endpoint:', error);
     
     if (error instanceof Error) {
-      if (error.message.includes('Authorization header is required')) {
-        res.status(401).json({ error: 'Authorization header is required' });
+      if (error.message.includes('jwt')) {
+        res.status(401).json({ error: 'Invalid or expired token' });
         return;
       }
-      if (error.message.includes('Invalid JWT token')) {
+      
+      res.status(500).json({ 
+        error: 'Failed to fetch repositories',
+        message: error.message 
+      });
+      return;
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Sync repositories from GitHub API to database
+router.post('/sync', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ error: 'Authorization header is required' });
+      return;
+    }
+
+    // Extract JWT token and get user ID
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-jwt-secret-change-this-in-production') as any;
+    const userId = decoded.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Invalid token: user ID not found' });
+      return;
+    }
+
+    // Fetch repositories from GitHub API
+    const githubRepos = await githubRepositoriesService.fetchRepositories(authHeader, {
+      per_page: 100, // Get more repos in one call
+      type: 'owner', // Only user's own repos
+      sort: 'updated',
+      direction: 'desc'
+    });
+
+    // Sync each repository to database
+    const syncedRepos = [];
+    for (const githubRepo of githubRepos) {
+      const syncedRepo = await repositoryService.upsert(userId, githubRepo.id, {
+        repo_name: githubRepo.name,
+        repo_url: githubRepo.html_url,
+        description: githubRepo.description || undefined
+      });
+      syncedRepos.push(syncedRepo);
+    }
+
+    res.json({
+      message: `Successfully synced ${syncedRepos.length} repositories`,
+      repositories: syncedRepos
+    });
+    
+  } catch (error) {
+    console.error('❌ Error in repository sync endpoint:', error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('jwt')) {
         res.status(401).json({ error: 'Invalid or expired token' });
         return;
       }
@@ -48,7 +113,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       }
       
       res.status(500).json({ 
-        error: 'Failed to fetch repositories',
+        error: 'Failed to sync repositories',
         message: error.message 
       });
       return;
