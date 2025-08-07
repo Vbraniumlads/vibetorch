@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import TaskManagement from "./TaskManagement";
@@ -7,9 +8,11 @@ import { GitHubConnectButton } from "./GitHubConnectButton";
 import { toast } from 'sonner';
 import { githubService } from "../features/github/services/github.service";
 import type { GitHubRepository } from "../features/github/types/github.types";
+import { Eye } from 'lucide-react';
 
 const VibetorchDashboard: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [sliderMode, setSliderMode] = useState(0); // 0: Maintainer, 1: Off, 2: Pioneer
   const [isDragging, setIsDragging] = useState(false);
   const [dragPosition, setDragPosition] = useState(50); // Temporary position during drag
@@ -231,6 +234,13 @@ const VibetorchDashboard: React.FC = () => {
     return 'Just now';
   };
 
+  const handleViewDetails = (repo: GitHubRepository) => {
+    // Extract owner from repo_url
+    const urlParts = repo.repo_url.split('/');
+    const owner = urlParts[urlParts.length - 2];
+    navigate(`/repository/${owner}/${repo.repo_name}`);
+  };
+
   return (
     <div className="h-full font-body p-8 pt-[20px] space-y-8 w-[90%] mx-auto pt-40">
       {/* Mode Selection Slider */}
@@ -398,6 +408,18 @@ const VibetorchDashboard: React.FC = () => {
                           <span className="text-xs text-muted-foreground">
                             {formatTimeAgo(repo.last_synced_at)}
                           </span>
+                        </div>
+                        
+                        {/* Details Button */}
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <Button
+                            size="sm"
+                            onClick={() => handleViewDetails(repo)}
+                            className="w-full bg-cta-500 hover:bg-cta-600 text-white"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Details
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>

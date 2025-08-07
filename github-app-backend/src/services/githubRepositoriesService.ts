@@ -70,7 +70,7 @@ interface JWTPayload {
 
 class GitHubRepositoriesService {
   private readonly baseUrl = 'https://api.github.com';
-  
+
   /**
    * Extract GitHub token from JWT authorization header
    */
@@ -78,22 +78,22 @@ class GitHubRepositoriesService {
     if (!authorizationHeader) {
       throw new Error('Authorization header is required');
     }
-    
+
     const token = authorizationHeader.replace('Bearer ', '');
     if (!token) {
       throw new Error('No token provided');
     }
-    
+
     try {
       const decoded = jwt.verify(
-        token, 
+        token,
         process.env.JWT_SECRET || 'your-jwt-secret'
       ) as JWTPayload;
-      
+
       if (!decoded.githubToken) {
         throw new Error('GitHub token not found in JWT');
       }
-      
+
       return decoded.githubToken;
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
@@ -102,7 +102,7 @@ class GitHubRepositoriesService {
       throw error;
     }
   }
-  
+
   /**
    * Transform GitHub API repository to our simplified format
    */
@@ -131,7 +131,7 @@ class GitHubRepositoriesService {
       open_issues: repo.open_issues_count,
     };
   }
-  
+
   /**
    * Fetch user repositories from GitHub API
    */
@@ -148,7 +148,7 @@ class GitHubRepositoriesService {
   ): Promise<RepositoriesResponse> {
     try {
       const githubToken = this.extractGitHubToken(authorizationHeader);
-      
+
       const {
         page = 1,
         per_page = 30,
@@ -157,7 +157,7 @@ class GitHubRepositoriesService {
         type,
         visibility
       } = options;
-      
+
       const response = await axios.get<GitHubApiRepository[]>(
         `${this.baseUrl}/user/repos`,
         {
@@ -176,22 +176,22 @@ class GitHubRepositoriesService {
           },
         }
       );
-      
+
       const repositories = response.data.map(repo => this.transformRepository(repo));
-      
+
       // Check if there are more pages by looking at Link header
       const linkHeader = response.headers.link;
       const hasNextPage = linkHeader ? linkHeader.includes('rel="next"') : false;
-      
+
       return {
         repositories,
         totalCount: repositories.length, // Note: GitHub doesn't provide total count in this endpoint
         hasNextPage,
       };
-      
+
     } catch (error) {
       console.error('❌ Error fetching repositories:', error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error('GitHub authentication failed. Please re-authenticate.');
@@ -202,16 +202,16 @@ class GitHubRepositoriesService {
         if (error.response?.status >= 500) {
           throw new Error('GitHub API is currently unavailable. Please try again later.');
         }
-        
+
         throw new Error(
           `GitHub API error: ${error.response?.data?.message || error.message}`
         );
       }
-      
+
       throw error;
     }
   }
-  
+
   /**
    * Fetch a specific repository by owner and name
    */
@@ -222,7 +222,7 @@ class GitHubRepositoriesService {
   ): Promise<Repository> {
     try {
       const githubToken = this.extractGitHubToken(authorizationHeader);
-      
+
       const response = await axios.get<GitHubApiRepository>(
         `${this.baseUrl}/repos/${owner}/${repo}`,
         {
@@ -233,12 +233,12 @@ class GitHubRepositoriesService {
           },
         }
       );
-      
+
       return this.transformRepository(response.data);
-      
+
     } catch (error) {
       console.error(`❌ Error fetching repository ${owner}/${repo}:`, error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
           throw new Error(`Repository ${owner}/${repo} not found or not accessible.`);
@@ -249,16 +249,16 @@ class GitHubRepositoriesService {
         if (error.response?.status === 403) {
           throw new Error('Insufficient permissions to access this repository.');
         }
-        
+
         throw new Error(
           `GitHub API error: ${error.response?.data?.message || error.message}`
         );
       }
-      
+
       throw error;
     }
   }
-  
+
   /**
    * Search repositories for the authenticated user
    */
@@ -274,14 +274,14 @@ class GitHubRepositoriesService {
   ): Promise<RepositoriesResponse> {
     try {
       const githubToken = this.extractGitHubToken(authorizationHeader);
-      
+
       const {
         page = 1,
         per_page = 30,
         sort = 'updated',
         order = 'desc'
       } = options;
-      
+
       // Get the authenticated user first to filter by user
       const userResponse = await axios.get(
         `${this.baseUrl}/user`,
@@ -293,10 +293,10 @@ class GitHubRepositoriesService {
           },
         }
       );
-      
+
       const username = userResponse.data.login;
       const searchQuery = `${query} user:${username}`;
-      
+
       const response = await axios.get(
         `${this.baseUrl}/search/repositories`,
         {
@@ -314,20 +314,20 @@ class GitHubRepositoriesService {
           },
         }
       );
-      
-      const repositories = response.data.items.map((repo: GitHubApiRepository) => 
+
+      const repositories = response.data.items.map((repo: GitHubApiRepository) =>
         this.transformRepository(repo)
       );
-      
+
       return {
         repositories,
         totalCount: response.data.total_count,
         hasNextPage: repositories.length === per_page && page * per_page < response.data.total_count,
       };
-      
+
     } catch (error) {
       console.error('❌ Error searching repositories:', error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error('GitHub authentication failed. Please re-authenticate.');
@@ -338,12 +338,138 @@ class GitHubRepositoriesService {
         if (error.response?.status === 422) {
           throw new Error('Invalid search query.');
         }
-        
+
         throw new Error(
           `GitHub API error: ${error.response?.data?.message || error.message}`
         );
       }
-      
+
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch issues for a repository
+   */
+  async fetchIssues(
+    authorizationHeader: string | undefined,
+    owner: string,
+    repo: string,
+    options: {
+      page?: number;
+      per_page?: number;
+      state?: 'open' | 'closed' | 'all';
+    } = {}
+  ) {
+    try {
+      const githubToken = this.extractGitHubToken(authorizationHeader);
+
+      const {
+        page = 1,
+        per_page = 30,
+        state = 'open'
+      } = options;
+
+      const response = await axios.get(
+        `${this.baseUrl}/repos/${owner}/${repo}/issues`,
+        {
+          headers: {
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Claude-Todo-GitHub-App',
+          },
+          params: {
+            page,
+            per_page,
+            state,
+          },
+        }
+      );
+
+      return response.data;
+
+    } catch (error) {
+      console.error('❌ Error fetching issues:', error);
+
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error('GitHub authentication failed. Please re-authenticate.');
+        }
+        if (error.response?.status === 404) {
+          throw new Error('Repository not found.');
+        }
+        if (error.response?.status === 403) {
+          throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
+        }
+
+        throw new Error(
+          `GitHub API error: ${error.response?.data?.message || error.message}`
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch pull requests for a repository
+   */
+  async fetchPullRequests(
+    authorizationHeader: string | undefined,
+    owner: string,
+    repo: string,
+    options: {
+      page?: number;
+      per_page?: number;
+      state?: 'open' | 'closed' | 'all';
+    } = {}
+  ) {
+    try {
+      const githubToken = this.extractGitHubToken(authorizationHeader);
+
+      const {
+        page = 1,
+        per_page = 30,
+        state = 'open'
+      } = options;
+
+      const response = await axios.get(
+        `${this.baseUrl}/repos/${owner}/${repo}/pulls`,
+        {
+          headers: {
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Claude-Todo-GitHub-App',
+          },
+          params: {
+            page,
+            per_page,
+            state,
+          },
+        }
+      );
+
+      return response.data;
+
+    } catch (error) {
+      console.error('❌ Error fetching pull requests:', error);
+
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error('GitHub authentication failed. Please re-authenticate.');
+        }
+        if (error.response?.status === 404) {
+          throw new Error('Repository not found.');
+        }
+        if (error.response?.status === 403) {
+          throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
+        }
+
+        throw new Error(
+          `GitHub API error: ${error.response?.data?.message || error.message}`
+        );
+      }
+
       throw error;
     }
   }

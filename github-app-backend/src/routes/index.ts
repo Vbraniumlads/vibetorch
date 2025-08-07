@@ -16,13 +16,13 @@ export function setupRoutes(app: Express, webhooks: Webhooks | null, github: Oct
   app.use('/api/repositories', repositoriesRouter);
 
   // Issue generation webhook endpoint
-  app.post('/generate-issue', issueGeneratorController(github));
+  app.post('/api/generate-issue', issueGeneratorController(github));
 
   // Issue comment endpoint
-  app.post('/issue-comment', issueCommentController(github));
+  app.post('/api/issue-comment', issueCommentController(github));
 
   // Pull request comment endpoint
-  app.post('/pr-comment', prCommentController(github));
+  app.post('/api/pr-comment', prCommentController(github));
 
   // GitHub App routes (only if configured)
   if (webhooks) {

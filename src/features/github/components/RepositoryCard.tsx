@@ -1,8 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../../../shared/components/ui/card';
 import { Button } from '../../../shared/components/ui/button';
 import { Badge } from '../../../shared/components/ui/badge';
-import { ExternalLink, Clock, GitBranch } from 'lucide-react';
+import { ExternalLink, Clock, GitBranch, Eye } from 'lucide-react';
 import { formatRelativeTime, formatDate } from '../../../shared/utils/date';
 import type { GitHubRepository } from '../types/github.types';
 
@@ -12,6 +13,14 @@ interface RepositoryCardProps {
 }
 
 export function RepositoryCard({ repository, compact = false }: RepositoryCardProps) {
+  const navigate = useNavigate();
+  
+  const handleViewDetails = () => {
+    // Extract owner from repo_url
+    const urlParts = repository.repo_url.split('/');
+    const owner = urlParts[urlParts.length - 2];
+    navigate(`/repository/${owner}/${repository.repo_name}`);
+  };
   if (compact) {
     return (
       <div className="flex items-center justify-between p-3 border rounded-lg bg-background hover:bg-accent/50 transition-colors">
@@ -74,20 +83,30 @@ export function RepositoryCard({ repository, compact = false }: RepositoryCardPr
             </div>
           </div>
           
-          <Button
-            size="sm"
-            variant="outline"
-            asChild
-          >
-            <a
-              href={repository.repo_url}
-              target="_blank"
-              rel="noopener noreferrer"
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="default"
+              onClick={handleViewDetails}
+              className="bg-cta-500 hover:bg-cta-600 text-white"
             >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              View
-            </a>
-          </Button>
+              <Eye className="h-4 w-4 mr-2" />
+              Details
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              asChild
+            >
+              <a
+                href={repository.repo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

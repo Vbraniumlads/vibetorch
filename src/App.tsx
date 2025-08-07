@@ -9,6 +9,7 @@ import { ReactPlugin } from "@21st-extension/react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import OAuthCallback from "./pages/OAuthCallback";
+import RepositoryDetail from "./pages/RepositoryDetail";
 import { TokenExpiryNotification } from "./components/TokenExpiryNotification";
 import { initGA, pageview } from "./lib/analytics";
 import { useDarkMode } from "./hooks/use-dark-mode";
@@ -55,6 +56,7 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/landing" element={<Index />} />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
+          <Route path="/repository/:owner/:repo" element={<RepositoryDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

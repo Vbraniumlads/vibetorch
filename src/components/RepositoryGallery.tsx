@@ -1,131 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, GitBranch, Star, Eye, Clock, Folder } from 'lucide-react';
+import { Search, GitBranch, Star, Eye, Clock, Folder, ExternalLink } from 'lucide-react';
 import { useAuth } from "@/contexts/AuthContext";
-
-interface Repository {
-  id: number;
-  name: string;
-  full_name: string;
-  description: string;
-  private: boolean;
-  stargazers_count: number;
-  watchers_count: number;
-  language: string;
-  updated_at: string;
-  html_url: string;
-  clone_url: string;
-}
+import { githubService } from '../features/github/services/github.service';
+import type { GitHubRepository } from '../features/github/types/github.types';
+import { toast } from 'sonner';
 
 interface RepositoryGalleryProps {
-  onRepositorySelect: (repo: Repository) => void;
+  onRepositorySelect?: (repo: GitHubRepository) => void;
 }
 
 export function RepositoryGallery({ onRepositorySelect }: RepositoryGalleryProps) {
   const { user } = useAuth();
-  const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]);
+  const navigate = useNavigate();
+  const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
+  const [filteredRepos, setFilteredRepos] = useState<GitHubRepository[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Mock data for demonstration - replace with actual GitHub API call
   useEffect(() => {
     const fetchRepositories = async () => {
       try {
         setIsLoading(true);
-        // TODO: Replace with actual GitHub API call
-        // const response = await fetch(`https://api.github.com/users/${user?.username}/repos`);
-        // const data = await response.json();
-        
-        // Mock data for now
-        const mockRepos: Repository[] = [
-          {
-            id: 1,
-            name: "ai-coding-assistant",
-            full_name: `${user?.username}/ai-coding-assistant`,
-            description: "AI-powered coding assistant that helps with code generation and optimization",
-            private: false,
-            stargazers_count: 42,
-            watchers_count: 15,
-            language: "TypeScript",
-            updated_at: "2024-01-15T10:30:00Z",
-            html_url: "https://github.com/example/ai-coding-assistant",
-            clone_url: "https://github.com/example/ai-coding-assistant.git"
-          },
-          {
-            id: 2,
-            name: "data-pipeline",
-            full_name: `${user?.username}/data-pipeline`,
-            description: "ETL pipeline for processing large datasets with real-time analytics",
-            private: true,
-            stargazers_count: 18,
-            watchers_count: 8,
-            language: "Python",
-            updated_at: "2024-01-12T14:20:00Z",
-            html_url: "https://github.com/example/data-pipeline",
-            clone_url: "https://github.com/example/data-pipeline.git"
-          },
-          {
-            id: 3,
-            name: "react-dashboard",
-            full_name: `${user?.username}/react-dashboard`,
-            description: "Modern dashboard built with React, TypeScript, and Tailwind CSS",
-            private: false,
-            stargazers_count: 127,
-            watchers_count: 34,
-            language: "React",
-            updated_at: "2024-01-10T09:15:00Z",
-            html_url: "https://github.com/example/react-dashboard",
-            clone_url: "https://github.com/example/react-dashboard.git"
-          },
-          {
-            id: 4,
-            name: "blockchain-explorer",
-            full_name: `${user?.username}/blockchain-explorer`,
-            description: "Blockchain explorer with transaction tracking and analytics",
-            private: false,
-            stargazers_count: 89,
-            watchers_count: 22,
-            language: "JavaScript",
-            updated_at: "2024-01-08T16:45:00Z",
-            html_url: "https://github.com/example/blockchain-explorer",
-            clone_url: "https://github.com/example/blockchain-explorer.git"
-          },
-          {
-            id: 5,
-            name: "ml-model-api",
-            full_name: `${user?.username}/ml-model-api`,
-            description: "REST API for serving machine learning models in production",
-            private: true,
-            stargazers_count: 56,
-            watchers_count: 12,
-            language: "Python",
-            updated_at: "2024-01-05T11:30:00Z",
-            html_url: "https://github.com/example/ml-model-api",
-            clone_url: "https://github.com/example/ml-model-api.git"
-          },
-          {
-            id: 6,
-            name: "mobile-app",
-            full_name: `${user?.username}/mobile-app`,
-            description: "Cross-platform mobile app built with React Native",
-            private: false,
-            stargazers_count: 73,
-            watchers_count: 19,
-            language: "React Native",
-            updated_at: "2024-01-03T13:20:00Z",
-            html_url: "https://github.com/example/mobile-app",
-            clone_url: "https://github.com/example/mobile-app.git"
-          }
-        ];
-        
-        setRepositories(mockRepos);
-        setFilteredRepos(mockRepos);
+        setError(null);
+        const repos = await githubService.getRepositories();
+        setRepositories(repos);
+        setFilteredRepos(repos);
       } catch (err) {
-        setError('Failed to fetch repositories');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch repositories';
+        setError(errorMessage);
+        toast.error(errorMessage);
         console.error('Error fetching repositories:', err);
       } finally {
         setIsLoading(false);
@@ -140,12 +48,18 @@ export function RepositoryGallery({ onRepositorySelect }: RepositoryGalleryProps
   // Filter repositories based on search query
   useEffect(() => {
     const filtered = repositories.filter(repo =>
-      repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.language?.toLowerCase().includes(searchQuery.toLowerCase())
+      repo.repo_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      repo.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredRepos(filtered);
   }, [searchQuery, repositories]);
+
+  const handleViewDetails = (repo: GitHubRepository) => {
+    // Extract owner from repo_url
+    const urlParts = repo.repo_url.split('/');
+    const owner = urlParts[urlParts.length - 2];
+    navigate(`/repository/${owner}/${repo.repo_name}`);
+  };
 
   const getLanguageColor = (language: string) => {
     const colors: Record<string, string> = {
@@ -172,6 +86,22 @@ export function RepositoryGallery({ onRepositorySelect }: RepositoryGalleryProps
     return `${Math.ceil(diffDays / 30)} months ago`;
   };
 
+  const handleSyncRepositories = async () => {
+    try {
+      setIsLoading(true);
+      await githubService.syncRepositories();
+      const repos = await githubService.getRepositories();
+      setRepositories(repos);
+      setFilteredRepos(repos);
+      toast.success('Repositories synced successfully!');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sync repositories';
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -194,12 +124,23 @@ export function RepositoryGallery({ onRepositorySelect }: RepositoryGalleryProps
       <div className="w-full max-w-7xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Your Repositories
-        </h1>
-        <p className="text-muted-foreground">
-          Select a repository to start coding with AI assistance
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Your Repositories
+            </h1>
+            <p className="text-muted-foreground">
+              View repository details, manage issues, and create tasks
+            </p>
+          </div>
+          <Button
+            onClick={handleSyncRepositories}
+            disabled={isLoading}
+            className="bg-cta-500 hover:bg-cta-600 text-white"
+          >
+            {isLoading ? 'Syncing...' : 'Sync Repositories'}
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -219,8 +160,7 @@ export function RepositoryGallery({ onRepositorySelect }: RepositoryGalleryProps
         {filteredRepos.map((repo) => (
           <Card 
             key={repo.id}
-            className="hover:shadow-lg transition-all duration-200 cursor-pointer border-border/50 hover:border-cta-500/50 group"
-            onClick={() => onRepositorySelect(repo)}
+            className="hover:shadow-lg transition-all duration-200 border-border/50 hover:border-cta-500/50 group"
           >
             <CardContent className="p-6">
               {/* Header */}
@@ -228,14 +168,9 @@ export function RepositoryGallery({ onRepositorySelect }: RepositoryGalleryProps
                 <div className="flex items-center gap-2">
                   <Folder className="w-5 h-5 text-cta-600" />
                   <h3 className="font-semibold text-foreground group-hover:text-cta-600 transition-colors truncate">
-                    {repo.name}
+                    {repo.repo_name}
                   </h3>
                 </div>
-                {repo.private && (
-                  <Badge variant="secondary" className="text-xs">
-                    Private
-                  </Badge>
-                )}
               </div>
 
               {/* Description */}
@@ -243,30 +178,36 @@ export function RepositoryGallery({ onRepositorySelect }: RepositoryGalleryProps
                 {repo.description || 'No description available'}
               </p>
 
-              {/* Language & Stats */}
-              <div className="flex items-center justify-between mb-4">
-                {repo.language && (
-                  <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${getLanguageColor(repo.language)}`}></div>
-                    <span className="text-sm text-muted-foreground">{repo.language}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3" />
-                    <span>{repo.stargazers_count}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Eye className="w-3 h-3" />
-                    <span>{repo.watchers_count}</span>
-                  </div>
-                </div>
+              {/* Updated */}
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
+                <Clock className="w-3 h-3" />
+                <span>Updated {formatDate(repo.last_synced_at)}</span>
               </div>
 
-              {/* Updated */}
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Clock className="w-3 h-3" />
-                <span>Updated {formatDate(repo.updated_at)}</span>
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => handleViewDetails(repo)}
+                  className="flex-1 bg-cta-500 hover:bg-cta-600 text-white"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Details
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  asChild
+                >
+                  <a
+                    href={repo.repo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </Button>
               </div>
             </CardContent>
           </Card>

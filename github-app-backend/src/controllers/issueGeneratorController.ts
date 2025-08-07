@@ -37,7 +37,7 @@ export function issueGeneratorController(github: Octokit) {
         owner: repository.owner,
         repo: repository.name,
         title: issue.title,
-        body: issue.body,
+        body: issue.body.startsWith('@claude') ? issue.body : `@claude ${issue.body}`,
         labels: issue.labels || [],
         assignees: issue.assignees || []
       });

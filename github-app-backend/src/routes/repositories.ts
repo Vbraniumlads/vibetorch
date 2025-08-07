@@ -166,6 +166,99 @@ router.get('/:owner/:repo', async (req: Request, res: Response): Promise<void> =
   }
 });
 
+// Get repository issues and pull requests
+router.get('/:owner/:repo/issues', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    const { owner, repo } = req.params;
+    
+    if (!owner || !repo) {
+      res.status(400).json({ error: 'Owner and repository name are required' });
+      return;
+    }
+    
+    const page = parseInt(req.query.page as string) || 1;
+    const state = (req.query.state as 'open' | 'closed' | 'all') || 'open';
+    
+    const issues = await githubRepositoriesService.fetchIssues(authHeader, owner, repo, {
+      page,
+      state,
+      per_page: 30
+    });
+    
+    res.json(issues);
+    
+  } catch (error) {
+    console.error(`❌ Error fetching issues for ${req.params.owner}/${req.params.repo}:`, error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('not found')) {
+        res.status(404).json({ error: error.message });
+        return;
+      }
+      if (error.message.includes('authentication failed')) {
+        res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
+        return;
+      }
+      
+      res.status(500).json({ 
+        error: 'Failed to fetch issues',
+        message: error.message 
+      });
+      return;
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get repository pull requests
+router.get('/:owner/:repo/pulls', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    const { owner, repo } = req.params;
+    
+    if (!owner || !repo) {
+      res.status(400).json({ error: 'Owner and repository name are required' });
+      return;
+    }
+    
+    const page = parseInt(req.query.page as string) || 1;
+    const state = (req.query.state as 'open' | 'closed' | 'all') || 'open';
+    
+    const pulls = await githubRepositoriesService.fetchPullRequests(authHeader, owner, repo, {
+      page,
+      state,
+      per_page: 30
+    });
+    
+    res.json(pulls);
+    
+  } catch (error) {
+    console.error(`❌ Error fetching pull requests for ${req.params.owner}/${req.params.repo}:`, error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('not found')) {
+        res.status(404).json({ error: error.message });
+        return;
+      }
+      if (error.message.includes('authentication failed')) {
+        res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
+        return;
+      }
+      
+      res.status(500).json({ 
+        error: 'Failed to fetch pull requests',
+        message: error.message 
+      });
+      return;
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 // Search repositories
 router.get('/search/:query', async (req: Request, res: Response): Promise<void> => {
   try {
