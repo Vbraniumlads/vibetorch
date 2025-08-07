@@ -1,12 +1,11 @@
 import type { Request, Response } from 'express';
-import type { App } from '@octokit/app';
+import type { Octokit } from '@octokit/rest';
 
 interface IssueGenerationRequest {
   repository: {
     owner: string;
     name: string;
   };
-  installation_id: number;
   issue: {
     title: string;
     body: string;
@@ -15,29 +14,26 @@ interface IssueGenerationRequest {
   };
 }
 
-export function issueGeneratorController(githubApp: App) {
+export function issueGeneratorController(github: Octokit) {
   return async (req: Request, res: Response): Promise<void> => {
     try {
       const payload: IssueGenerationRequest = req.body;
 
       // Validate required fields
-      if (!payload.repository || !payload.installation_id || !payload.issue) {
+      if (!payload.repository || !payload.issue) {
         res.status(400).json({ 
-          error: 'Missing required fields: repository, installation_id, and issue are required' 
+          error: 'Missing required fields: repository and issue are required' 
         });
         return;
       }
 
-      const { repository, installation_id, issue } = payload;
+      const { repository, issue } = payload;
 
       console.log(`🚀 Generating issue: "${issue.title}" in ${repository.owner}/${repository.name}`);
-
-      // Get installation access token
-      const octokit = await githubApp.getInstallationOctokit(installation_id);
-      console.log(`✅ Successfully authenticated for installation ${installation_id}`);
+      console.log(`✅ Using personal access token for GitHub API`);
 
       // Create the issue
-      const response = await octokit.request('POST /repos/{owner}/{repo}/issues', {
+      const response = await github.rest.issues.create({
         owner: repository.owner,
         repo: repository.name,
         title: issue.title,
@@ -60,19 +56,28 @@ export function issueGeneratorController(githubApp: App) {
         message: 'Issue created successfully'
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Issue generation error:', error);
       
       if (error.status === 404) {
         res.status(404).json({ 
-          error: 'Repository not found or app not installed',
-          message: 'Make sure the GitHub App is installed on the repository'
+          error: 'Repository not found',
+          message: 'Make sure the repository exists and you have access to it'
         });
       } else if (error.status === 403) {
-        res.status(403).json({ 
-          error: 'Permission denied',
-          message: 'The app does not have permission to create issues in this repository'
-        });
+        const errorMessage = error.response?.data?.message || error.message;
+        if (errorMessage?.includes('Resource not accessible by personal access token')) {
+          res.status(403).json({ 
+            error: 'Insufficient token permissions',
+            message: 'The personal access token lacks the "issues" write permission. Please update your token at: https://github.com/settings/tokens',
+            fix: 'Enable the "issues" scope in your GitHub token settings'
+          });
+        } else {
+          res.status(403).json({ 
+            error: 'Permission denied',
+            message: errorMessage || 'The personal access token does not have permission to create issues in this repository'
+          });
+        }
       } else {
         res.status(500).json({ 
           error: 'Issue generation failed',

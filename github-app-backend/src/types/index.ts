@@ -54,7 +54,7 @@ export interface GitHubInstallation {
 export interface WebhookPayload {
   action?: string;
   repository: GitHubRepository;
-  installation: GitHubInstallation;
+  installation?: GitHubInstallation;
   issue?: GitHubIssue;
   commits?: Array<{
     added?: string[];
@@ -89,8 +89,7 @@ export interface ProjectFiles {
 }
 
 export interface AppConfig {
-  githubAppId: string;
-  githubPrivateKey: string;
+  githubToken: string;
   githubWebhookSecret: string;
   port: number;
   nodeEnv: string;

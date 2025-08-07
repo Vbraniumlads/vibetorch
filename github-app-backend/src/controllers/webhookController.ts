@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express';
-import type { App } from '@octokit/app';
+import type { Octokit } from '@octokit/rest';
 import type { Webhooks } from '@octokit/webhooks';
-import type { WebhookPayload, GitHubRepository, OctokitInstance } from '../types/index.js';
+import type { WebhookPayload, GitHubRepository } from '../types/index.js';
 
 import { todoParser } from '../services/todoParser.js';
 import { repositoryService } from '../services/repositoryService.js';
 import { claudeService } from '../services/claudeService.js';
 
-export function webhookController(githubApp: App, webhooks: Webhooks) {
+export function webhookController(github: Octokit, webhooks: Webhooks) {
   return async (req: Request, res: Response): Promise<void> => {
     try {
       const signature = req.get('X-Hub-Signature-256');
@@ -32,13 +32,10 @@ export function webhookController(githubApp: App, webhooks: Webhooks) {
       // Handle different webhook events
       switch (event) {
         case 'push':
-          await handlePushEvent(payload, githubApp);
+          await handlePushEvent(payload, github);
           break;
         case 'issues':
-          await handleIssuesEvent(payload, githubApp);
-          break;
-        case 'installation':
-          await handleInstallationEvent(payload);
+          await handleIssuesEvent(payload, github);
           break;
         default:
           console.log(`🤷 Unhandled event: ${event}`);
@@ -52,20 +49,13 @@ export function webhookController(githubApp: App, webhooks: Webhooks) {
   };
 }
 
-async function handlePushEvent(payload: WebhookPayload, githubApp: App): Promise<void> {
-  const { repository, installation } = payload;
-
-  if (!installation) {
-    console.log('❌ No installation found in push event');
-    return;
-  }
+async function handlePushEvent(payload: WebhookPayload, github: Octokit): Promise<void> {
+  const { repository } = payload;
 
   console.log(`🔄 Push event in ${repository.full_name}`);
 
   try {
-    // Get installation access token
-    const octokit = await githubApp.getInstallationOctokit(installation.id);
-    console.log(`✅ Successfully authenticated for installation ${installation.id}`);
+    console.log(`✅ Using personal access token for GitHub API`);
 
     // Check for todo files in the push
     const modifiedFiles = payload.commits?.flatMap(commit =>
@@ -83,9 +73,9 @@ async function handlePushEvent(payload: WebhookPayload, githubApp: App): Promise
 
       for (const file of todoFiles) {
         try {
-          await processTodoFile(octokit, repository, file);
+          await processTodoFile(github, repository, file);
         } catch (error) {
-          console.error(`❌ Error processing todo file ${file}:`, error.message);
+          console.error(`❌ Error processing todo file ${file}:`, error instanceof Error ? error.message : String(error));
         }
       }
     }
@@ -94,13 +84,13 @@ async function handlePushEvent(payload: WebhookPayload, githubApp: App): Promise
   }
 }
 
-async function handleIssuesEvent(payload: WebhookPayload, githubApp: App): Promise<void> {
-  const { action, issue, repository, installation } = payload;
+async function handleIssuesEvent(payload: WebhookPayload, github: Octokit): Promise<void> {
+  const { action, issue, repository } = payload;
 
   console.log('🔍 Issues event payload:', payload);
 
-  if (!issue || !installation) {
-    console.log('❌ Missing issue or installation in issues event');
+  if (!issue) {
+    console.log('❌ Missing issue in issues event');
     return;
   }
 
@@ -113,8 +103,13 @@ async function handleIssuesEvent(payload: WebhookPayload, githubApp: App): Promi
       console.log('🤖 Claude mentioned in issue!');
 
       try {
-        const octokit = await githubApp.getInstallationOctokit(installation.id);
-        await claudeService.handleClaudeMention(octokit, repository, issue);
+        await claudeService.handleClaudeMention(github, repository, issue);
+
+        // Optionally trigger additional workflows for complex requests
+        if (body.toLowerCase().includes('implement') || body.toLowerCase().includes('create')) {
+          console.log('🚀 Complex request detected, ensuring Claude Action is triggered');
+          // The issue assignment should already trigger the action, but we can add additional logic here
+        }
       } catch (error) {
         console.error('❌ Error handling Claude mention:', error);
       }
@@ -122,19 +117,9 @@ async function handleIssuesEvent(payload: WebhookPayload, githubApp: App): Promi
   }
 }
 
-async function handleInstallationEvent(payload: WebhookPayload): Promise<void> {
-  const { action, installation } = payload;
-
-  if (!installation) {
-    console.log('❌ No installation found in installation event');
-    return;
-  }
-
-  console.log(`🔧 Installation ${action} for account: ${installation.account.login}`);
-}
 
 async function processTodoFile(
-  octokit: any,
+  github: Octokit,
   repository: GitHubRepository,
   filePath: string
 ): Promise<void> {
@@ -146,13 +131,8 @@ async function processTodoFile(
       return;
     }
 
-    // Get file content using direct request method
-    if (!octokit || !octokit.request) {
-      console.error('❌ Invalid octokit instance');
-      return;
-    }
-
-    const { data: fileData } = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+    // Get file content using GitHub REST API
+    const { data: fileData } = await github.rest.repos.getContent({
       owner: repository.owner.login,
       repo: repository.name,
       path: filePath
@@ -164,7 +144,7 @@ async function processTodoFile(
       return;
     }
 
-    if (fileData.type !== 'file' || !fileData.content) {
+    if (fileData.type !== 'file' || !('content' in fileData)) {
       console.log(`❌ ${filePath} is not a file or has no content`);
       return;
     }
@@ -182,7 +162,7 @@ async function processTodoFile(
         if (todo.claudeMentioned) {
           console.log('🤖 Processing Claude-mentioned todo:', todo.text);
           try {
-            await repositoryService.createImplementationRepo(octokit, repository, todo);
+            await repositoryService.createImplementationRepo(github, repository, todo);
           } catch (error) {
             console.error(`❌ Error creating repo for todo "${todo.text}":`, error);
           }
