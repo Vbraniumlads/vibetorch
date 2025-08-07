@@ -43,6 +43,139 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Google Maps Variables
+let map, directionsService, directionsRenderer;
+let pickupAutocomplete, destinationAutocomplete;
+let miniMap;
+
+// Initialize Google Maps
+function initMap() {
+    // Initialize the main map services
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer({
+        suppressMarkers: false,
+        polylineOptions: {
+            strokeColor: '#667eea',
+            strokeWeight: 4,
+            strokeOpacity: 0.8
+        }
+    });
+
+    // Initialize mini map in phone mockup
+    const miniMapContainer = document.getElementById('mini-map');
+    if (miniMapContainer) {
+        miniMap = new google.maps.Map(miniMapContainer, {
+            zoom: 13,
+            center: { lat: 37.7749, lng: -122.4194 }, // San Francisco default
+            disableDefaultUI: true,
+            zoomControl: false,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+            styles: [
+                {
+                    featureType: 'all',
+                    elementType: 'geometry.fill',
+                    stylers: [{ color: '#667eea' }]
+                }
+            ]
+        });
+    }
+
+    // Initialize autocomplete for inputs
+    initializeAutocomplete();
+}
+
+// Initialize Places Autocomplete
+function initializeAutocomplete() {
+    const pickupInput = document.getElementById('pickup');
+    const destinationInput = document.getElementById('destination');
+
+    if (pickupInput) {
+        pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput, {
+            types: ['establishment', 'geocode']
+        });
+    }
+
+    if (destinationInput) {
+        destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, {
+            types: ['establishment', 'geocode']
+        });
+    }
+}
+
+// Calculate distance and show route
+function calculateRoute(pickup, destination) {
+    if (!directionsService) {
+        showNotification('Google Maps is not loaded yet. Please try again.', 'error');
+        return;
+    }
+
+    const request = {
+        origin: pickup,
+        destination: destination,
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC
+    };
+
+    directionsService.route(request, (result, status) => {
+        if (status === 'OK') {
+            const route = result.routes[0];
+            const leg = route.legs[0];
+            
+            // Update distance and duration display
+            document.getElementById('distance-text').textContent = `Distance: ${leg.distance.text}`;
+            document.getElementById('duration-text').textContent = `Duration: ${leg.duration.text}`;
+            
+            // Show route info
+            const routeInfo = document.getElementById('route-info');
+            routeInfo.style.display = 'flex';
+            
+            // Store directions for later display
+            window.currentDirections = result;
+            
+            // Update mini map if available
+            if (miniMap) {
+                directionsRenderer.setMap(miniMap);
+                directionsRenderer.setDirections(result);
+            }
+            
+            showNotification('Route calculated successfully!', 'success');
+        } else {
+            showNotification('Could not calculate route: ' + status, 'error');
+        }
+    });
+}
+
+// Display turn-by-turn directions
+function showDirections(directionsResult) {
+    const directionsPanel = document.getElementById('directions-panel');
+    const directionsList = document.getElementById('directions-list');
+    
+    // Clear previous directions
+    directionsList.innerHTML = '';
+    
+    const route = directionsResult.routes[0];
+    const leg = route.legs[0];
+    
+    leg.steps.forEach((step, index) => {
+        const stepElement = document.createElement('div');
+        stepElement.className = 'direction-step';
+        
+        stepElement.innerHTML = `
+            <div class="step-number">${index + 1}</div>
+            <div class="step-content">
+                <div class="step-instruction">${step.instructions}</div>
+                <div class="step-distance">${step.distance.text} - ${step.duration.text}</div>
+            </div>
+        `;
+        
+        directionsList.appendChild(stepElement);
+    });
+    
+    directionsPanel.style.display = 'block';
+}
+
 // Booking form functionality
 document.addEventListener('DOMContentLoaded', function() {
     const bookNowBtn = document.getElementById('book-now');
@@ -61,17 +194,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Simulate booking process
+            // Calculate route first
             showLoadingState();
-            
-            setTimeout(() => {
-                hideLoadingState();
-                showNotification('Ride booked successfully! Your driver will arrive in 5 minutes.', 'success');
-                
-                // Clear form
-                if (pickupInput) pickupInput.value = '';
-                if (destinationInput) destinationInput.value = '';
-            }, 2000);
+            calculateRoute(pickup, destination);
+            hideLoadingState();
         });
     }
 });
@@ -396,6 +522,98 @@ window.addEventListener('unhandledrejection', function(e) {
     console.error('Unhandled promise rejection:', e.reason);
 });
 
+// Directions panel event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleDirectionsBtn = document.getElementById('toggle-directions');
+    const closeDirectionsBtn = document.getElementById('close-directions');
+    const directionsPanel = document.getElementById('directions-panel');
+
+    // Toggle directions panel
+    if (toggleDirectionsBtn) {
+        toggleDirectionsBtn.addEventListener('click', function() {
+            if (window.currentDirections) {
+                showDirections(window.currentDirections);
+                this.innerHTML = '<i class="fas fa-directions"></i> Hide Directions';
+            } else {
+                showNotification('No route calculated yet. Please find a ride first.', 'info');
+            }
+        });
+    }
+
+    // Close directions panel
+    if (closeDirectionsBtn) {
+        closeDirectionsBtn.addEventListener('click', function() {
+            directionsPanel.style.display = 'none';
+            toggleDirectionsBtn.innerHTML = '<i class="fas fa-directions"></i> Show Directions';
+        });
+    }
+});
+
+// Mobile touch improvements
+document.addEventListener('DOMContentLoaded', function() {
+    // Add touch-friendly hover effects for mobile
+    const interactiveElements = document.querySelectorAll('.btn, .service-card, .nav-link');
+    
+    interactiveElements.forEach(element => {
+        element.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.98)';
+        });
+        
+        element.addEventListener('touchend', function() {
+            this.style.transform = '';
+        });
+    });
+
+    // Improve form input experience on mobile
+    const inputs = document.querySelectorAll('input[type="text"]');
+    inputs.forEach(input => {
+        // Prevent zoom on iOS when focusing inputs
+        input.addEventListener('focus', function() {
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                this.setAttribute('readonly', 'readonly');
+                this.setAttribute('style', 'opacity: 1 !important;');
+                setTimeout(() => {
+                    this.removeAttribute('readonly');
+                }, 100);
+            }
+        });
+    });
+});
+
+// Enhanced mobile navigation
+document.addEventListener('DOMContentLoaded', function() {
+    const navMenu = document.getElementById('nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!navMenu.contains(e.target) && !document.getElementById('nav-toggle').contains(e.target)) {
+            navMenu.classList.remove('active');
+            document.getElementById('nav-toggle').classList.remove('active');
+        }
+    });
+
+    // Smooth scroll with mobile offset adjustment
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                // Additional offset for mobile
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    const offsetTop = targetSection.offsetTop - 90; // Extra space on mobile
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+});
+
 // Console welcome message
 console.log('%cWelcome to RideX! 🚗', 'color: #667eea; font-size: 20px; font-weight: bold;');
 console.log('%cThis is a demo ride-sharing website built with vanilla HTML, CSS, and JavaScript.', 'color: #333; font-size: 14px;');
+console.log('%cNow with Google Maps integration for distance calculation and directions!', 'color: #10b981; font-size: 12px;');

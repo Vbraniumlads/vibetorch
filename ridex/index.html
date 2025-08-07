@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places,directions&callback=initMap"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -60,6 +62,35 @@
                             Find Rides
                         </button>
                     </div>
+                    <!-- Distance and Directions Display -->
+                    <div class="route-info" id="route-info" style="display: none;">
+                        <div class="distance-display">
+                            <i class="fas fa-route"></i>
+                            <span id="distance-text">Distance: --</span>
+                        </div>
+                        <div class="duration-display">
+                            <i class="fas fa-clock"></i>
+                            <span id="duration-text">Duration: --</span>
+                        </div>
+                        <div class="directions-toggle">
+                            <button id="toggle-directions" class="btn btn-outline">
+                                <i class="fas fa-directions"></i>
+                                Show Directions
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Directions Panel -->
+                    <div class="directions-panel" id="directions-panel" style="display: none;">
+                        <div class="directions-header">
+                            <h4>Turn-by-turn Directions</h4>
+                            <button id="close-directions" class="close-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="directions-list" id="directions-list">
+                            <!-- Directions will be populated here -->
+                        </div>
+                    </div>
                 </div>
                 <div class="hero-stats">
                     <div class="stat">
@@ -84,7 +115,7 @@
                                 <div class="status-bar"></div>
                                 <h4>RideX</h4>
                             </div>
-                            <div class="map-area"></div>
+                            <div class="map-area" id="mini-map"></div>
                             <div class="ride-options">
                                 <div class="ride-type active">
                                     <i class="fas fa-car"></i>
