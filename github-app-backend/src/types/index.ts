@@ -121,7 +121,7 @@ export interface ProjectFiles {
 
 export interface AppConfig {
   githubToken: string;
-  githubWebhookSecret: string;
+  githubWebhookSecret?: string;
   port: number;
   nodeEnv: string;
   claudeApiKey: string | undefined;

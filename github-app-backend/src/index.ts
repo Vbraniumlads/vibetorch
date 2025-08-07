@@ -70,12 +70,10 @@ app.get('/health', (_req, res) => {
 });
 
 // Setup routes
-setupRoutes(app, github, webhooks);
+setupRoutes(app, githubApp, webhooks);
 
-// Start server with validation
+// Start server
 async function startServer() {
-  await validateGitHubPermissions();
-  
   app.listen(appConfig.port, () => {
     console.log(`🚀 Claude GitHub User server running on port ${appConfig.port}`);
     console.log(`📋 Ready to process todo lists and create repositories!`);
