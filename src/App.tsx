@@ -8,9 +8,16 @@ import { TwentyFirstToolbar } from "@21st-extension/toolbar-react";
 import { ReactPlugin } from "@21st-extension/react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import OAuthCallback from "./pages/OAuthCallback";
+import { TokenExpiryNotification } from "./components/TokenExpiryNotification";
 import { initGA, pageview } from "./lib/analytics";
 import { useDarkMode } from "./hooks/use-dark-mode";
 import { AuthProvider } from "./contexts/AuthContext";
+
+// 개발 환경에서만 auth 테스트 유틸리티 로드
+if (import.meta.env.DEV) {
+  import("./utils/auth-test");
+}
 
 const queryClient = new QueryClient();
 
@@ -43,8 +50,11 @@ const AppContent = () => {
       />
       <BrowserRouter>
         <Analytics />
+        <TokenExpiryNotification />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/landing" element={<Index />} />
+          <Route path="/oauth-callback" element={<OAuthCallback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

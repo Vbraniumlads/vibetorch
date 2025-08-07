@@ -33,6 +33,37 @@ export interface GitHubRepository {
   };
 }
 
+// Extended repository interface for API responses
+export interface Repository {
+  id: number;
+  name: string;
+  full_name: string;
+  html_url: string;
+  description: string | null;
+  stars: number;
+  forks: number;
+  language: string | null;
+  updated_at: string;
+  private: boolean;
+  owner: {
+    login: string;
+    id: number;
+    avatar_url: string;
+  };
+  topics: string[];
+  default_branch: string;
+  clone_url: string;
+  ssh_url: string;
+  size: number;
+  open_issues: number;
+}
+
+export interface RepositoriesResponse {
+  repositories: Repository[];
+  totalCount: number;
+  hasNextPage: boolean;
+}
+
 export interface GitHubIssue {
   number: number;
   title: string;
@@ -90,10 +121,15 @@ export interface ProjectFiles {
 
 export interface AppConfig {
   githubToken: string;
-  githubWebhookSecret: string;
+  githubWebhookSecret?: string;
   port: number;
   nodeEnv: string;
   claudeApiKey: string | undefined;
+  githubClientId: string;
+  githubClientSecret: string;
+  frontendUrl: string;
+  githubAppId?: string;
+  githubPrivateKey?: string;
 }
 
 // GitHub Octokit instance type with REST API

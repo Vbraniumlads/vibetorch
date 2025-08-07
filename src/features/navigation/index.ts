@@ -1,0 +1,1 @@
+export { FloatingNavbar } from './components/FloatingNavbar';

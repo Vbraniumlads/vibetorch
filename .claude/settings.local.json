@@ -14,7 +14,14 @@
       "Bash(npx tsx:*)",
       "Bash(cp:*)",
       "Bash(pkill:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(curl:*)",
+      "Bash(npm start)",
+      "Bash(pkill:*)",
+      "Bash(node:*)",
+      "Bash(kill:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
