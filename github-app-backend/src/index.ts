@@ -5,6 +5,7 @@ import { Octokit } from '@octokit/rest';
 import { issueGeneratorController } from './controllers/issueGeneratorController.js';
 import { issueCommentController } from './controllers/issueCommentController.js';
 import { prCommentController } from './controllers/prCommentController.js';
+import { setupRoutes } from './routes/index.js';
 
 config();
 
@@ -39,9 +40,7 @@ app.get('/health', (_req, res) => {
 });
 
 // API Routes
-app.post('/generate-issue', issueGeneratorController(github));
-app.post('/issue-comment', issueCommentController(github));
-app.post('/pr-comment', prCommentController(github));
+setupRoutes(app, null, github);
 
 app.get('/callback', (_req, res) => {
   res.json({ message: 'GitHub authentication successful!' });
