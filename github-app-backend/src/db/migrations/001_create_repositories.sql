@@ -1,5 +1,5 @@
 -- Create repositories table
-CREATE TABLE repositories (
+CREATE TABLE IF NOT EXISTS repositories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
   github_repo_id INTEGER NOT NULL, -- GitHub's repository ID
@@ -13,5 +13,5 @@ CREATE TABLE repositories (
 );
 
 -- Create index for faster queries
-CREATE INDEX idx_repositories_user_id ON repositories(user_id);
-CREATE INDEX idx_repositories_last_synced ON repositories(last_synced_at);
+CREATE INDEX IF NOT EXISTS idx_repositories_user_id ON repositories(user_id);
+CREATE INDEX IF NOT EXISTS idx_repositories_last_synced ON repositories(last_synced_at);

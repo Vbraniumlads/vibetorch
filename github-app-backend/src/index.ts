@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
-import { Octokit } from '@octokit/rest';
 import { App } from '@octokit/app';
 import { Webhooks } from '@octokit/webhooks';
 import { setupRoutes } from './routes/index.js';
 import type { AppConfig } from './types/index.js';
+import { Octokit } from '@octokit/rest';
 
 config();
 
@@ -22,28 +22,23 @@ const appConfig: AppConfig = {
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173'
 };
 
+const github = new Octokit({
+  auth: appConfig.githubToken
+});
+
 // OAuth 테스트를 위해 GitHub App 없이도 실행 가능하도록 수정
-if (!appConfig.githubClientId || !appConfig.githubClientSecret) {
-  console.error('❌ Missing required OAuth environment variables. Please check your .env file.');
-  console.error('Required: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET');
-  process.exit(1);
-}
+// if (!appConfig.githubClientId || !appConfig.githubClientSecret) {
+//   console.error('❌ Missing required OAuth environment variables. Please check your .env file.');
+//   console.error('Required: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET');
+//   process.exit(1);
+// }
 
 const app = express();
 
 // GitHub App configuration (optional for OAuth-only mode)
-let githubApp: App | null = null;
 let webhooks: Webhooks | null = null;
 
-if (appConfig.githubAppId && appConfig.githubPrivateKey && appConfig.githubWebhookSecret) {
-  githubApp = new App({
-    appId: appConfig.githubAppId,
-    privateKey: appConfig.githubPrivateKey,
-    webhooks: {
-      secret: appConfig.githubWebhookSecret
-    }
-  });
-
+if (appConfig.githubWebhookSecret) {
   webhooks = new Webhooks({
     secret: appConfig.githubWebhookSecret
   });
@@ -70,7 +65,7 @@ app.get('/health', (_req, res) => {
 });
 
 // Setup routes
-setupRoutes(app, githubApp, webhooks);
+setupRoutes(app, webhooks, github);
 
 // Start server
 async function startServer() {

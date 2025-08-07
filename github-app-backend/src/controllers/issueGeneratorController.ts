@@ -21,8 +21,8 @@ export function issueGeneratorController(github: Octokit) {
 
       // Validate required fields
       if (!payload.repository || !payload.issue) {
-        res.status(400).json({ 
-          error: 'Missing required fields: repository and issue are required' 
+        res.status(400).json({
+          error: 'Missing required fields: repository and issue are required'
         });
         return;
       }
@@ -58,28 +58,28 @@ export function issueGeneratorController(github: Octokit) {
 
     } catch (error: any) {
       console.error('❌ Issue generation error:', error);
-      
+
       if (error?.status === 404) {
-        res.status(404).json({ 
+        res.status(404).json({
           error: 'Repository not found',
           message: 'Make sure the repository exists and you have access to it'
         });
       } else if (error.status === 403) {
         const errorMessage = error.response?.data?.message || error.message;
         if (errorMessage?.includes('Resource not accessible by personal access token')) {
-          res.status(403).json({ 
+          res.status(403).json({
             error: 'Insufficient token permissions',
             message: 'The personal access token lacks the "issues" write permission. Please update your token at: https://github.com/settings/tokens',
             fix: 'Enable the "issues" scope in your GitHub token settings'
           });
         } else {
-          res.status(403).json({ 
+          res.status(403).json({
             error: 'Permission denied',
             message: errorMessage || 'The personal access token does not have permission to create issues in this repository'
           });
         }
       } else {
-        res.status(500).json({ 
+        res.status(500).json({
           error: 'Issue generation failed',
           message: error?.message || 'Unknown error occurred'
         });
