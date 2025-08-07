@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideX - Your Premium Ride Sharing Experience</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-car"></i>
+                <span>RideX</span>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <div class="nav-buttons">
+                    <button class="btn btn-outline">Sign In</button>
+                    <button class="btn btn-primary">Sign Up</button>
+                </div>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Your Premium <span class="highlight">Ride Experience</span> Awaits
+                </h1>
+                <p class="hero-description">
+                    Experience luxury, comfort, and reliability with RideX. 
+                    Book your ride in seconds and travel in style.
+                </p>
+                <div class="booking-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" placeholder="Pickup location" id="pickup">
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-flag-checkered"></i>
+                            <input type="text" placeholder="Destination" id="destination">
+                        </div>
+                        <button class="btn btn-primary btn-large" id="book-now">
+                            <i class="fas fa-search"></i>
+                            Find Rides
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <h3>50K+</h3>
+                        <p>Happy Riders</p>
+                    </div>
+                    <div class="stat">
+                        <h3>24/7</h3>
+                        <p>Service</p>
+                    </div>
+                    <div class="stat">
+                        <h3>5★</h3>
+                        <p>Rating</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="app-interface">
+                            <div class="app-header">
+                                <div class="status-bar"></div>
+                                <h4>RideX</h4>
+                            </div>
+                            <div class="map-area"></div>
+                            <div class="ride-options">
+                                <div class="ride-type active">
+                                    <i class="fas fa-car"></i>
+                                    <span>Economy</span>
+                                    <span class="price">$12</span>
+                                </div>
+                                <div class="ride-type">
+                                    <i class="fas fa-car-side"></i>
+                                    <span>Premium</span>
+                                    <span class="price">$18</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Services</h2>
+                <p>Choose from our range of premium ride options</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h3>Economy</h3>
+                    <p>Affordable rides for everyday travel. Clean, comfortable, and reliable.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> 4-door sedan</li>
+                        <li><i class="fas fa-check"></i> AC & heating</li>
+                        <li><i class="fas fa-check"></i> Professional drivers</li>
+                    </ul>
+                </div>
+                <div class="service-card featured">
+                    <div class="service-badge">Most Popular</div>
+                    <div class="service-icon">
+                        <i class="fas fa-car-side"></i>
+                    </div>
+                    <h3>Premium</h3>
+                    <p>Luxury vehicles for special occasions. Travel in style and comfort.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Luxury sedan</li>
+                        <li><i class="fas fa-check"></i> Premium amenities</li>
+                        <li><i class="fas fa-check"></i> Top-rated drivers</li>
+                    </ul>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Group</h3>
+                    <p>Perfect for group travel. Spacious vehicles for up to 6 passengers.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> 6-8 passengers</li>
+                        <li><i class="fas fa-check"></i> Extra luggage space</li>
+                        <li><i class="fas fa-check"></i> Family-friendly</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="features-content">
+                <div class="features-text">
+                    <h2>Why Choose RideX?</h2>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="feature-info">
+                                <h4>Safe & Secure</h4>
+                                <p>All our drivers are background-checked and vehicles are regularly inspected.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="feature-info">
+                                <h4>Always On Time</h4>
+                                <p>Real-time tracking and professional drivers ensure punctual pickups.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="feature-info">
+                                <h4>Fair Pricing</h4>
+                                <p>Transparent pricing with no hidden fees. Pay exactly what you see.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="features-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-mobile-alt"></i>
+                        <p>RideX Mobile App</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>What Our Riders Say</h2>
+                <p>Trusted by thousands of satisfied customers</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"Amazing service! The drivers are professional and the cars are always clean. Highly recommend RideX for anyone looking for reliable transportation."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-info">
+                                <h5>Sarah Johnson</h5>
+                                <span>Regular Customer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"Perfect for business trips. The premium service is worth every penny. Professional drivers and luxury vehicles make every journey comfortable."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-info">
+                                <h5>Michael Chen</h5>
+                                <span>Business Executive</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"Great app, easy to use, and fantastic customer service. RideX has become my go-to transportation solution for all occasions."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="author-info">
+                                <h5>Emily Rodriguez</h5>
+                                <span>Daily Commuter</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Ride?</h2>
+                <p>Download our app and experience the future of transportation</p>
+                <div class="app-buttons">
+                    <a href="#" class="app-button">
+                        <i class="fab fa-apple"></i>
+                        <div>
+                            <span>Download on the</span>
+                            <strong>App Store</strong>
+                        </div>
+                    </a>
+                    <a href="#" class="app-button">
+                        <i class="fab fa-google-play"></i>
+                        <div>
+                            <span>Get it on</span>
+                            <strong>Google Play</strong>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-car"></i>
+                        <span>RideX</span>
+                    </div>
+                    <p>Your premium ride-sharing experience. Safe, reliable, and comfortable transportation at your fingertips.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#press">Press</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#ride">Book a Ride</a></li>
+                        <li><a href="#drive">Become a Driver</a></li>
+                        <li><a href="#business">RideX for Business</a></li>
+                        <li><a href="#airport">Airport Transfer</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#safety">Safety</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#feedback">Feedback</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 RideX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Service</a>
+                    <a href="#cookies">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
