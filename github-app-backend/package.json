@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "npx tsc src/index.ts src/controllers/issueGeneratorController.ts src/controllers/issueCommentController.ts src/controllers/prCommentController.ts --outDir dist --target es2020 --module nodenext --moduleResolution nodenext --esModuleInterop true --allowSyntheticDefaultImports true --skipLibCheck true --declaration true",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "dev:build": "tsc --watch",
@@ -16,10 +16,6 @@
   "dependencies": {
     "@octokit/rest": "^22.0.0",
     "@octokit/webhooks": "^13.0.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.19",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/pg": "^8.15.5",
     "axios": "^1.7.0",
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^12.2.0",
@@ -31,8 +27,13 @@
   },
   "devDependencies": {
     "@octokit/types": "^13.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.15.5",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^2.0.0"

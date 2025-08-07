@@ -1,14 +1,15 @@
-# Use Node.js 18 LTS
-FROM node:18-alpine
+FROM node:20-alpine
 
-# Set working directory
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including dev dependencies for building)
+RUN npm ci --no-audit
 
 # Copy source code
 COPY . .
@@ -16,8 +17,18 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Expose port
+# Remove dev dependencies after build
+RUN npm ci --only=production --no-audit && npm cache clean --force
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Change ownership of the app directory
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
 EXPOSE $PORT
 
-# Start the application
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["npm", "start"]
