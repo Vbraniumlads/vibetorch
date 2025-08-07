@@ -21,7 +21,9 @@
       "Bash(pkill:*)",
       "Bash(node:*)",
       "Bash(kill:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm run preview:*)",
+      "Bash(PORT=3000 npm run preview)"
     ],
     "deny": []
   }
