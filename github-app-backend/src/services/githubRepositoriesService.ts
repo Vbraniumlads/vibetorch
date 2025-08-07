@@ -154,8 +154,8 @@ class GitHubRepositoriesService {
         per_page = 30,
         sort = 'updated',
         direction = 'desc',
-        type = 'owner',
-        visibility = 'all'
+        type,
+        visibility
       } = options;
       
       const response = await axios.get<GitHubApiRepository[]>(
@@ -171,8 +171,8 @@ class GitHubRepositoriesService {
             per_page,
             sort,
             direction,
-            type,
-            visibility,
+            ...(type && { type }),
+            ...(visibility && { visibility }),
           },
         }
       );
