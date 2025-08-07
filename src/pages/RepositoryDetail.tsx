@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, GitBranch, GitPullRequest, AlertCircle, Plus, ExternalLink } from 'lucide-react';
+import { ArrowLeft, GitBranch, GitPullRequest, AlertCircle, Plus, ExternalLink, Calendar, User, GitCommit, MessageSquare, FileText, ChevronDown, ChevronRight } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -10,7 +12,7 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import { githubService } from '../features/github/services/github.service';
-import type { GitHubRepository, GitHubIssue, GitHubPullRequest } from '../features/github/types/github.types';
+import type { GitHubRepository, GitHubIssue, GitHubPullRequest, GitHubComment } from '../features/github/types/github.types';
 import { toast } from 'sonner';
 
 interface RepositoryDetailParams {
@@ -35,6 +37,13 @@ export default function RepositoryDetail() {
     labels: ''
   });
   const [isCreatingIssue, setIsCreatingIssue] = useState(false);
+
+  // Comments state
+  const [expandedIssues, setExpandedIssues] = useState<Set<number>>(new Set());
+  const [expandedPRs, setExpandedPRs] = useState<Set<number>>(new Set());
+  const [issueComments, setIssueComments] = useState<Record<number, GitHubComment[]>>({});
+  const [prComments, setPrComments] = useState<Record<number, GitHubComment[]>>({});
+  const [loadingComments, setLoadingComments] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +70,145 @@ export default function RepositoryDetail() {
 
     fetchData();
   }, [owner, repo]);
+
+  const toggleIssueComments = async (issueNumber: number) => {
+    if (expandedIssues.has(issueNumber)) {
+      setExpandedIssues(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(issueNumber);
+        return newSet;
+      });
+      return;
+    }
+
+    setExpandedIssues(prev => new Set(prev).add(issueNumber));
+
+    if (!issueComments[issueNumber] && !loadingComments.has(issueNumber)) {
+      setLoadingComments(prev => new Set(prev).add(issueNumber));
+      try {
+        const comments = await githubService.getIssueComments(owner!, repo!, issueNumber);
+        setIssueComments(prev => ({ ...prev, [issueNumber]: comments }));
+      } catch (err) {
+        toast.error('Failed to load issue comments');
+        console.error('Error loading issue comments:', err);
+      } finally {
+        setLoadingComments(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(issueNumber);
+          return newSet;
+        });
+      }
+    }
+  };
+
+  const togglePRComments = async (prNumber: number) => {
+    if (expandedPRs.has(prNumber)) {
+      setExpandedPRs(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(prNumber);
+        return newSet;
+      });
+      return;
+    }
+
+    setExpandedPRs(prev => new Set(prev).add(prNumber));
+
+    if (!prComments[prNumber] && !loadingComments.has(prNumber)) {
+      setLoadingComments(prev => new Set(prev).add(prNumber));
+      try {
+        const comments = await githubService.getPullRequestComments(owner!, repo!, prNumber);
+        setPrComments(prev => ({ ...prev, [prNumber]: comments }));
+      } catch (err) {
+        toast.error('Failed to load PR comments');
+        console.error('Error loading PR comments:', err);
+      } finally {
+        setLoadingComments(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(prNumber);
+          return newSet;
+        });
+      }
+    }
+  };
+
+  const renderComments = (comments: GitHubComment[]) => (
+    <div className="mt-3 pt-3 border-t border-neu-600 space-y-3">
+      {comments.map(comment => (
+        <div key={comment.id} className="bg-neu-500 rounded-lg p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-6 h-6 bg-neu-700 rounded-full flex items-center justify-center">
+              <User className="w-3 h-3 text-neu-0" />
+            </div>
+            <span className="text-sm font-bold text-neu-900">{comment.user.login}</span>
+            <Badge 
+              variant="outline" 
+              className="text-xs border-neu-700 text-neu-700"
+            >
+              {comment.author_association.toLowerCase()}
+            </Badge>
+            <span className="text-xs text-neu-700 ml-auto">
+              {new Date(comment.created_at).toLocaleDateString()}
+            </span>
+          </div>
+          <div className="text-sm text-neu-800 prose prose-sm max-w-none prose-neu">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                // Custom styling for markdown elements
+                h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-neu-900 mb-2" {...props} />,
+                h2: ({ node, ...props }) => <h2 className="text-base font-bold text-neu-900 mb-2" {...props} />,
+                h3: ({ node, ...props }) => <h3 className="text-sm font-bold text-neu-900 mb-1" {...props} />,
+                p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
+                ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
+                li: ({ node, ...props }) => <li className="text-sm" {...props} />,
+                blockquote: ({ node, ...props }) => (
+                  <blockquote className="border-l-4 border-neu-600 pl-3 italic text-neu-700 mb-2" {...props} />
+                ),
+                code: ({ node, inline, ...props }) => 
+                  inline ? (
+                    <code className="bg-neu-600 text-neu-900 px-1 py-0.5 rounded text-xs font-mono" {...props} />
+                  ) : (
+                    <code className="block bg-neu-600 text-neu-900 p-2 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
+                  ),
+                pre: ({ node, ...props }) => (
+                  <pre className="bg-neu-600 text-neu-900 p-3 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
+                ),
+                a: ({ node, ...props }) => (
+                  <a className="text-cta-600 hover:text-cta-700 underline" target="_blank" rel="noopener noreferrer" {...props} />
+                ),
+                table: ({ node, ...props }) => (
+                  <table className="w-full border border-neu-600 rounded mb-2" {...props} />
+                ),
+                th: ({ node, ...props }) => (
+                  <th className="border border-neu-600 bg-neu-600 px-2 py-1 text-left text-xs font-medium" {...props} />
+                ),
+                td: ({ node, ...props }) => (
+                  <td className="border border-neu-600 px-2 py-1 text-xs" {...props} />
+                ),
+                hr: ({ node, ...props }) => <hr className="border-neu-600 my-3" {...props} />,
+                img: ({ node, ...props }) => (
+                  <img className="max-w-full h-auto rounded mb-2" {...props} />
+                ),
+                // Task lists (GitHub-flavored markdown)
+                input: ({ node, ...props }) => 
+                  props.type === 'checkbox' ? (
+                    <input className="mr-2" disabled {...props} />
+                  ) : (
+                    <input {...props} />
+                  )
+              }}
+            >
+              {comment.body}
+            </ReactMarkdown>
+          </div>
+        </div>
+      ))}
+      {comments.length === 0 && (
+        <p className="text-sm text-neu-700 italic">No comments yet</p>
+      )}
+    </div>
+  );
 
   const handleCreateIssue = async () => {
     if (!owner || !repo || !newIssue.title.trim() || !newIssue.description.trim()) {
@@ -297,14 +445,41 @@ export default function RepositoryDetail() {
                           </div>
                         </div>
                         
-                        <Button
-                          variant="ghost"
-                          onClick={() => window.open(issue.html_url, '_blank')}
-                          className="p-2"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            onClick={() => toggleIssueComments(issue.number)}
+                            className="p-2"
+                          >
+                            {expandedIssues.has(issue.number) ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={() => window.open(issue.html_url, '_blank')}
+                            className="p-2"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
+                      
+                      {/* Comments Section */}
+                      {expandedIssues.has(issue.number) && (
+                        <div className="px-4 pb-4">
+                          {loadingComments.has(issue.number) ? (
+                            <div className="flex items-center gap-2 text-sm text-neu-700 mt-3 pt-3 border-t border-neu-600">
+                              <div className="w-4 h-4 border-2 border-neu-700 border-t-transparent rounded-full animate-spin"></div>
+                              Loading comments...
+                            </div>
+                          ) : issueComments[issue.number] ? (
+                            renderComments(issueComments[issue.number])
+                          ) : null}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
@@ -325,7 +500,7 @@ export default function RepositoryDetail() {
                 {pullRequests.map(pr => (
                   <Card key={pr.id} className="bg-gradient-to-r from-white to-neu-500 border border-neu-600 hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
+                      <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="font-semibold text-neu-900 hover:text-acc-600">
@@ -333,38 +508,150 @@ export default function RepositoryDetail() {
                                 #{pr.number} {pr.title}
                               </a>
                             </h3>
-                            <Badge 
-                              variant={pr.state === 'open' ? 'default' : 'secondary'}
-                              className={
-                                pr.state === 'open' ? 'bg-status-success text-white' :
-                                pr.state === 'merged' ? 'bg-acc-500 text-white' :
-                                'bg-neu-700 text-neu-0'
-                              }
-                            >
-                              {pr.state}
-                            </Badge>
+                            <div className="flex gap-2">
+                              {pr.draft && (
+                                <Badge variant="outline" className="text-xs border-neu-700 text-neu-700">
+                                  Draft
+                                </Badge>
+                              )}
+                              <Badge 
+                                variant={pr.state === 'open' ? 'default' : 'secondary'}
+                                className={
+                                  pr.state === 'open' ? 'bg-status-success text-white' :
+                                  pr.merged ? 'bg-acc-500 text-white' :
+                                  'bg-neu-700 text-neu-0'
+                                }
+                              >
+                                {pr.merged ? 'merged' : pr.state}
+                              </Badge>
+                            </div>
                           </div>
+                          
+                          {/* PR Description Preview */}
+                          {pr.body && (
+                            <div className="text-sm text-neu-700 mb-3 line-clamp-2 prose prose-sm max-w-none">
+                              <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                  p: ({ node, ...props }) => <p className="inline" {...props} />,
+                                  code: ({ node, inline, ...props }) => 
+                                    <code className="bg-neu-600 text-neu-900 px-1 rounded text-xs" {...props} />,
+                                  a: ({ node, ...props }) => 
+                                    <a className="text-cta-600 hover:text-cta-700" {...props} />
+                                }}
+                              >
+                                {pr.body.length > 150 ? `${pr.body.substring(0, 150)}...` : pr.body}
+                              </ReactMarkdown>
+                            </div>
+                          )}
                           
                           <div className="flex items-center gap-2 text-sm text-neu-700 mb-2">
                             <GitBranch className="w-4 h-4" />
                             <span>{pr.head.ref} → {pr.base.ref}</span>
                           </div>
                           
+                          {/* PR Stats */}
+                          <div className="flex items-center gap-4 text-xs text-neu-700 mb-2">
+                            {pr.commits !== undefined && (
+                              <div className="flex items-center gap-1">
+                                <GitCommit className="w-3 h-3" />
+                                <span>{pr.commits} commits</span>
+                              </div>
+                            )}
+                            {pr.changed_files !== undefined && (
+                              <div className="flex items-center gap-1">
+                                <FileText className="w-3 h-3" />
+                                <span>{pr.changed_files} files</span>
+                              </div>
+                            )}
+                            {pr.comments !== undefined && pr.comments > 0 && (
+                              <div className="flex items-center gap-1">
+                                <MessageSquare className="w-3 h-3" />
+                                <span>{pr.comments} comments</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Code Changes */}
+                          {(pr.additions !== undefined || pr.deletions !== undefined) && (
+                            <div className="flex items-center gap-3 text-xs mb-2">
+                              {pr.additions !== undefined && (
+                                <span className="text-status-success">+{pr.additions}</span>
+                              )}
+                              {pr.deletions !== undefined && (
+                                <span className="text-status-error">-{pr.deletions}</span>
+                              )}
+                            </div>
+                          )}
+                          
                           <div className="flex items-center gap-2 text-sm text-neu-700">
+                            <User className="w-3 h-3" />
                             <span>opened by {pr.user.login}</span>
                             <span>•</span>
+                            <Calendar className="w-3 h-3" />
                             <span>{new Date(pr.created_at).toLocaleDateString()}</span>
+                            {pr.merged_at && (
+                              <>
+                                <span>•</span>
+                                <span>merged {new Date(pr.merged_at).toLocaleDateString()}</span>
+                              </>
+                            )}
                           </div>
                         </div>
                         
-                        <Button
-                          variant="ghost"
-                          onClick={() => window.open(pr.html_url, '_blank')}
-                          className="p-2"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            onClick={() => togglePRComments(pr.number)}
+                            className="p-2"
+                          >
+                            {expandedPRs.has(pr.number) ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={() => window.open(pr.html_url, '_blank')}
+                            className="p-2"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
+
+                      {/* Mergeable Status */}
+                      {pr.mergeable !== undefined && pr.state === 'open' && (
+                        <div className="pt-3 border-t border-neu-600">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${
+                              pr.mergeable === true ? 'bg-status-success' : 
+                              pr.mergeable === false ? 'bg-status-error' : 
+                              'bg-status-warning'
+                            }`} />
+                            <span className="text-xs text-neu-700">
+                              {pr.mergeable === true ? 'Ready to merge' : 
+                               pr.mergeable === false ? 'Merge conflicts' : 
+                               'Checking merge status...'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Comments Section */}
+                      {expandedPRs.has(pr.number) && (
+                        <div className="px-4 pb-4">
+                          {loadingComments.has(pr.number) ? (
+                            <div className="flex items-center gap-2 text-sm text-neu-700 mt-3 pt-3 border-t border-neu-600">
+                              <div className="w-4 h-4 border-2 border-neu-700 border-t-transparent rounded-full animate-spin"></div>
+                              Loading comments...
+                            </div>
+                          ) : prComments[pr.number] ? (
+                            renderComments(prComments[pr.number])
+                          ) : null}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}

@@ -412,6 +412,150 @@ class GitHubRepositoriesService {
   }
 
   /**
+   * Fetch a specific pull request by number
+   */
+  async fetchPullRequestDetail(
+    authorizationHeader: string | undefined,
+    owner: string,
+    repo: string,
+    pullNumber: number
+  ) {
+    try {
+      const githubToken = this.extractGitHubToken(authorizationHeader);
+
+      const response = await axios.get(
+        `${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Claude-Todo-GitHub-App',
+          },
+        }
+      );
+
+      return response.data;
+      
+    } catch (error) {
+      console.error('❌ Error fetching pull request details:', error);
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error('GitHub authentication failed. Please re-authenticate.');
+        }
+        if (error.response?.status === 404) {
+          throw new Error('Pull request not found.');
+        }
+        if (error.response?.status === 403) {
+          throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
+        }
+        
+        throw new Error(
+          `GitHub API error: ${error.response?.data?.message || error.message}`
+        );
+      }
+      
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch comments for an issue
+   */
+  async fetchIssueComments(
+    authorizationHeader: string | undefined,
+    owner: string,
+    repo: string,
+    issueNumber: number
+  ) {
+    try {
+      const githubToken = this.extractGitHubToken(authorizationHeader);
+
+      const response = await axios.get(
+        `${this.baseUrl}/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+        {
+          headers: {
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Claude-Todo-GitHub-App',
+          },
+        }
+      );
+
+      return response.data;
+      
+    } catch (error) {
+      console.error('❌ Error fetching issue comments:', error);
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error('GitHub authentication failed. Please re-authenticate.');
+        }
+        if (error.response?.status === 404) {
+          throw new Error('Issue not found.');
+        }
+        if (error.response?.status === 403) {
+          throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
+        }
+        
+        throw new Error(
+          `GitHub API error: ${error.response?.data?.message || error.message}`
+        );
+      }
+      
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch comments for a pull request
+   */
+  async fetchPullRequestComments(
+    authorizationHeader: string | undefined,
+    owner: string,
+    repo: string,
+    pullNumber: number
+  ) {
+    try {
+      const githubToken = this.extractGitHubToken(authorizationHeader);
+
+      const response = await axios.get(
+        `${this.baseUrl}/repos/${owner}/${repo}/issues/${pullNumber}/comments`,
+        {
+          headers: {
+            'Authorization': `Bearer ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Claude-Todo-GitHub-App',
+          },
+        }
+      );
+
+      return response.data;
+      
+    } catch (error) {
+      console.error('❌ Error fetching pull request comments:', error);
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error('GitHub authentication failed. Please re-authenticate.');
+        }
+        if (error.response?.status === 404) {
+          throw new Error('Pull request not found.');
+        }
+        if (error.response?.status === 403) {
+          throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
+        }
+        
+        throw new Error(
+          `GitHub API error: ${error.response?.data?.message || error.message}`
+        );
+      }
+      
+      throw error;
+    }
+  }
+
+  /**
    * Fetch pull requests for a repository
    */
   async fetchPullRequests(

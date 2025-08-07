@@ -303,4 +303,27 @@
   .vibe-flow {
     animation: float 3s ease-in-out infinite;
   }
+
+  /* Markdown Prose Styles */
+  .prose-neu {
+    --tw-prose-body: rgb(var(--neu-800));
+    --tw-prose-headings: rgb(var(--neu-900));
+    --tw-prose-links: rgb(var(--cta-600));
+    --tw-prose-bold: rgb(var(--neu-900));
+    --tw-prose-counters: rgb(var(--neu-700));
+    --tw-prose-bullets: rgb(var(--neu-700));
+    --tw-prose-hr: rgb(var(--neu-600));
+    --tw-prose-quotes: rgb(var(--neu-700));
+    --tw-prose-quote-borders: rgb(var(--neu-600));
+    --tw-prose-code: rgb(var(--neu-900));
+    --tw-prose-pre-code: rgb(var(--neu-900));
+    --tw-prose-pre-bg: rgb(var(--neu-600));
+    --tw-prose-th-borders: rgb(var(--neu-600));
+    --tw-prose-td-borders: rgb(var(--neu-600));
+  }
+
+  /* Override line-clamp for markdown content */
+  .line-clamp-2 .prose p {
+    display: inline;
+  }
 }

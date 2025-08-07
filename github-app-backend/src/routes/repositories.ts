@@ -166,6 +166,84 @@ router.get('/:owner/:repo', async (req: Request, res: Response): Promise<void> =
   }
 });
 
+// Get issue comments
+router.get('/:owner/:repo/issues/:issueNumber/comments', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    const { owner, repo, issueNumber } = req.params;
+    
+    if (!owner || !repo || !issueNumber) {
+      res.status(400).json({ error: 'Owner, repository name, and issue number are required' });
+      return;
+    }
+    
+    const comments = await githubRepositoriesService.fetchIssueComments(authHeader, owner, repo, parseInt(issueNumber));
+    
+    res.json(comments);
+    
+  } catch (error) {
+    console.error(`❌ Error fetching comments for issue #${req.params.issueNumber} in ${req.params.owner}/${req.params.repo}:`, error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('not found')) {
+        res.status(404).json({ error: error.message });
+        return;
+      }
+      if (error.message.includes('authentication failed')) {
+        res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
+        return;
+      }
+      
+      res.status(500).json({ 
+        error: 'Failed to fetch issue comments',
+        message: error.message 
+      });
+      return;
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get pull request comments
+router.get('/:owner/:repo/pulls/:pullNumber/comments', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    const { owner, repo, pullNumber } = req.params;
+    
+    if (!owner || !repo || !pullNumber) {
+      res.status(400).json({ error: 'Owner, repository name, and pull request number are required' });
+      return;
+    }
+    
+    const comments = await githubRepositoriesService.fetchPullRequestComments(authHeader, owner, repo, parseInt(pullNumber));
+    
+    res.json(comments);
+    
+  } catch (error) {
+    console.error(`❌ Error fetching comments for pull request #${req.params.pullNumber} in ${req.params.owner}/${req.params.repo}:`, error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('not found')) {
+        res.status(404).json({ error: error.message });
+        return;
+      }
+      if (error.message.includes('authentication failed')) {
+        res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
+        return;
+      }
+      
+      res.status(500).json({ 
+        error: 'Failed to fetch pull request comments',
+        message: error.message 
+      });
+      return;
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Get repository issues and pull requests
 router.get('/:owner/:repo/issues', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -203,6 +281,45 @@ router.get('/:owner/:repo/issues', async (req: Request, res: Response): Promise<
       
       res.status(500).json({ 
         error: 'Failed to fetch issues',
+        message: error.message 
+      });
+      return;
+    }
+    
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get specific pull request details
+router.get('/:owner/:repo/pulls/:pullNumber', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const authHeader = req.headers.authorization;
+    const { owner, repo, pullNumber } = req.params;
+    
+    if (!owner || !repo || !pullNumber) {
+      res.status(400).json({ error: 'Owner, repository name, and pull request number are required' });
+      return;
+    }
+    
+    const pull = await githubRepositoriesService.fetchPullRequestDetail(authHeader, owner, repo, parseInt(pullNumber));
+    
+    res.json(pull);
+    
+  } catch (error) {
+    console.error(`❌ Error fetching pull request #${req.params.pullNumber} for ${req.params.owner}/${req.params.repo}:`, error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('not found')) {
+        res.status(404).json({ error: error.message });
+        return;
+      }
+      if (error.message.includes('authentication failed')) {
+        res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
+        return;
+      }
+      
+      res.status(500).json({ 
+        error: 'Failed to fetch pull request details',
         message: error.message 
       });
       return;

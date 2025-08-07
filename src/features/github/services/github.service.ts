@@ -1,5 +1,5 @@
 import { apiClient } from '../../../shared/services/api.service';
-import type { GitHubRepository, SyncResponse, GitHubIssue, GitHubPullRequest } from '../types/github.types';
+import type { GitHubRepository, SyncResponse, GitHubIssue, GitHubPullRequest, GitHubComment } from '../types/github.types';
 
 export class GitHubService {
   async getRepositories(): Promise<GitHubRepository[]> {
@@ -18,14 +18,36 @@ export class GitHubService {
     page?: number;
     state?: 'open' | 'closed' | 'all';
   }): Promise<GitHubIssue[]> {
-    return apiClient.get<GitHubIssue[]>(`/repositories/${owner}/${repo}/issues`, { params });
+    const queryString = params ? new URLSearchParams(
+      Object.entries(params).filter(([_, value]) => value !== undefined)
+        .map(([key, value]) => [key, String(value)])
+    ).toString() : '';
+    const url = `/repositories/${owner}/${repo}/issues${queryString ? `?${queryString}` : ''}`;
+    return apiClient.get<GitHubIssue[]>(url);
   }
 
   async getRepositoryPullRequests(owner: string, repo: string, params?: {
     page?: number;
     state?: 'open' | 'closed' | 'all';
   }): Promise<GitHubPullRequest[]> {
-    return apiClient.get<GitHubPullRequest[]>(`/repositories/${owner}/${repo}/pulls`, { params });
+    const queryString = params ? new URLSearchParams(
+      Object.entries(params).filter(([_, value]) => value !== undefined)
+        .map(([key, value]) => [key, String(value)])
+    ).toString() : '';
+    const url = `/repositories/${owner}/${repo}/pulls${queryString ? `?${queryString}` : ''}`;
+    return apiClient.get<GitHubPullRequest[]>(url);
+  }
+
+  async getPullRequestDetail(owner: string, repo: string, pullNumber: number): Promise<GitHubPullRequest> {
+    return apiClient.get<GitHubPullRequest>(`/repositories/${owner}/${repo}/pulls/${pullNumber}`);
+  }
+
+  async getIssueComments(owner: string, repo: string, issueNumber: number): Promise<GitHubComment[]> {
+    return apiClient.get<GitHubComment[]>(`/repositories/${owner}/${repo}/issues/${issueNumber}/comments`);
+  }
+
+  async getPullRequestComments(owner: string, repo: string, pullNumber: number): Promise<GitHubComment[]> {
+    return apiClient.get<GitHubComment[]>(`/repositories/${owner}/${repo}/pulls/${pullNumber}/comments`);
   }
 
   async createIssue(owner: string, repo: string, issueData: {
@@ -44,7 +66,7 @@ export class GitHubService {
         labels: issueData.labels || []
       }
     };
-    
+
     const response = await apiClient.post<{
       success: boolean;
       issue: {
@@ -55,7 +77,7 @@ export class GitHubService {
       };
       message: string;
     }>('/generate-issue', payload);
-    
+
     // Transform the response to match GitHubIssue interface
     return {
       id: response.issue.number,
