@@ -128,6 +128,8 @@ export interface AppConfig {
   githubClientId: string;
   githubClientSecret: string;
   frontendUrl: string;
+  githubAppId?: string;
+  githubPrivateKey?: string;
 }
 
 // GitHub Octokit instance type with REST API
