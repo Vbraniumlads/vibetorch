@@ -71,13 +71,59 @@ router.post('/sync', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Fetch repositories from GitHub API
-    const githubRepos = await githubRepositoriesService.fetchRepositories(authHeader, {
-      per_page: 100, // Get more repos in one call
-      type: 'owner', // Only user's own repos
-      sort: 'updated',
-      direction: 'desc'
-    });
+    // Fetch both personal and organization repositories where user has push access
+    // Get multiple pages to fetch more than 100 repositories
+    const fetchAllRepositories = async (type: 'owner' | 'member') => {
+      let allRepos: any[] = [];
+      let page = 1;
+      let hasMore = true;
+      
+      while (hasMore && page <= 5) { // Limit to 5 pages (500 repos max)
+        const response = await githubRepositoriesService.fetchRepositories(authHeader, {
+          per_page: 100,
+          page,
+          type,
+          sort: 'updated',
+          direction: 'desc'
+        });
+        
+        allRepos = allRepos.concat(response.repositories);
+        hasMore = response.hasNextPage;
+        page++;
+      }
+      
+      return { repositories: allRepos };
+    };
+
+    const [ownedRepos, memberRepos] = await Promise.all([
+      fetchAllRepositories('owner'),
+      fetchAllRepositories('member')
+    ]);
+
+    // Combine both sets of repositories
+    const allRepos = [...ownedRepos.repositories, ...memberRepos.repositories];
+    
+    // Filter organization repos to only include those where user has push/maintain access
+    const filteredRepos = [];
+    for (const repo of allRepos) {
+      // For owned repos, always include
+      if (ownedRepos.repositories.includes(repo)) {
+        filteredRepos.push(repo);
+      } else {
+        // For organization repos, check permissions
+        try {
+          const repoDetails = await githubRepositoriesService.fetchRepository(authHeader, repo.owner.login, repo.name);
+          // Include if user has push access (maintainer/admin permissions)
+          if (repoDetails.permissions?.push || repoDetails.permissions?.maintain || repoDetails.permissions?.admin) {
+            filteredRepos.push(repo);
+          }
+        } catch (error) {
+          console.log(`⚠️ Could not check permissions for ${repo.owner.login}/${repo.name}, skipping`);
+        }
+      }
+    }
+
+    const githubRepos = { repositories: filteredRepos };
 
     // Sync each repository to database
     const syncedRepos = [];

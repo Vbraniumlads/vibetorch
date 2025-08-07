@@ -17,6 +17,7 @@ interface GitHubApiRepository {
     login: string;
     id: number;
     avatar_url: string;
+    type: string;
   };
   topics: string[];
   default_branch: string;
@@ -24,6 +25,13 @@ interface GitHubApiRepository {
   ssh_url: string;
   size: number;
   open_issues_count: number;
+  permissions?: {
+    admin: boolean;
+    maintain?: boolean;
+    push: boolean;
+    triage?: boolean;
+    pull: boolean;
+  };
 }
 
 // Simplified repository interface for the UI
@@ -42,6 +50,7 @@ export interface Repository {
     login: string;
     id: number;
     avatar_url: string;
+    type: string;
   };
   topics: string[];
   default_branch: string;
@@ -49,6 +58,13 @@ export interface Repository {
   ssh_url: string;
   size: number;
   open_issues: number;
+  permissions?: {
+    admin: boolean;
+    maintain?: boolean;
+    push: boolean;
+    triage?: boolean;
+    pull: boolean;
+  };
 }
 
 export interface RepositoriesResponse {
@@ -122,6 +138,7 @@ class GitHubRepositoriesService {
         login: repo.owner.login,
         id: repo.owner.id,
         avatar_url: repo.owner.avatar_url,
+        type: repo.owner.type,
       },
       topics: repo.topics || [],
       default_branch: repo.default_branch,
@@ -129,6 +146,7 @@ class GitHubRepositoriesService {
       ssh_url: repo.ssh_url,
       size: repo.size,
       open_issues: repo.open_issues_count,
+      permissions: repo.permissions,
     };
   }
 

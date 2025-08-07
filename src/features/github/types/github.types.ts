@@ -6,6 +6,25 @@ export interface GitHubRepository {
   description?: string;
   last_synced_at: string;
   created_at: string;
+  owner?: {
+    login: string;
+    id: number;
+    avatar_url: string;
+    type: string;
+  };
+  permissions?: {
+    admin: boolean;
+    maintain?: boolean;
+    push: boolean;
+    triage?: boolean;
+    pull: boolean;
+  };
+  full_name?: string;
+  private?: boolean;
+  language?: string | null;
+  stars?: number;
+  forks?: number;
+  updated_at?: string;
 }
 
 export interface SyncResponse {

@@ -8,7 +8,7 @@ import { GitHubConnectButton } from "./GitHubConnectButton";
 import { toast } from 'sonner';
 import { githubService } from "../features/github/services/github.service";
 import type { GitHubRepository } from "../features/github/types/github.types";
-import { Eye } from 'lucide-react';
+import { Eye, Building, User } from 'lucide-react';
 
 const VibetorchDashboard: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -151,6 +151,15 @@ const VibetorchDashboard: React.FC = () => {
   const updateSliderMode = (index: number) => {
     setSliderMode(index);
     
+    // Fire event when slider moves to left (Maintainer) or right (Pioneer)
+    if (index === 0) {
+      console.log('Slider fired: Moved to LEFT (Maintainer mode)');
+      toast.success('Maintainer mode activated!');
+    } else if (index === 2) {
+      console.log('Slider fired: Moved to RIGHT (Pioneer mode)');
+      toast.success('Pioneer mode activated!');
+    }
+    
     // Show fill animation first, then glow effect
     if (index !== 1) { // Only show animation for non-center positions
       setShowFillAnimation(true);
@@ -235,10 +244,30 @@ const VibetorchDashboard: React.FC = () => {
   };
 
   const handleViewDetails = (repo: GitHubRepository) => {
-    // Extract owner from repo_url
-    const urlParts = repo.repo_url.split('/');
-    const owner = urlParts[urlParts.length - 2];
+    // Use owner from repository data if available, otherwise extract from URL
+    let owner;
+    if (repo.owner?.login) {
+      owner = repo.owner.login;
+    } else {
+      const urlParts = repo.repo_url.split('/');
+      owner = urlParts[urlParts.length - 2];
+    }
     navigate(`/repository/${owner}/${repo.repo_name}`);
+  };
+
+  const isOrganizationRepo = (repo: GitHubRepository) => {
+    return repo.owner?.type === 'Organization';
+  };
+
+  const getPermissionBadge = (repo: GitHubRepository) => {
+    if (!repo.permissions) return null;
+    
+    if (repo.permissions.admin) return 'Admin';
+    if (repo.permissions.maintain) return 'Maintain';
+    if (repo.permissions.push) return 'Write';
+    if (repo.permissions.triage) return 'Triage';
+    if (repo.permissions.pull) return 'Read';
+    return null;
   };
 
   return (
@@ -324,7 +353,7 @@ const VibetorchDashboard: React.FC = () => {
                   Your Repositories
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {repositories.length} repositories • Agent mode: {modes[sliderMode].name}
+                  {repositories.length} repositories ({repositories.filter(r => isOrganizationRepo(r)).length} organization) • Agent mode: {modes[sliderMode].name}
                 </p>
               </div>
               <button 
@@ -369,9 +398,16 @@ const VibetorchDashboard: React.FC = () => {
                                 'bg-violet-500'
                               }`}
                             />
-                            <h3 className="font-medium text-foreground group-hover:text-cta-600 transition-colors text-sm">
-                              {repo.repo_name}
-                            </h3>
+                            <div className="flex items-center space-x-1">
+                              {isOrganizationRepo(repo) ? (
+                                <Building className="w-3 h-3 text-acc-600" />
+                              ) : (
+                                <User className="w-3 h-3 text-neu-700" />
+                              )}
+                              <h3 className="font-medium text-foreground group-hover:text-cta-600 transition-colors text-sm">
+                                {repo.owner?.login ? `${repo.owner.login}/` : ''}{repo.repo_name}
+                              </h3>
+                            </div>
                           </div>
                           <div className="flex items-center space-x-1">
                             <a 
@@ -393,11 +429,19 @@ const VibetorchDashboard: React.FC = () => {
                         
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 rounded-full bg-gray-500" />
-                            <span className="text-xs text-muted-foreground">GitHub</span>
+                            {isOrganizationRepo(repo) && (
+                              <span className="text-xs px-1.5 py-0.5 bg-acc-100 text-acc-700 rounded border border-acc-300">
+                                Organization
+                              </span>
+                            )}
+                            {getPermissionBadge(repo) && (
+                              <span className="text-xs px-1.5 py-0.5 bg-cta-100 text-cta-700 rounded border border-cta-300">
+                                {getPermissionBadge(repo)}
+                              </span>
+                            )}
                           </div>
                           <span className="text-xs text-muted-foreground">
-                            ID: {repo.id}
+                            {repo.private ? '🔒' : '🌐'}
                           </span>
                         </div>
                         
