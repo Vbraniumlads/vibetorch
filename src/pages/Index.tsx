@@ -3,6 +3,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { FloatingNavbar } from "@/features/navigation";
+import VibetorchDashboard from "@/components/VibetorchDashboard";
 
 
 export default function VibetorchApp() {
@@ -294,7 +295,7 @@ export default function VibetorchApp() {
               />
             </div>
           )}
-          <VibetorchSteps />
+          {isAuthenticated ? <VibetorchDashboard /> : <VibetorchSteps />}
           {/* Dot Navigation - Only show when not authenticated */}
           {!isAuthenticated && (
             <div className="fixed right-2 top-1/2 transform -translate-y-1/2 z-50 space-y-2 flex flex-col">

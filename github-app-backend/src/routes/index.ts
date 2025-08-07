@@ -4,10 +4,14 @@ import type { Webhooks } from '@octokit/webhooks';
 import { webhookController } from '../controllers/webhookController.js';
 import { issueGeneratorController } from '../controllers/issueGeneratorController.js';
 import { authRouter } from './auth.js';
+import { repositoriesRouter } from './repositories.js';
 
 export function setupRoutes(app: Express, githubApp: App | null, webhooks: Webhooks | null): void {
   // OAuth authentication routes
   app.use('/api/auth', authRouter);
+  
+  // GitHub repositories routes
+  app.use('/api/repositories', repositoriesRouter);
   
   // GitHub App routes (only if configured)
   if (githubApp && webhooks) {
