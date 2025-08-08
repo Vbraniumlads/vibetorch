@@ -1,24 +1,21 @@
 import axios from "axios";
 
-const SERVER_URL = "http://localhost:3001/pr-comment";
+const SERVER_URL = "http://localhost:3001/api/pr-comment";
 
 const payload = {
   repository: {
-    owner: "Vbraniumlads",
-    name: "vibetorch",
+    owner: "guzus",
+    name: "test",
   },
   pull_request: {
-    number: 24, // Change this to an actual PR number in your repo
+    number: 3, // Change this to an actual PR number in your repo
   },
   comment: {
-    body: `This is a test comment on a pull request created via API.
+    body: `
+@claude Great work on this PR! Some improvements you should make:
 
-@claude Great work on this PR! The implementation looks solid.
-
-Some observations:
-- ✅ Code follows the project conventions
-- ✅ Good error handling
-- 💡 Consider adding more unit tests
+- After a user clicks "Find Rides", the app should the path from the user's current location to the destination. 
+(e.g. uber, walk, bike etc.)
 
 ---
 *Generated automatically by VibeTorch - ${new Date().toISOString()}*`,
