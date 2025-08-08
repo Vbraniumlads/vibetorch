@@ -26,14 +26,40 @@ export function useRepositories() {
         isLoading: false,
       }));
     } catch (error) {
-      console.error('Failed to fetch repositories:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load repositories';
-      setState(prev => ({
-        ...prev,
-        error: errorMessage,
-        isLoading: false,
-      }));
-      toast.error('Failed to load repositories');
+      // If no repositories are found, try to sync them automatically
+      if (error instanceof Error && error.message.includes('Failed to fetch repositories')) {
+        console.log('🔄 No repositories found, attempting automatic sync...');
+        try {
+          setState(prev => ({ ...prev, isSyncing: true }));
+          const syncResult = await githubService.syncRepositories();
+          setState(prev => ({
+            ...prev,
+            repositories: syncResult.repositories,
+            isLoading: false,
+            isSyncing: false,
+          }));
+          toast.success('Repositories synced successfully!');
+        } catch (syncErr) {
+          console.error('Failed to sync repositories:', syncErr);
+          const errorMessage = syncErr instanceof Error ? syncErr.message : 'Failed to sync repositories';
+          setState(prev => ({
+            ...prev,
+            error: errorMessage,
+            isLoading: false,
+            isSyncing: false,
+          }));
+          toast.error('Failed to load repositories');
+        }
+      } else {
+        console.error('Failed to fetch repositories:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load repositories';
+        setState(prev => ({
+          ...prev,
+          error: errorMessage,
+          isLoading: false,
+        }));
+        toast.error('Failed to load repositories');
+      }
     }
   }, []);
 
