@@ -269,8 +269,8 @@ export default function RepositoryDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background px-4 py-6 sm:p-6 font-sans-pro">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button

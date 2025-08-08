@@ -94,13 +94,13 @@ export function FloatingNavbar({ user, isAuthenticated = false, onLogout }: Floa
               <div className="flex flex-col space-y-3">
                 <a 
                   href="#" 
-                  className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm"
+                  className="text-muted-foreground hover:text-foreground transition-smooth py-3 text-base min-h-[44px] flex items-center"
                 >
                   Docs
                 </a>
                 <a 
                   href="#" 
-                  className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm"
+                  className="text-muted-foreground hover:text-foreground transition-smooth py-3 text-base min-h-[44px] flex items-center"
                 >
                   Pricing
                 </a>
@@ -124,7 +124,7 @@ export function FloatingNavbar({ user, isAuthenticated = false, onLogout }: Floa
                   <>
                     <a 
                       href="#" 
-                      className="text-muted-foreground hover:text-foreground transition-smooth py-2 text-sm"
+                      className="text-muted-foreground hover:text-foreground transition-smooth py-3 text-base min-h-[44px] flex items-center"
                     >
                       Login
                     </a>

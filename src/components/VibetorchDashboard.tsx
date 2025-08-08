@@ -285,26 +285,26 @@ const VibetorchDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full font-sans p-8 pt-[120px] space-y-8 w-[90%] mx-auto pt-40">
+    <div className="h-full font-sans px-4 py-6 sm:p-8 pt-16 sm:pt-20 md:pt-24 space-y-4 sm:space-y-6 md:space-y-8 w-full sm:w-[95%] md:w-[90%] lg:w-[85%] mx-auto">
       {/* Mode description section */}
       <div className="w-full">
-                  <div className="rounded-lg p-6 bg-background text-center w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] mx-auto">
-            <h1 className="text-xl font-sans font-bold mb-2 pb-6 text-foreground">
+                  <div className="rounded-sm p-4 sm:p-6 bg-background text-center w-full sm:w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%] mx-auto">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-sans font-bold mb-2 pb-4 sm:pb-6 text-foreground">
               Torch Mode
             </h1>
             
             <div className="mb-6">
               
-              <div className="relative mb-4 min-w-[280px] mx-auto">
+              <div className="relative mb-4 w-full max-w-[320px] mx-auto px-4 sm:px-0">
                 <div 
                   ref={sliderRef}
-                  className="h-0.5 bg-neu-600 rounded-md relative cursor-pointer shadow-sm min-w-[280px]"
+                  className="h-1 sm:h-0.5 bg-neu-600 rounded-md relative cursor-pointer shadow-sm w-full"
                   onMouseDown={handleMouseDown}
                   onTouchStart={handleTouchStart}
                 >
                 {/* End indicators using design system colors */}
-                <div className="w-4 h-4 bg-neu-700 rounded-full absolute top-[-4px] left-0 transform -translate-x-1/2 border border-neu-800" />
-                <div className="w-4 h-4 bg-neu-700 rounded-full absolute top-[-4px] right-0 transform translate-x-1/2 border border-neu-800" />
+                <div className="w-5 h-5 sm:w-4 sm:h-4 bg-neu-700 rounded-full absolute top-[-6px] sm:top-[-4px] left-0 transform -translate-x-1/2 border border-neu-800" />
+                <div className="w-5 h-5 sm:w-4 sm:h-4 bg-neu-700 rounded-full absolute top-[-6px] sm:top-[-4px] right-0 transform translate-x-1/2 border border-neu-800" />
                 
                 {/* Fill from center to slider position with design system gradient */}
                 <div 
@@ -325,7 +325,7 @@ const VibetorchDashboard: React.FC = () => {
                   }}
                 />
                 <div 
-                  className={`w-10 h-10 border-3 rounded-full absolute top-[-16px] cursor-grab transform -translate-x-1/2 transition-all duration-300 ${
+                  className={`w-12 h-12 sm:w-10 sm:h-10 border-3 rounded-full absolute top-[-20px] sm:top-[-16px] cursor-grab transform -translate-x-1/2 transition-all duration-300 ${
                     sliderMode === 0 ? 'border-cta-500 bg-cta-50 shadow-lg shadow-cta-500/30' :
                     sliderMode === 2 ? 'border-acc-500 bg-acc-100 shadow-lg shadow-acc-500/30' :
                     'border-neu-800 bg-neu-0 shadow-md'
@@ -353,8 +353,8 @@ const VibetorchDashboard: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex justify-center text-xs mb-4 pt-3 text-muted-foreground">
-              <span className={`${sliderMode !== 1 ? 'font-bold' : 'text-muted-foreground'} text-foreground text-2xl`}>
+            <div className="flex justify-center text-sm sm:text-base mb-4 pt-3 text-muted-foreground">
+              <span className={`${sliderMode !== 1 ? 'font-bold' : 'text-muted-foreground'} text-foreground text-xl sm:text-2xl`}>
                 {modes[sliderMode].name}
               </span>
             </div>
@@ -368,27 +368,27 @@ const VibetorchDashboard: React.FC = () => {
 
       {/* Repository Gallery */}
       <div className="w-full">
-        <div className="rounded-lg bg-transparent border border-border">
+        <div className="rounded-sm bg-transparent border border-border">
           <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-display font-semibold text-foreground">
+                <h2 className="text-base sm:text-lg md:text-xl font-display font-semibold text-foreground">
                   Your Repositories
                 </h2>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                   {repositories.length} repositories ({repositories.filter(r => isOrganizationRepo(r)).length} organization) • Agent mode: {modes[sliderMode].name}
                 </p>
               </div>
               
               {/* Repository Search and Sync Button Group */}
-              <div className="flex items-center gap-4 w-1/2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-1/2 mt-4 sm:mt-0">
                 <div className="flex-1">
                   <RepositorySearch repositories={repositories} />
                 </div>
                 <button 
                   onClick={syncRepositories} 
                   disabled={isLoading}
-                  className="px-4 py-2 text-sm bg-muted hover:bg-muted-foreground/20 text-foreground rounded-md transition-colors whitespace-nowrap"
+                  className="px-4 py-3 sm:py-2 text-sm bg-muted hover:bg-muted-foreground/20 text-foreground rounded-sm transition-colors whitespace-nowrap min-h-[44px] sm:min-h-auto"
                 >
                   {isLoading ? 'Syncing...' : 'Sync Repos'}
                 </button>
@@ -413,11 +413,11 @@ const VibetorchDashboard: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {repositories.map((repo) => {
                   const activityStatus = getActivityStatus(repo.last_synced_at);
                   return (
-                    <Card key={repo.id} className="bg-transparent hover:bg-muted/10 transition-all duration-200 cursor-pointer group border-border">
+                    <Card key={repo.id} className="bg-transparent hover:bg-muted/10 transition-all duration-200 cursor-pointer group border-border rounded-sm">
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center space-x-2">
@@ -434,7 +434,7 @@ const VibetorchDashboard: React.FC = () => {
                               ) : (
                                 <User className="w-3 h-3 text-muted-foreground" />
                               )}
-                              <h3 className="font-medium text-foreground group-hover:text-foreground transition-colors text-sm">
+                              <h3 className="font-medium text-foreground group-hover:text-foreground transition-colors text-sm sm:text-base break-all">
                                 {repo.owner?.login ? `${repo.owner.login}/` : ''}{repo.repo_name}
                               </h3>
                             </div>
@@ -453,19 +453,19 @@ const VibetorchDashboard: React.FC = () => {
                           </div>
                         </div>
                         
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 h-10">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem] sm:min-h-[2.5rem]">
                           {repo.description || 'No description available'}
                         </p>
                         
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-2">
                             {isOrganizationRepo(repo) && (
-                              <span className="text-xs px-1.5 py-0.5 bg-transparent text-muted-foreground rounded border border-border">
+                              <span className="text-xs px-2 py-1 bg-transparent text-muted-foreground rounded-sm border border-border">
                                 Organization
                               </span>
                             )}
                             {getPermissionBadge(repo) && (
-                              <span className="text-xs px-1.5 py-0.5 bg-transparent text-foreground rounded border border-foreground">
+                              <span className="text-xs px-2 py-1 bg-transparent text-foreground rounded-sm border border-foreground">
                                 {getPermissionBadge(repo)}
                               </span>
                             )}
@@ -476,7 +476,7 @@ const VibetorchDashboard: React.FC = () => {
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <span className={`text-xs px-2 py-1 rounded-full border font-medium ${getStatusBadge(activityStatus)}`}>
+                          <span className={`text-xs px-2 py-1 rounded-sm border font-medium ${getStatusBadge(activityStatus)}`}>
                             {activityStatus}
                           </span>
                           <span className="text-xs text-muted-foreground">
@@ -490,7 +490,7 @@ const VibetorchDashboard: React.FC = () => {
                             size="sm"
                             variant="outline"
                             onClick={() => handleViewDetails(repo)}
-                            className="w-full bg-transparent hover:bg-muted/10 text-foreground border-foreground"
+                            className="w-full bg-transparent hover:bg-muted/10 text-foreground border-foreground min-h-[44px] rounded-sm"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             View Details
