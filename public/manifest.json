@@ -7,7 +7,11 @@
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
-  "categories": ["productivity", "social", "utilities"],
+  "categories": [
+    "productivity",
+    "social",
+    "utilities"
+  ],
   "lang": "en",
   "dir": "ltr",
   "scope": "/",
