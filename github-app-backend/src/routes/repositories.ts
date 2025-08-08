@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { githubRepositoriesService } from '../services/githubRepositoriesService.js';
-import { repositoryService } from '../services/repositoryService';
+import { repositoryService } from '../services/repositoryService.js';
 import jwt from 'jsonwebtoken';
-import { GitHubRepositoryData } from '../db/models/Repository';
+import { GitHubRepositoryData } from '../db/models/Repository.js';
 
 const router = Router();
 
@@ -77,7 +77,7 @@ router.post('/sync', async (req: Request, res: Response): Promise<void> => {
       let allRepos: any[] = [];
       let page = 1;
       let hasMore = true;
-      
+
       while (hasMore && page <= 5) { // Limit to 5 pages (500 repos max)
         const response = await githubRepositoriesService.fetchRepositories(authHeader, {
           per_page: 100,
@@ -86,12 +86,12 @@ router.post('/sync', async (req: Request, res: Response): Promise<void> => {
           sort: 'updated',
           direction: 'desc'
         });
-        
+
         allRepos = allRepos.concat(response.repositories);
         hasMore = response.hasNextPage;
         page++;
       }
-      
+
       return { repositories: allRepos };
     };
 
@@ -102,7 +102,7 @@ router.post('/sync', async (req: Request, res: Response): Promise<void> => {
 
     // Combine both sets of repositories
     const allRepos = [...ownedRepos.repositories, ...memberRepos.repositories];
-    
+
     // Filter organization repos to only include those where user has push/maintain access
     const filteredRepos = [];
     for (const repo of allRepos) {
@@ -217,19 +217,19 @@ router.get('/:owner/:repo/issues/:issueNumber/comments', async (req: Request, re
   try {
     const authHeader = req.headers.authorization;
     const { owner, repo, issueNumber } = req.params;
-    
+
     if (!owner || !repo || !issueNumber) {
       res.status(400).json({ error: 'Owner, repository name, and issue number are required' });
       return;
     }
-    
+
     const comments = await githubRepositoriesService.fetchIssueComments(authHeader, owner, repo, parseInt(issueNumber));
-    
+
     res.json(comments);
-    
+
   } catch (error) {
     console.error(`❌ Error fetching comments for issue #${req.params.issueNumber} in ${req.params.owner}/${req.params.repo}:`, error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         res.status(404).json({ error: error.message });
@@ -239,14 +239,14 @@ router.get('/:owner/:repo/issues/:issueNumber/comments', async (req: Request, re
         res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
         return;
       }
-      
-      res.status(500).json({ 
+
+      res.status(500).json({
         error: 'Failed to fetch issue comments',
-        message: error.message 
+        message: error.message
       });
       return;
     }
-    
+
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -256,19 +256,19 @@ router.get('/:owner/:repo/pulls/:pullNumber/comments', async (req: Request, res:
   try {
     const authHeader = req.headers.authorization;
     const { owner, repo, pullNumber } = req.params;
-    
+
     if (!owner || !repo || !pullNumber) {
       res.status(400).json({ error: 'Owner, repository name, and pull request number are required' });
       return;
     }
-    
+
     const comments = await githubRepositoriesService.fetchPullRequestComments(authHeader, owner, repo, parseInt(pullNumber));
-    
+
     res.json(comments);
-    
+
   } catch (error) {
     console.error(`❌ Error fetching comments for pull request #${req.params.pullNumber} in ${req.params.owner}/${req.params.repo}:`, error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         res.status(404).json({ error: error.message });
@@ -278,14 +278,14 @@ router.get('/:owner/:repo/pulls/:pullNumber/comments', async (req: Request, res:
         res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
         return;
       }
-      
-      res.status(500).json({ 
+
+      res.status(500).json({
         error: 'Failed to fetch pull request comments',
-        message: error.message 
+        message: error.message
       });
       return;
     }
-    
+
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -295,26 +295,26 @@ router.get('/:owner/:repo/issues', async (req: Request, res: Response): Promise<
   try {
     const authHeader = req.headers.authorization;
     const { owner, repo } = req.params;
-    
+
     if (!owner || !repo) {
       res.status(400).json({ error: 'Owner and repository name are required' });
       return;
     }
-    
+
     const page = parseInt(req.query.page as string) || 1;
     const state = (req.query.state as 'open' | 'closed' | 'all') || 'open';
-    
+
     const issues = await githubRepositoriesService.fetchIssues(authHeader, owner, repo, {
       page,
       state,
       per_page: 30
     });
-    
+
     res.json(issues);
-    
+
   } catch (error) {
     console.error(`❌ Error fetching issues for ${req.params.owner}/${req.params.repo}:`, error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         res.status(404).json({ error: error.message });
@@ -324,14 +324,14 @@ router.get('/:owner/:repo/issues', async (req: Request, res: Response): Promise<
         res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
         return;
       }
-      
-      res.status(500).json({ 
+
+      res.status(500).json({
         error: 'Failed to fetch issues',
-        message: error.message 
+        message: error.message
       });
       return;
     }
-    
+
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -341,19 +341,19 @@ router.get('/:owner/:repo/pulls/:pullNumber', async (req: Request, res: Response
   try {
     const authHeader = req.headers.authorization;
     const { owner, repo, pullNumber } = req.params;
-    
+
     if (!owner || !repo || !pullNumber) {
       res.status(400).json({ error: 'Owner, repository name, and pull request number are required' });
       return;
     }
-    
+
     const pull = await githubRepositoriesService.fetchPullRequestDetail(authHeader, owner, repo, parseInt(pullNumber));
-    
+
     res.json(pull);
-    
+
   } catch (error) {
     console.error(`❌ Error fetching pull request #${req.params.pullNumber} for ${req.params.owner}/${req.params.repo}:`, error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         res.status(404).json({ error: error.message });
@@ -363,14 +363,14 @@ router.get('/:owner/:repo/pulls/:pullNumber', async (req: Request, res: Response
         res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
         return;
       }
-      
-      res.status(500).json({ 
+
+      res.status(500).json({
         error: 'Failed to fetch pull request details',
-        message: error.message 
+        message: error.message
       });
       return;
     }
-    
+
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -380,26 +380,26 @@ router.get('/:owner/:repo/pulls', async (req: Request, res: Response): Promise<v
   try {
     const authHeader = req.headers.authorization;
     const { owner, repo } = req.params;
-    
+
     if (!owner || !repo) {
       res.status(400).json({ error: 'Owner and repository name are required' });
       return;
     }
-    
+
     const page = parseInt(req.query.page as string) || 1;
     const state = (req.query.state as 'open' | 'closed' | 'all') || 'open';
-    
+
     const pulls = await githubRepositoriesService.fetchPullRequests(authHeader, owner, repo, {
       page,
       state,
       per_page: 30
     });
-    
+
     res.json(pulls);
-    
+
   } catch (error) {
     console.error(`❌ Error fetching pull requests for ${req.params.owner}/${req.params.repo}:`, error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes('not found')) {
         res.status(404).json({ error: error.message });
@@ -409,14 +409,14 @@ router.get('/:owner/:repo/pulls', async (req: Request, res: Response): Promise<v
         res.status(401).json({ error: 'GitHub authentication failed. Please re-authenticate.' });
         return;
       }
-      
-      res.status(500).json({ 
+
+      res.status(500).json({
         error: 'Failed to fetch pull requests',
-        message: error.message 
+        message: error.message
       });
       return;
     }
-    
+
     res.status(500).json({ error: 'Internal server error' });
   }
 });

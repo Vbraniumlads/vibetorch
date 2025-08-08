@@ -24,7 +24,7 @@ export function GitHubLoginButton({
 
     onLoginStart?.();
     
-    const redirectUri = `${window.location.origin}/auth/callback`;
+    const redirectUri = `${window.location.origin}/oauth-callback`;
     const scope = 'read:user,repo';
     
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;

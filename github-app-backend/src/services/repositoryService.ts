@@ -2,7 +2,8 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { Repository, RepositoryCreateInput, RepositoryUpdateInput } from '../db/models/Repository';
+import { Repository, RepositoryCreateInput, RepositoryUpdateInput } from '../db/models/Repository.js';
+import type { GitHubRepository, Todo } from '../types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -107,12 +108,16 @@ class RepositoryService {
 
   async upsert(userId: number, githubRepoId: number, data: Omit<RepositoryCreateInput, 'user_id' | 'github_repo_id'>): Promise<Repository> {
     const existing = await this.findByUserIdAndGithubId(userId, githubRepoId);
-    
+
     if (existing) {
-      return this.update(existing.id, {
+      const updated = await this.update(existing.id, {
         ...data,
         last_synced_at: new Date().toISOString()
-      })!;
+      });
+      if (!updated) {
+        throw new Error('Failed to update repository record');
+      }
+      return updated;
     } else {
       return this.create({
         user_id: userId,
@@ -135,6 +140,25 @@ class RepositoryService {
 
   close(): void {
     this.db.close();
+  }
+
+  /**
+   * Create an implementation repository based on a parsed todo.
+   *
+   * NOTE: This is a minimal placeholder to satisfy current webhook flow.
+   * It logs intent and can be expanded to actually create a repo, scaffold
+   * files, and persist metadata. Keeping the signature stable for callers.
+   */
+  async createImplementationRepo(
+    _github: any,
+    sourceRepository: GitHubRepository,
+    todo: Todo
+  ): Promise<void> {
+    const summary = todo.text?.slice(0, 120) || 'implementation task';
+    console.log(
+      `🧱 [repositoryService] Requested implementation repo for "${summary}" from ${sourceRepository.full_name}`
+    );
+    // Future: use Octokit to create repo and store record in SQLite
   }
 }
 

@@ -64,7 +64,7 @@ export interface Repository {
     push: boolean;
     triage?: boolean;
     pull: boolean;
-  };
+  } | undefined;
 }
 
 export interface RepositoriesResponse {
@@ -211,13 +211,14 @@ class GitHubRepositoriesService {
       console.error('❌ Error fetching repositories:', error);
 
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
+        const status = error.response?.status;
+        if (status === 401) {
           throw new Error('GitHub authentication failed. Please re-authenticate.');
         }
-        if (error.response?.status === 403) {
+        if (status === 403) {
           throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
         }
-        if (error.response?.status >= 500) {
+        if (typeof status === 'number' && status >= 500) {
           throw new Error('GitHub API is currently unavailable. Please try again later.');
         }
 
@@ -453,10 +454,10 @@ class GitHubRepositoriesService {
       );
 
       return response.data;
-      
+
     } catch (error) {
       console.error('❌ Error fetching pull request details:', error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error('GitHub authentication failed. Please re-authenticate.');
@@ -467,12 +468,12 @@ class GitHubRepositoriesService {
         if (error.response?.status === 403) {
           throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
         }
-        
+
         throw new Error(
           `GitHub API error: ${error.response?.data?.message || error.message}`
         );
       }
-      
+
       throw error;
     }
   }
@@ -501,10 +502,10 @@ class GitHubRepositoriesService {
       );
 
       return response.data;
-      
+
     } catch (error) {
       console.error('❌ Error fetching issue comments:', error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error('GitHub authentication failed. Please re-authenticate.');
@@ -515,12 +516,12 @@ class GitHubRepositoriesService {
         if (error.response?.status === 403) {
           throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
         }
-        
+
         throw new Error(
           `GitHub API error: ${error.response?.data?.message || error.message}`
         );
       }
-      
+
       throw error;
     }
   }
@@ -549,10 +550,10 @@ class GitHubRepositoriesService {
       );
 
       return response.data;
-      
+
     } catch (error) {
       console.error('❌ Error fetching pull request comments:', error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error('GitHub authentication failed. Please re-authenticate.');
@@ -563,12 +564,12 @@ class GitHubRepositoriesService {
         if (error.response?.status === 403) {
           throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
         }
-        
+
         throw new Error(
           `GitHub API error: ${error.response?.data?.message || error.message}`
         );
       }
-      
+
       throw error;
     }
   }
