@@ -285,12 +285,12 @@ const VibetorchDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full font-body p-8 pt-[120px] space-y-8 w-[90%] mx-auto pt-40">
-      {/* Mode Selection Slider */}
+    <div className="h-full font-sans p-8 pt-[120px] space-y-8 w-[90%] mx-auto pt-40">
+      {/* Mode description section */}
       <div className="w-full">
         <div className="rounded-lg p-6 bg-background text-center w-[60%] mx-auto">
-          <h1 className="text-xl font-display font-bold mb-2 pb-6 text-foreground">
-            Agent Vibe Mode
+          <h1 className="text-xl font-sans font-bold mb-2 pb-6 text-foreground">
+            Torch Mode
           </h1>
           
           <div className="mb-6">
@@ -350,17 +350,10 @@ const VibetorchDashboard: React.FC = () => {
               </span>
             </div>
             
-            <div className="text-sm leading-relaxed text-center text-muted-foreground h-12 flex items-center justify-center">
+            {/* <div className="text-sm leading-relaxed text-center text-muted-foreground h-12 flex items-center justify-center">
               {modes[sliderMode].desc}
-            </div>
+            </div> */}
           </div>
-        </div>
-      </div>
-
-      {/* Repository Search */}
-      <div className="w-full mb-8">
-        <div className="rounded-lg bg-background border border-border p-6">
-          <RepositorySearch repositories={repositories} />
         </div>
       </div>
 
@@ -377,13 +370,20 @@ const VibetorchDashboard: React.FC = () => {
                   {repositories.length} repositories ({repositories.filter(r => isOrganizationRepo(r)).length} organization) • Agent mode: {modes[sliderMode].name}
                 </p>
               </div>
-              <button 
-                onClick={syncRepositories} 
-                disabled={isLoading}
-                className="px-4 py-2 text-sm bg-muted hover:bg-muted-foreground/20 text-foreground rounded-md transition-colors"
-              >
-                {isLoading ? 'Syncing...' : 'Sync Repos'}
-              </button>
+              
+              {/* Repository Search and Sync Button Group */}
+              <div className="flex items-center gap-4 w-1/2">
+                <div className="flex-1">
+                  <RepositorySearch repositories={repositories} />
+                </div>
+                <button 
+                  onClick={syncRepositories} 
+                  disabled={isLoading}
+                  className="px-4 py-2 text-sm bg-muted hover:bg-muted-foreground/20 text-foreground rounded-md transition-colors whitespace-nowrap"
+                >
+                  {isLoading ? 'Syncing...' : 'Sync Repos'}
+                </button>
+              </div>
             </div>
           </div>
           
