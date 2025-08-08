@@ -25,4 +25,4 @@ dist-ssr
 
 .env
 *.pem   
-*.sqlite
+*/*.sqlite

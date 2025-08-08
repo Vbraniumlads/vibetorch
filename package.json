@@ -8,7 +8,9 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview --port $PORT --host 0.0.0.0"
+    "preview": "vite preview --port $PORT --host 0.0.0.0",
+    "prestart": "vite build",
+    "start": "node server.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -62,7 +64,8 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@21st-extension/react": "^0.5.14",
