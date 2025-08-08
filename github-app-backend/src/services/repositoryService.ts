@@ -12,18 +12,62 @@ class RepositoryService {
   private db: Database.Database;
 
   constructor() {
-    const dbPath = path.join(__dirname, '../db/database.sqlite');
+    // Use absolute path for database file to ensure it works in both dev and production
+    const dbPath = process.env.DATABASE_PATH || path.join(process.cwd(), 'database.sqlite');
+    console.log('🗄️  Database path:', dbPath);
+    
     this.db = new Database(dbPath);
     this.initDatabase();
   }
 
   private initDatabase(): void {
-    // Run migrations
-    const migrationPath = path.join(__dirname, '../db/migrations/001_create_repositories.sql');
-    if (fs.existsSync(migrationPath)) {
-      const migration = fs.readFileSync(migrationPath, 'utf8');
-      this.db.exec(migration);
+    console.log('🚀 Initializing database...');
+    
+    // Run migrations - try multiple possible paths
+    const possibleMigrationPaths = [
+      path.join(__dirname, '../db/migrations/001_create_repositories.sql'),
+      path.join(process.cwd(), 'src/db/migrations/001_create_repositories.sql'),
+      path.join(process.cwd(), 'dist/db/migrations/001_create_repositories.sql'),
+    ];
+    
+    let migrationExecuted = false;
+    
+    for (const migrationPath of possibleMigrationPaths) {
+      console.log('🔍 Checking migration path:', migrationPath);
+      if (fs.existsSync(migrationPath)) {
+        console.log('✅ Found migration file, executing...');
+        const migration = fs.readFileSync(migrationPath, 'utf8');
+        this.db.exec(migration);
+        migrationExecuted = true;
+        break;
+      }
     }
+    
+    if (!migrationExecuted) {
+      console.log('⚠️  Migration file not found, creating table manually...');
+      // Fallback: create table directly if migration file is not found
+      this.db.exec(`
+        -- Create repositories table
+        CREATE TABLE IF NOT EXISTS repositories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          github_repo_id INTEGER NOT NULL, -- GitHub's repository ID
+          repo_name TEXT NOT NULL,
+          repo_url TEXT NOT NULL,
+          description TEXT,
+          last_synced_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(user_id, github_repo_id) -- Prevent duplicate repos per user
+        );
+
+        -- Create index for faster queries
+        CREATE INDEX IF NOT EXISTS idx_repositories_user_id ON repositories(user_id);
+        CREATE INDEX IF NOT EXISTS idx_repositories_last_synced ON repositories(last_synced_at);
+      `);
+    }
+    
+    console.log('✅ Database initialization complete');
   }
 
   async findByUserId(userId: number): Promise<Repository[]> {
