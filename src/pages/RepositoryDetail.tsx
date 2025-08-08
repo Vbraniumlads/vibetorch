@@ -129,12 +129,12 @@ export default function RepositoryDetail() {
   const renderComments = (comments: GitHubComment[]) => (
     <div className="mt-3 pt-3 border-t border-border space-y-3">
       {comments.map(comment => (
-        <div key={comment.id} className="bg-muted/30 rounded-lg p-3">
+        <div key={comment.id} className="bg-transparent border border-border rounded-md p-3">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
-              <User className="w-3 h-3 text-background" />
+            <div className="w-5 h-5 bg-muted rounded-full flex items-center justify-center">
+              <User className="w-3 h-3 text-muted-foreground" />
             </div>
-            <span className="text-sm font-bold text-foreground">{comment.user.login}</span>
+            <span className="text-sm font-medium text-foreground">{comment.user.login}</span>
             <Badge 
               variant="outline" 
               className="text-xs border-border text-muted-foreground"
@@ -296,23 +296,23 @@ export default function RepositoryDetail() {
         </div>
 
         {/* Stats Card */}
-        <Card className="bg-gradient-to-r from-background to-muted/50 border border-border">
-          <CardContent className="p-6">
+        <Card className="bg-transparent border border-border">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-cta-500" />
-                  <span className="font-medium">{issues.length} Issues</span>
+                  <AlertCircle className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">{issues.length} Issues</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GitPullRequest className="w-5 h-5 text-acc-500" />
-                  <span className="font-medium">{pullRequests.length} Pull Requests</span>
+                  <GitPullRequest className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">{pullRequests.length} Pull Requests</span>
                 </div>
               </div>
               
               <Dialog open={isCreateIssueOpen} onOpenChange={setIsCreateIssueOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-cta-500 hover:bg-cta-600 text-white">
+                  <Button variant="outline" className="text-foreground border-border hover:bg-muted/50">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Task
                   </Button>
@@ -368,7 +368,7 @@ export default function RepositoryDetail() {
                       <Button
                         onClick={handleCreateIssue}
                         disabled={isCreatingIssue || !newIssue.title.trim() || !newIssue.description.trim()}
-                        className="bg-cta-500 hover:bg-cta-600 text-white"
+                        className="bg-foreground hover:bg-foreground/90 text-background"
                       >
                         {isCreatingIssue ? 'Creating...' : 'Create Issue'}
                       </Button>
@@ -382,27 +382,27 @@ export default function RepositoryDetail() {
 
         {/* Issues and PRs */}
         <Tabs defaultValue="issues" className="w-full">
-          <TabsList className="bg-muted text-foreground">
-            <TabsTrigger value="issues" className="data-[state=active]:bg-cta-500 data-[state=active]:text-white">
+          <TabsList className="bg-transparent border border-border h-9">
+            <TabsTrigger value="issues" className="data-[state=active]:bg-foreground data-[state=active]:text-background text-sm">
               Issues ({issues.length})
             </TabsTrigger>
-            <TabsTrigger value="pulls" className="data-[state=active]:bg-acc-500 data-[state=active]:text-white">
+            <TabsTrigger value="pulls" className="data-[state=active]:bg-foreground data-[state=active]:text-background text-sm">
               Pull Requests ({pullRequests.length})
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="issues" className="space-y-4">
             {issues.length === 0 ? (
-              <Card className="bg-gradient-to-r from-background to-muted/50 border border-border">
-                <CardContent className="p-8 text-center">
-                  <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No issues found</p>
+              <Card className="bg-transparent border border-border">
+                <CardContent className="p-6 text-center">
+                  <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">No issues found</p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-3">
                 {issues.map(issue => (
-                  <Card key={issue.id} className="bg-gradient-to-r from-background to-muted/50 border border-border hover:shadow-md transition-shadow">
+                  <Card key={issue.id} className="bg-transparent border border-border hover:bg-muted/20 transition-colors">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -486,16 +486,16 @@ export default function RepositoryDetail() {
           
           <TabsContent value="pulls" className="space-y-4">
             {pullRequests.length === 0 ? (
-              <Card className="bg-gradient-to-r from-background to-muted/50 border border-border">
-                <CardContent className="p-8 text-center">
-                  <GitPullRequest className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No pull requests found</p>
+              <Card className="bg-transparent border border-border">
+                <CardContent className="p-6 text-center">
+                  <GitPullRequest className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">No pull requests found</p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-3">
                 {pullRequests.map(pr => (
-                  <Card key={pr.id} className="bg-gradient-to-r from-background to-muted/50 border border-border hover:shadow-md transition-shadow">
+                  <Card key={pr.id} className="bg-transparent border border-border hover:bg-muted/20 transition-colors">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
