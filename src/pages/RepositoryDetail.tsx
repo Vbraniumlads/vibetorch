@@ -15,13 +15,8 @@ import { githubService } from '../features/github/services/github.service';
 import type { GitHubRepository, GitHubIssue, GitHubPullRequest, GitHubComment } from '../features/github/types/github.types';
 import { toast } from 'sonner';
 
-interface RepositoryDetailParams {
-  owner: string;
-  repo: string;
-}
-
 export default function RepositoryDetail() {
-  const { owner, repo } = useParams<RepositoryDetailParams>();
+  const { owner, repo } = useParams<Record<string, string | undefined>>();
   const navigate = useNavigate();
   
   const [repository, setRepository] = useState<GitHubRepository | null>(null);
@@ -134,7 +129,7 @@ export default function RepositoryDetail() {
   const renderComments = (comments: GitHubComment[]) => (
     <div className="mt-3 pt-3 border-t border-border space-y-3">
       {comments.map(comment => (
-        <div key={comment.id} className="bg-neu-500 rounded-lg p-3">
+        <div key={comment.id} className="bg-muted/30 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
               <User className="w-3 h-3 text-background" />
@@ -165,12 +160,14 @@ export default function RepositoryDetail() {
                 blockquote: ({ node, ...props }) => (
                   <blockquote className="border-l-4 border-border pl-3 italic text-muted-foreground mb-2" {...props} />
                 ),
-                code: ({ node, inline, ...props }) => 
-                  inline ? (
+                code: ({ node, ...props }) => {
+                  const isInline = !String(props.children).includes('\n');
+                  return isInline ? (
                     <code className="bg-muted/50 text-foreground px-1 py-0.5 rounded text-xs font-mono" {...props} />
                   ) : (
                     <code className="block bg-muted/50 text-foreground p-2 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
-                  ),
+                  );
+                },
                 pre: ({ node, ...props }) => (
                   <pre className="bg-muted/50 text-foreground p-3 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
                 ),
@@ -299,7 +296,7 @@ export default function RepositoryDetail() {
         </div>
 
         {/* Stats Card */}
-        <Card className="bg-gradient-to-r from-white to-neu-500 border border-border">
+        <Card className="bg-gradient-to-r from-background to-muted/50 border border-border">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
@@ -320,7 +317,7 @@ export default function RepositoryDetail() {
                     Add Task
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-neu-0 border-border">
+                <DialogContent className="bg-background border-border">
                   <DialogHeader>
                     <DialogTitle className="text-foreground">Create New Task</DialogTitle>
                   </DialogHeader>
@@ -396,7 +393,7 @@ export default function RepositoryDetail() {
           
           <TabsContent value="issues" className="space-y-4">
             {issues.length === 0 ? (
-              <Card className="bg-gradient-to-r from-white to-neu-500 border border-border">
+              <Card className="bg-gradient-to-r from-background to-muted/50 border border-border">
                 <CardContent className="p-8 text-center">
                   <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">No issues found</p>
@@ -405,7 +402,7 @@ export default function RepositoryDetail() {
             ) : (
               <div className="space-y-3">
                 {issues.map(issue => (
-                  <Card key={issue.id} className="bg-gradient-to-r from-white to-neu-500 border border-border hover:shadow-md transition-shadow">
+                  <Card key={issue.id} className="bg-gradient-to-r from-background to-muted/50 border border-border hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -489,7 +486,7 @@ export default function RepositoryDetail() {
           
           <TabsContent value="pulls" className="space-y-4">
             {pullRequests.length === 0 ? (
-              <Card className="bg-gradient-to-r from-white to-neu-500 border border-border">
+              <Card className="bg-gradient-to-r from-background to-muted/50 border border-border">
                 <CardContent className="p-8 text-center">
                   <GitPullRequest className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">No pull requests found</p>
@@ -498,7 +495,7 @@ export default function RepositoryDetail() {
             ) : (
               <div className="space-y-3">
                 {pullRequests.map(pr => (
-                  <Card key={pr.id} className="bg-gradient-to-r from-white to-neu-500 border border-border hover:shadow-md transition-shadow">
+                  <Card key={pr.id} className="bg-gradient-to-r from-background to-muted/50 border border-border hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
@@ -534,7 +531,7 @@ export default function RepositoryDetail() {
                                 remarkPlugins={[remarkGfm]}
                                 components={{
                                   p: ({ node, ...props }) => <p className="inline" {...props} />,
-                                  code: ({ node, inline, ...props }) => 
+                                  code: ({ node, ...props }) => 
                                     <code className="bg-muted/50 text-foreground px-1 rounded text-xs" {...props} />,
                                   a: ({ node, ...props }) => 
                                     <a className="text-cta-600 hover:text-cta-700" {...props} />

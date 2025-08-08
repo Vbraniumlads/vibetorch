@@ -60,14 +60,14 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
             placeholder="Search repositories..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-10 min-h-[44px] rounded-sm text-sm sm:text-base"
+            className="pl-10 min-h-[44px] rounded-sm text-sm sm:text-base bg-transparent border-border focus:border-foreground"
           />
         </div>
         {query && (
           <Button
             onClick={clearSearch}
             variant="outline"
-            className="px-4 py-3 sm:py-2 min-h-[44px] sm:min-h-auto rounded-sm whitespace-nowrap"
+            className="px-4 py-3 sm:py-2 min-h-[44px] sm:min-h-auto rounded-sm whitespace-nowrap bg-transparent border-border hover:bg-muted/10 text-foreground"
           >
             Clear
           </Button>
@@ -93,14 +93,14 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
               {filteredResults.map((repo) => (
                 <Card 
                   key={repo.id}
-                  className="hover:shadow-md transition-all duration-200 border-border/50 hover:border-cta-500/50 group rounded-sm"
+                  className="bg-transparent hover:bg-muted/10 transition-all duration-200 border-border hover:border-foreground group rounded-sm"
                 >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-0">
                       <div className="flex-1 min-w-0">
                         {/* Repository Name */}
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                          <h4 className="font-semibold text-foreground group-hover:text-cta-600 transition-colors truncate text-sm sm:text-base">
+                          <h4 className="font-semibold text-foreground group-hover:text-foreground transition-colors truncate text-sm sm:text-base">
                             {repo.repo_name}
                           </h4>
                           {repo.private && (
@@ -120,7 +120,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
                           <div className="flex items-center gap-3 sm:gap-4">
                             {repo.language && (
                               <div className="flex items-center gap-1">
-                                <div className="w-3 h-3 rounded-full bg-cta-500"></div>
+                                <div className="w-3 h-3 rounded-full border border-foreground bg-transparent"></div>
                                 <span>{repo.language}</span>
                               </div>
                             )}
@@ -142,7 +142,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
                         <Button
                           size="sm"
                           onClick={() => handleViewDetails(repo)}
-                          className="bg-cta-500 hover:bg-cta-600 text-white flex-1 sm:flex-none min-h-[44px] sm:min-h-auto rounded-sm"
+                          className="bg-transparent border-foreground hover:bg-muted/10 text-foreground flex-1 sm:flex-none min-h-[44px] sm:min-h-auto rounded-sm"
                         >
                           <Eye className="w-4 h-4 mr-1" />
                           View
@@ -150,7 +150,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
                         <Button
                           size="sm"
                           variant="outline"
-                          className="min-h-[44px] sm:min-h-auto rounded-sm"
+                          className="min-h-[44px] sm:min-h-auto rounded-sm bg-transparent border-border hover:bg-muted/10"
                           asChild
                         >
                           <a
@@ -170,7 +170,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
               ))}
             </div>
           ) : (
-            <Card className="border-dashed rounded-sm">
+            <Card className="bg-transparent border-dashed border-border rounded-sm">
               <CardContent className="p-4 sm:p-8 text-center">
                 <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
                 <h4 className="text-base sm:text-lg font-medium text-foreground mb-2">No repositories found</h4>
