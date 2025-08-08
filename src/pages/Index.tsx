@@ -17,6 +17,7 @@ export default function VibetorchApp() {
   const [showNavbar, setShowNavbar] = useState(false);
   const [initialAuthState, setInitialAuthState] = useState<boolean | null>(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [leftPanelAnimationComplete, setLeftPanelAnimationComplete] = useState(false);
 
   // Capture initial auth state when loading completes
   useEffect(() => {
@@ -66,6 +67,7 @@ export default function VibetorchApp() {
         // Desktop: use slide-out animation
         const timer = setTimeout(() => {
           setShowNavbar(true);
+          setLeftPanelAnimationComplete(true); // Hide panel after animation completes
         }, 1700); // 1.2s slide-out animation + 0.5s buffer
         return () => clearTimeout(timer);
       }
@@ -209,6 +211,11 @@ export default function VibetorchApp() {
         .expand-right {
           animation: expandRight 1.2s ease-in-out forwards;
         }
+        @media (min-width: 1024px) {
+          .lg\\:slide-out-left {
+            animation: slideOutLeft 1.2s ease-in-out forwards;
+          }
+        }
         @keyframes fadeInDown {
           0% {
             opacity: 0;
@@ -226,8 +233,8 @@ export default function VibetorchApp() {
 
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row min-h-screen">
-        {/* Left Panel - Marketing (hide for pre-authenticated users and mobile) */}
-        {!(initialAuthState === true) && (
+        {/* Left Panel - Marketing (hide for pre-authenticated users and after slide-out animation) */}
+        {!(initialAuthState === true) && !leftPanelAnimationComplete && (
           <div className={`hidden lg:flex lg:w-2/5 panel-left p-6 lg:p-8 flex-col lg:fixed lg:h-screen relative overflow-hidden ${isAuthenticated ? 'lg:slide-out-left' : ''}`}>
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 opacity-5 flex items-center justify-center">

@@ -131,7 +131,7 @@ export function GitHubConnectButton({
       >
       {isLoading ? (
         <>
-          <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-foreground border-t-transparent rounded-sm animate-spin"></div>
+          <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin"></div>
           <span className="flex items-center gap-2">
             Opening GitHub...
             <span className="animate-pulse">🚀</span>
