@@ -285,7 +285,7 @@ const VibetorchDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full font-body p-8 pt-[20px] space-y-8 w-[90%] mx-auto pt-40">
+    <div className="h-full font-body p-8 pt-[120px] space-y-8 w-[90%] mx-auto pt-40">
       {/* Mode Selection Slider */}
       <div className="w-full">
         <div className="rounded-lg p-6 bg-background text-center w-[60%] mx-auto">
