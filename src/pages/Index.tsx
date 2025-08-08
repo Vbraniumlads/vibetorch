@@ -51,15 +51,8 @@ export default function VibetorchApp() {
       const isMobile = window.innerWidth < 1024;
       
       if (isMobile) {
-        // Mobile: scroll to dashboard immediately
+        // Mobile: just show navbar without auto-scroll
         const timer = setTimeout(() => {
-          const rightPanel = document.querySelector('.panel-right');
-          if (rightPanel) {
-            rightPanel.scrollTo({
-              top: window.innerHeight, // Scroll down by one viewport height
-              behavior: 'smooth'
-            });
-          }
           setShowNavbar(true);
         }, 300); // Shorter delay for mobile
         return () => clearTimeout(timer);
