@@ -285,7 +285,7 @@ const VibetorchDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full font-sans px-4 py-6 sm:p-8 pt-16 sm:pt-20 md:pt-24 space-y-4 sm:space-y-6 md:space-y-8 w-full sm:w-[95%] md:w-[90%] lg:w-[85%] mx-auto">
+    <div className="h-full font-sans px-4 py-6 sm:p-8 pt-36 sm:pt-20 md:pt-24 space-y-4 sm:space-y-6 md:space-y-8 w-full sm:w-[95%] md:w-[90%] lg:w-[85%] mx-auto">
       {/* Mode description section */}
       <div className="w-full">
                   <div className="rounded-sm p-4 sm:p-6 bg-background text-center w-full sm:w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%] mx-auto">

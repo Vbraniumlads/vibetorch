@@ -188,6 +188,14 @@ export default function VibetorchApp() {
             width: 100%;
           }
         }
+        @media (max-width: 1023px) {
+          .expand-right {
+            animation: none !important;
+          }
+          .panel-right {
+            scroll-snap-type: none !important;
+          }
+        }
         .panel-right::-webkit-scrollbar {
           display: none;
         }
@@ -294,7 +302,7 @@ export default function VibetorchApp() {
           }`}
           style={{ 
             height: '100vh',
-            scrollSnapType: 'y mandatory',
+            scrollSnapType: window.innerWidth >= 1024 ? 'y mandatory' : 'none',
             scrollBehavior: 'smooth',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none'
