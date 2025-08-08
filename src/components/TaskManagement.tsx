@@ -110,102 +110,127 @@ const TaskManagement: React.FC = () => {
   const counts = updateTaskCounts();
 
   return (
-    <div className="w-full font-sans-pro">
-      <div className="border-t border-b border-border overflow-hidden shadow-sm bg-background">
+    <div className="w-full max-w-4xl mx-auto px-4 py-8">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="px-4 sm:px-6 py-5 border-b border-border bg-card">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-display font-semibold mb-1 text-foreground">
-                Task Management
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Plan and track work before agent execution
-              </p>
-            </div>
-            <Button 
-              onClick={() => setIsModalOpen(true)}
-              variant="outline"
-              className="bg-transparent text-foreground border-foreground hover:bg-muted/10 font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg w-full sm:w-auto rounded-sm"
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" className="mr-2">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
-              </svg>
-              Add New Task
-            </Button>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-light text-foreground">
+              Tasks
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Plan and track work
+            </p>
           </div>
+          <Button 
+            onClick={() => setIsModalOpen(true)}
+            variant="outline"
+            className="w-fit"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" className="mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Task
+          </Button>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[480px] border-collapse bg-card">
-            <thead className="bg-muted border-b border-border">
+        {/* Mobile Card View */}
+        <div className="block md:hidden space-y-3">
+          {tasks.map((task, index) => (
+            <div key={task.id} className="border border-border rounded-lg p-4">
+              <div className="flex items-start justify-between mb-2">
+                <input
+                  type="text"
+                  value={task.description}
+                  onChange={(e) => updateTask(task.id, 'description', e.target.value)}
+                  readOnly={editingTask !== task.id}
+                  className={`text-sm font-medium bg-transparent border-none w-full ${
+                    editingTask === task.id ? 'text-foreground' : 'text-foreground'
+                  }`}
+                />
+                <button
+                  onClick={() => setEditingTask(editingTask === task.id ? null : task.id)}
+                  className="p-1 text-muted-foreground hover:text-foreground"
+                >
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {editingTask === task.id ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    )}
+                  </svg>
+                </button>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <input
+                  type="date"
+                  value={task.date}
+                  onChange={(e) => updateTask(task.id, 'date', e.target.value)}
+                  readOnly={editingTask !== task.id}
+                  className="bg-transparent border-none text-muted-foreground"
+                />
+                <span 
+                  className={`px-2 py-1 rounded text-xs cursor-pointer ${getStatusClasses(task.status)}`}
+                  onClick={() => toggleStatus(task.id)}
+                >
+                  {task.status === 'pending' ? 'P' : 
+                   task.status === 'in-progress' ? 'IP' : 
+                   task.status === 'completed' ? 'C' : 'B'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block border border-border rounded-lg overflow-hidden">
+          <table className="w-full border-collapse">
+            <thead className="border-b border-border">
               <tr>
-                <th className="px-2 sm:px-5 py-4 text-left text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground w-24 sm:w-32">
-                  Date
-                </th>
-                <th className="px-2 sm:px-5 py-4 text-left text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground">
-                  Task
-                </th>
-                <th className="px-2 sm:px-5 py-4 text-left text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground w-28 sm:w-36">
-                  Status
-                </th>
-                <th className="px-2 sm:px-5 py-4 text-center text-xs sm:text-sm font-semibold uppercase tracking-wide text-foreground w-16 sm:w-20">
-                  Edit
-                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Task</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Status</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">Edit</th>
               </tr>
             </thead>
             <tbody>
               {tasks.map((task, index) => (
                 <tr 
                   key={task.id} 
-                  className="border-b border-border transition-all duration-200 hover:bg-muted/50"
+                  className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors"
                 >
-                  <td className="px-2 sm:px-5 py-4">
+                  <td className="px-4 py-3">
                     <input
                       type="date"
                       value={task.date}
                       onChange={(e) => updateTask(task.id, 'date', e.target.value)}
                       readOnly={editingTask !== task.id}
-                      className={`bg-transparent border-none text-xs sm:text-sm font-mono text-muted-foreground transition-all duration-200 w-full ${
-                        editingTask === task.id 
-                          ? 'border-b-2 border-cta-500 text-foreground' 
-                          : 'border-b-2 border-transparent'
-                      }`}
+                      className="bg-transparent border-none text-sm text-muted-foreground w-full"
                     />
                   </td>
-                  <td className="px-2 sm:px-5 py-4">
+                  <td className="px-4 py-3">
                     <input
                       type="text"
                       value={task.description}
                       onChange={(e) => updateTask(task.id, 'description', e.target.value)}
                       readOnly={editingTask !== task.id}
-                      className={`w-full bg-transparent border-none text-xs sm:text-sm font-medium text-foreground transition-all duration-200 ${
-                        editingTask === task.id 
-                          ? 'border-b-2 border-cta-500' 
-                          : 'border-b-2 border-transparent'
-                      }`}
+                      className="w-full bg-transparent border-none text-sm text-foreground"
                     />
                   </td>
-                  <td className="px-2 sm:px-5 py-4 text-center">
+                  <td className="px-4 py-3">
                     <span 
-                      className={`inline-block px-2 sm:px-3 py-1 rounded-sm text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-200 hover:scale-105 ${getStatusClasses(task.status)}`}
+                      className={`px-2 py-1 rounded text-xs cursor-pointer ${getStatusClasses(task.status)}`}
                       onClick={() => toggleStatus(task.id)}
                     >
-                      <span className="hidden sm:inline">{statusLabels[task.status]}</span>
-                      <span className="sm:hidden">
-                        {task.status === 'pending' ? 'P' : 
-                         task.status === 'in-progress' ? 'IP' : 
-                         task.status === 'completed' ? 'C' : 'B'}
-                      </span>
+                      {statusLabels[task.status]}
                     </span>
                   </td>
-                  <td className="px-2 sm:px-5 py-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => setEditingTask(editingTask === task.id ? null : task.id)}
-                      className="p-1 sm:p-2 rounded transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted"
+                      className="p-1 text-muted-foreground hover:text-foreground"
                     >
-                      <svg width="14" height="14" className="sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         {editingTask === task.id ? (
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
                         ) : (
@@ -220,19 +245,17 @@ const TaskManagement: React.FC = () => {
           </table>
         </div>
 
-        {/* Footer */}
-        <div className="px-4 sm:px-6 py-4 border-t border-border text-center bg-muted">
-          <div className="text-xs sm:text-sm text-muted-foreground">
+        {/* Footer Stats */}
+        <div className="text-center">
+          <div className="text-xs text-muted-foreground">
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-              <span>Total <strong className="text-foreground">{counts.total}</strong> tasks</span>
-              <span className="hidden sm:inline">|</span>
-              <span>Completed: <strong className="text-foreground">{counts.completed}</strong></span>
-              <span className="hidden sm:inline">|</span>
-              <span>In Progress: <strong className="text-foreground">{counts.inProgress}</strong></span>
-              <span className="hidden sm:inline">|</span>
-              <span>Pending: <strong className="text-foreground">{counts.pending}</strong></span>
-              <span className="hidden sm:inline">|</span>
-              <span>Blocked: <strong className="text-foreground">{counts.blocked}</strong></span>
+              <span>{counts.total} tasks</span>
+              <span>•</span>
+              <span>{counts.completed} completed</span>
+              <span>•</span>
+              <span>{counts.inProgress} in progress</span>
+              <span>•</span>
+              <span>{counts.pending} pending</span>
             </div>
           </div>
         </div>
@@ -241,49 +264,49 @@ const TaskManagement: React.FC = () => {
       {/* Modal */}
       {isModalOpen && (
         <div 
-          className="fixed inset-0 flex items-center justify-center z-50 bg-black/50"
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 px-4"
           onClick={(e) => e.target === e.currentTarget && setIsModalOpen(false)}
         >
-          <div className="bg-card rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl border border-border">
-            <div className="mb-5">
-              <h2 className="text-xl font-display font-semibold text-foreground">
-                Add New Task
+          <div className="bg-background rounded-lg p-6 w-full max-w-md shadow-xl border border-border">
+            <div className="mb-6">
+              <h2 className="text-lg font-light text-foreground">
+                Add Task
               </h2>
             </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2 text-foreground">
+                <label className="block text-sm mb-2 text-foreground">
                   Date
                 </label>
                 <input
                   type="date"
                   value={newTask.date}
                   onChange={(e) => setNewTask({ ...newTask, date: e.target.value })}
-                  className="w-full px-3 py-2 border border-border rounded-md text-sm bg-card text-foreground focus:border-cta-500 focus:ring-1 focus:ring-cta-500"
+                  className="w-full px-3 py-2 border border-border rounded text-sm bg-transparent text-foreground focus:border-foreground focus:outline-none"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2 text-foreground">
-                  Task Description
+                <label className="block text-sm mb-2 text-foreground">
+                  Description
                 </label>
                 <textarea
                   value={newTask.description}
                   onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                   placeholder="Enter task description..."
-                  className="w-full px-3 py-2 border border-border rounded-md text-sm resize-vertical min-h-[80px] bg-card text-foreground placeholder:text-muted-foreground focus:border-cta-500 focus:ring-1 focus:ring-cta-500"
+                  className="w-full px-3 py-2 border border-border rounded text-sm resize-vertical min-h-[80px] bg-transparent text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2 text-foreground">
+                <label className="block text-sm mb-2 text-foreground">
                   Status
                 </label>
                 <select
                   value={newTask.status}
                   onChange={(e) => setNewTask({ ...newTask, status: e.target.value as Task['status'] })}
-                  className="w-full px-3 py-2 border border-border rounded-md text-sm bg-card text-foreground focus:border-cta-500 focus:ring-1 focus:ring-cta-500"
+                  className="w-full px-3 py-2 border border-border rounded text-sm bg-transparent text-foreground focus:border-foreground focus:outline-none"
                 >
                   <option value="pending">Pending</option>
                   <option value="in-progress">In Progress</option>
@@ -297,13 +320,12 @@ const TaskManagement: React.FC = () => {
               <Button
                 onClick={() => setIsModalOpen(false)}
                 variant="outline"
-                className="border-border text-foreground hover:bg-muted"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={addNewTask}
-                className="bg-cta-500 hover:bg-cta-600 text-white"
+                className="bg-foreground text-background hover:bg-foreground/90"
               >
                 Add Task
               </Button>

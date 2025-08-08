@@ -399,127 +399,122 @@ const VibetorchSteps: React.FC = () => {
           scrollSnapAlign: 'start'
         }}
       >
-        <div className="w-full">
-          <div className="border-t border-b border-border p-8 bg-background">
-            <div className="flex items-center mb-8">
-              <div className="flex-1">
-                <h1 className="text-2xl font-display font-semibold text-foreground">
-                  Vibetorch Dashboard
-                </h1>
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-xl md:text-2xl font-light text-foreground">
+                  Dashboard
+                </h2>
                 <p className="text-sm text-muted-foreground">
-                  Agent is active in {modes[sliderMode].name} mode
+                  {modes[sliderMode].name} mode active
                 </p>
               </div>
               <Button 
                 size="sm" 
                 onClick={refreshTasks}
-                className="bg-cta-500 hover:bg-cta-600 text-white"
+                variant="outline"
+                className="w-fit"
               >
                 Refresh
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <Card className="p-5 text-center bg-muted border-border">
-                <div className="text-2xl font-semibold mb-1 text-cta-500">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-4 border border-border rounded-lg">
+                <div className="text-2xl font-light mb-1 text-foreground">
                   12.4K
                 </div>
-                <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   Tokens Used
                 </div>
-              </Card>
-              <Card className="p-5 text-center bg-muted border-border">
-                <div className="text-2xl font-semibold mb-1 text-cta-500">
+              </div>
+              <div className="text-center p-4 border border-border rounded-lg">
+                <div className="text-2xl font-light mb-1 text-foreground">
                   {tasks.length}
                 </div>
-                <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   Active Tasks
                 </div>
-              </Card>
+              </div>
             </div>
 
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-4 text-base font-medium text-foreground">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                Current Tasks
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <h3 className="text-sm font-medium text-foreground">Tasks</h3>
               </div>
               
-              <Card className="overflow-hidden border-border">
-                {/* Table Header */}
-                <div className="px-4 py-3 border-b border-border bg-muted">
-                  <div className="grid grid-cols-12 gap-2 text-xs font-semibold uppercase tracking-wide text-foreground">
-                    <div className="col-span-3">Repository</div>
-                    <div className="col-span-1">Status</div>
-                    <div className="col-span-5">Description</div>
-                    <div className="col-span-1">Tokens</div>
-                    <div className="col-span-1">Time</div>
-                    <div className="col-span-1">Cost</div>
-                  </div>
-                </div>
-
-                {/* Table Rows */}
-                <div className="max-h-60 overflow-y-auto">
+              <div className="border border-border rounded-lg overflow-hidden">
+                {/* Mobile view */}
+                <div className="block md:hidden">
                   {tasks.map((task, index) => (
-                    <div
-                      key={index} 
-                      className="px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/50 transition-all duration-150"
-                    >
-                      <div className="grid grid-cols-12 gap-2 items-center">
-                        {/* Repository */}
-                        <div className="col-span-3">
-                          <span className="text-sm font-medium overflow-hidden whitespace-nowrap text-ellipsis block text-foreground">
-                            {task.repo}
-                          </span>
-                        </div>
-
-                        {/* Status */}
-                        <div className="col-span-1 flex justify-center">
-                          <div 
-                            className={`w-3 h-3 rounded-full ${
-                              task.status === 'running' ? 'bg-amber-500' :
-                              task.status === 'completed' ? 'bg-emerald-500' : 
-                              task.status === 'pending' ? 'bg-violet-500' : 'bg-red-500'
-                            }`}
-                          />
-                        </div>
-
-                        {/* Description */}
-                        <div className="col-span-5">
-                          <p className="text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
-                            {task.description}
-                          </p>
-                        </div>
-
-                        {/* Tokens */}
-                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
-                          {task.tokens}
-                        </div>
-
-                        {/* Time */}
-                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
-                          {task.time}
-                        </div>
-
-                        {/* Cost */}
-                        <div className="col-span-1 text-sm overflow-hidden whitespace-nowrap text-ellipsis text-muted-foreground">
-                          {task.cost}
-                        </div>
+                    <div key={index} className="p-4 border-b border-border last:border-b-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="text-sm font-medium text-foreground">{task.repo}</span>
+                        <div 
+                          className={`w-2 h-2 rounded-full ${
+                            task.status === 'running' ? 'bg-yellow-500' :
+                            task.status === 'completed' ? 'bg-green-500' : 
+                            task.status === 'pending' ? 'bg-blue-500' : 'bg-red-500'
+                          }`}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2">{task.description}</p>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>{task.tokens}</span>
+                        <span>{task.time}</span>
+                        <span>{task.cost}</span>
                       </div>
                     </div>
                   ))}
                 </div>
-              </Card>
+
+                {/* Desktop view */}
+                <div className="hidden md:block">
+                  <div className="grid grid-cols-12 gap-4 p-4 border-b border-border bg-muted/30">
+                    <div className="col-span-3 text-xs font-medium text-muted-foreground">Repository</div>
+                    <div className="col-span-1 text-xs font-medium text-muted-foreground text-center">Status</div>
+                    <div className="col-span-5 text-xs font-medium text-muted-foreground">Description</div>
+                    <div className="col-span-1 text-xs font-medium text-muted-foreground">Tokens</div>
+                    <div className="col-span-1 text-xs font-medium text-muted-foreground">Time</div>
+                    <div className="col-span-1 text-xs font-medium text-muted-foreground">Cost</div>
+                  </div>
+                  {tasks.map((task, index) => (
+                    <div key={index} className="grid grid-cols-12 gap-4 p-4 border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors">
+                      <div className="col-span-3">
+                        <span className="text-sm text-foreground">{task.repo}</span>
+                      </div>
+                      <div className="col-span-1 flex justify-center">
+                        <div 
+                          className={`w-2 h-2 rounded-full ${
+                            task.status === 'running' ? 'bg-yellow-500' :
+                            task.status === 'completed' ? 'bg-green-500' : 
+                            task.status === 'pending' ? 'bg-blue-500' : 'bg-red-500'
+                          }`}
+                        />
+                      </div>
+                      <div className="col-span-5">
+                        <p className="text-sm text-muted-foreground truncate">{task.description}</p>
+                      </div>
+                      <div className="col-span-1 text-sm text-muted-foreground">{task.tokens}</div>
+                      <div className="col-span-1 text-sm text-muted-foreground">{task.time}</div>
+                      <div className="col-span-1 text-sm text-muted-foreground">{task.cost}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <Card className="p-4 bg-accent text-accent-foreground border-border">
-              <div className="text-sm font-medium mb-3">Monthly Claude Token Usage</div>
-              <div className="bg-accent-foreground/20 h-2 rounded-full overflow-hidden mb-2">
-                <div className="bg-accent-foreground/80 h-full w-2/3 rounded-full transition-all duration-500" />
+            <div className="p-4 border border-border rounded-lg">
+              <div className="text-sm font-medium mb-3 text-foreground">Monthly Usage</div>
+              <div className="bg-muted h-1.5 rounded-full overflow-hidden mb-2">
+                <div className="bg-foreground h-full w-2/3 rounded-full transition-all duration-500" />
               </div>
-              <div className="text-xs opacity-90">
-                12,400 / 18,500 tokens used this month • $4.96 spent
+              <div className="text-xs text-muted-foreground">
+                12,400 / 18,500 tokens • $4.96 spent
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </div>
