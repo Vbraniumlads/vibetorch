@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import TaskManagement from "./TaskManagement";
 import { useAuth } from "@/contexts/AuthContext";
 import { GitHubConnectButton } from "./GitHubConnectButton";
+import { RepositorySearch } from "./RepositorySearch";
 import { toast } from 'sonner';
 import { githubService } from "../features/github/services/github.service";
 import type { GitHubRepository } from "../features/github/types/github.types";
@@ -340,6 +341,13 @@ const VibetorchDashboard: React.FC = () => {
               {modes[sliderMode].desc}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Repository Search */}
+      <div className="w-full mb-8">
+        <div className="rounded-lg bg-background border border-border p-6">
+          <RepositorySearch repositories={repositories} />
         </div>
       </div>
 
