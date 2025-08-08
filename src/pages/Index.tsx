@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { FloatingNavbar } from "@/features/navigation";
 import VibetorchDashboard from "@/components/VibetorchDashboard";
+import { Info, X } from "lucide-react";
 
 
 export default function VibetorchApp() {
@@ -15,6 +16,7 @@ export default function VibetorchApp() {
   const [hasInitialAnimationPlayed, setHasInitialAnimationPlayed] = useState(false);
   const [showNavbar, setShowNavbar] = useState(false);
   const [initialAuthState, setInitialAuthState] = useState<boolean | null>(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Capture initial auth state when loading completes
   useEffect(() => {
@@ -44,11 +46,29 @@ export default function VibetorchApp() {
   // Show navbar after login animation completes (only for fresh logins)
   useEffect(() => {
     if (isAuthenticated && initialAuthState === false) {
-      // Fresh login - show navbar after animation
-      const timer = setTimeout(() => {
-        setShowNavbar(true);
-      }, 1700); // 1.2s slide-out animation + 0.5s buffer
-      return () => clearTimeout(timer);
+      // Check if mobile (screen width < 1024px for lg breakpoint)
+      const isMobile = window.innerWidth < 1024;
+      
+      if (isMobile) {
+        // Mobile: scroll to dashboard immediately
+        const timer = setTimeout(() => {
+          const rightPanel = document.querySelector('.panel-right');
+          if (rightPanel) {
+            rightPanel.scrollTo({
+              top: window.innerHeight, // Scroll down by one viewport height
+              behavior: 'smooth'
+            });
+          }
+          setShowNavbar(true);
+        }, 300); // Shorter delay for mobile
+        return () => clearTimeout(timer);
+      } else {
+        // Desktop: use slide-out animation
+        const timer = setTimeout(() => {
+          setShowNavbar(true);
+        }, 1700); // 1.2s slide-out animation + 0.5s buffer
+        return () => clearTimeout(timer);
+      }
     } else if (!isAuthenticated) {
       setShowNavbar(false);
     }
@@ -168,6 +188,14 @@ export default function VibetorchApp() {
             width: 100%;
           }
         }
+        @media (max-width: 1023px) {
+          .expand-right {
+            animation: none !important;
+          }
+          .panel-right {
+            scroll-snap-type: none !important;
+          }
+        }
         .panel-right::-webkit-scrollbar {
           display: none;
         }
@@ -198,9 +226,9 @@ export default function VibetorchApp() {
 
       {/* Main Layout */}
       <div className="flex flex-col lg:flex-row min-h-screen">
-        {/* Left Panel - Marketing (hide for pre-authenticated users) */}
+        {/* Left Panel - Marketing (hide for pre-authenticated users and mobile) */}
         {!(initialAuthState === true) && (
-          <div className={`lg:w-2/5 panel-left p-6 lg:p-8 flex flex-col lg:fixed lg:h-screen relative overflow-hidden ${isAuthenticated ? 'slide-out-left' : ''}`}>
+          <div className={`hidden lg:flex lg:w-2/5 panel-left p-6 lg:p-8 flex-col lg:fixed lg:h-screen relative overflow-hidden ${isAuthenticated ? 'lg:slide-out-left' : ''}`}>
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 opacity-5 flex items-center justify-center">
             <div className="absolute top-20 left-10 w-32 h-32 bg-cta-500 rounded-full blur-3xl"></div>
@@ -265,7 +293,7 @@ export default function VibetorchApp() {
 
         {/* Right Panel - Vibetorch Steps */}
         <div 
-          className={`panel-right overflow-y-auto ${
+          className={`panel-right overflow-y-auto w-full ${
             initialAuthState === true 
               ? 'lg:w-full lg:ml-0' // Already authenticated - full width immediately
               : isAuthenticated 
@@ -274,7 +302,7 @@ export default function VibetorchApp() {
           }`}
           style={{ 
             height: '100vh',
-            scrollSnapType: 'y mandatory',
+            scrollSnapType: window.innerWidth >= 1024 ? 'y mandatory' : 'none',
             scrollBehavior: 'smooth',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none'
@@ -321,6 +349,82 @@ export default function VibetorchApp() {
             </div>
           )}
         </div>
+
+        {/* Mobile Floating Info Button - Only show on mobile when not authenticated */}
+        {!isAuthenticated && (
+          <button
+            onClick={() => setShowInfoModal(true)}
+            className="fixed bottom-6 left-6 lg:hidden z-50 w-12 h-12 bg-cta-500 hover:bg-cta-600 text-white rounded-full shadow-lg transition-all duration-200 flex items-center justify-center"
+          >
+            <Info className="w-5 h-5" />
+          </button>
+        )}
+
+        {/* Mobile Info Modal */}
+        {showInfoModal && (
+          <div className="fixed inset-0 z-[100] lg:hidden">
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowInfoModal(false)}
+            />
+            
+            {/* Modal Content */}
+            <div className="absolute inset-4 bg-background rounded-xl shadow-xl flex flex-col overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <h2 className="text-lg font-bold text-foreground">VibeTorch</h2>
+                <button
+                  onClick={() => setShowInfoModal(false)}
+                  className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-4">
+                {/* Logo */}
+                <div className="text-center mb-6">
+                  <img 
+                    src="/torch.png" 
+                    alt="Vibetorch" 
+                    className="w-24 h-24 mx-auto rounded-2xl mb-4"
+                  />
+                  <h1 className="text-2xl font-bold text-cta-700 mb-2">
+                    Vibe must flow.
+                  </h1>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    Rest easy, AI's got the night shift.
+                    Automated Vibe Coding when you're not around.
+                  </p>
+                </div>
+                
+                {/* GitHub Link */}
+                <div className="text-center">
+                  <a 
+                    href="https://github.com/Vbraniumlads/exchange-llm-ui" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-cta-600 hover:text-cta-700 transition-colors duration-200 font-medium text-sm"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    View on GitHub
+                  </a>
+                </div>
+              </div>
+              
+              {/* Footer with Theme Toggle */}
+              <div className="p-4 border-t border-border">
+                <div className="flex justify-center">
+                  <ThemeToggle />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

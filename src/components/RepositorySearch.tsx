@@ -50,37 +50,38 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`relative ${className}`}>
       {/* Search Input */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             type="text"
-            placeholder="Search your repositories by name or description..."
+            placeholder="Search repositories..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 min-h-[44px] rounded-sm text-sm sm:text-base bg-transparent border-border focus:border-foreground"
           />
         </div>
         {query && (
           <Button
             onClick={clearSearch}
             variant="outline"
-            className="px-4"
+            className="px-4 py-3 sm:py-2 min-h-[44px] sm:min-h-auto rounded-sm whitespace-nowrap bg-transparent border-border hover:bg-muted/10 text-foreground"
           >
             Clear
           </Button>
         )}
       </div>
 
-      {/* Results */}
+      {/* Results Overlay - Mobile optimized */}
       {query.trim() && (
-        <div className="space-y-4">
+        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-background border border-border rounded-sm shadow-lg max-w-full overflow-hidden sm:rounded-lg">
+          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 max-h-[70vh] sm:max-h-96 overflow-y-auto">
           {/* Results Header */}
           {filteredResults.length > 0 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Found {filteredResults.length} of {repositories.length} repositories
               </p>
             </div>
@@ -88,58 +89,60 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
 
           {/* Results List */}
           {filteredResults.length > 0 ? (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div className="space-y-2 sm:space-y-3">
               {filteredResults.map((repo) => (
                 <Card 
                   key={repo.id}
-                  className="hover:shadow-md transition-all duration-200 border-border/50 hover:border-cta-500/50 group"
+                  className="bg-transparent hover:bg-muted/10 transition-all duration-200 border-border hover:border-foreground group rounded-sm"
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-0">
                       <div className="flex-1 min-w-0">
                         {/* Repository Name */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <h4 className="font-semibold text-foreground group-hover:text-cta-600 transition-colors truncate">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                          <h4 className="font-semibold text-foreground group-hover:text-foreground transition-colors truncate text-sm sm:text-base">
                             {repo.repo_name}
                           </h4>
                           {repo.private && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-sm text-xs font-medium bg-transparent text-muted-foreground border border-border self-start">
                               Private
                             </span>
                           )}
                         </div>
 
                         {/* Description */}
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">
                           {repo.description || 'No description available'}
                         </p>
 
-                        {/* Metadata */}
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          {repo.language && (
+                        {/* Metadata - Stack on mobile */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-3 sm:gap-4">
+                            {repo.language && (
+                              <div className="flex items-center gap-1">
+                                <div className="w-3 h-3 rounded-full border border-foreground bg-transparent"></div>
+                                <span>{repo.language}</span>
+                              </div>
+                            )}
                             <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 rounded-full bg-cta-500"></div>
-                              <span>{repo.language}</span>
+                              <Star className="w-3 h-3" />
+                              <span>{repo.stargazers_count || 0}</span>
                             </div>
-                          )}
-                          <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3" />
-                            <span>{repo.stargazers_count || 0}</span>
+                            <div className="flex items-center gap-1">
+                              <GitFork className="w-3 h-3" />
+                              <span>{repo.forks_count || 0}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <GitFork className="w-3 h-3" />
-                            <span>{repo.forks_count || 0}</span>
-                          </div>
-                          <span>Updated {formatDate(repo.updated_at)}</span>
+                          <span className="sm:ml-auto">Updated {formatDate(repo.updated_at)}</span>
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex gap-2 ml-4">
+                      {/* Action Buttons - Full width on mobile */}
+                      <div className="flex gap-2 sm:ml-4 w-full sm:w-auto">
                         <Button
                           size="sm"
                           onClick={() => handleViewDetails(repo)}
-                          className="bg-cta-500 hover:bg-cta-600 text-white"
+                          className="bg-transparent border-foreground hover:bg-muted/10 text-foreground flex-1 sm:flex-none min-h-[44px] sm:min-h-auto rounded-sm"
                         >
                           <Eye className="w-4 h-4 mr-1" />
                           View
@@ -147,6 +150,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
                         <Button
                           size="sm"
                           variant="outline"
+                          className="min-h-[44px] sm:min-h-auto rounded-sm bg-transparent border-border hover:bg-muted/10"
                           asChild
                         >
                           <a
@@ -154,6 +158,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
+                            className="flex items-center justify-center"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </a>
@@ -165,16 +170,17 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
               ))}
             </div>
           ) : (
-            <Card className="border-dashed">
-              <CardContent className="p-8 text-center">
-                <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h4 className="text-lg font-medium text-foreground mb-2">No repositories found</h4>
-                <p className="text-muted-foreground">
+            <Card className="bg-transparent border-dashed border-border rounded-sm">
+              <CardContent className="p-4 sm:p-8 text-center">
+                <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                <h4 className="text-base sm:text-lg font-medium text-foreground mb-2">No repositories found</h4>
+                <p className="text-sm text-muted-foreground">
                   Try a different search term or check your spelling
                 </p>
               </CardContent>
             </Card>
           )}
+          </div>
         </div>
       )}
     </div>

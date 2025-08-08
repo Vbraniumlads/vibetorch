@@ -237,9 +237,9 @@ const VibetorchDashboard: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      'active': 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      'maintenance': 'bg-amber-100 text-amber-800 border-amber-200',
-      'archived': 'bg-gray-100 text-gray-800 border-gray-200'
+      'active': 'bg-transparent text-foreground border-foreground',
+      'maintenance': 'bg-transparent text-muted-foreground border-muted-foreground',
+      'archived': 'bg-transparent text-muted-foreground border-border'
     };
     return badges[status as keyof typeof badges] || badges.active;
   };
@@ -285,48 +285,57 @@ const VibetorchDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full font-body p-8 pt-[120px] space-y-8 w-[90%] mx-auto pt-40">
-      {/* Mode Selection Slider */}
+    <div className="h-full font-sans px-4 py-6 sm:p-8 pt-36 sm:pt-20 md:pt-24 space-y-4 sm:space-y-6 md:space-y-8 w-full sm:w-[95%] md:w-[90%] lg:w-[85%] mx-auto">
+      {/* Mode description section */}
       <div className="w-full">
-        <div className="rounded-lg p-6 bg-background text-center w-[60%] mx-auto">
-          <h1 className="text-xl font-display font-bold mb-2 pb-6 text-foreground">
-            Agent Vibe Mode
-          </h1>
-          
-          <div className="mb-6">
+                  <div className="rounded-sm p-4 sm:p-6 bg-background text-center w-full sm:w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%] mx-auto">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-sans font-bold mb-2 pb-4 sm:pb-6 text-foreground">
+              Torch Mode
+            </h1>
             
-            <div className="relative mb-4">
-              <div 
-                ref={sliderRef}
-                className="h-1.5 bg-muted rounded-full relative cursor-pointer"
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
-              >
-                {/* Semi-transparent circles at both ends */}
-                <div className="w-4 h-4 bg-muted rounded-full absolute top-[-5px] left-0 transform -translate-x-1/2" />
-                <div className="w-4 h-4 bg-muted rounded-full absolute top-[-5px] right-0 transform translate-x-1/2" />
-                
-                {/* Fill from center to slider position with animation */}
+            <div className="mb-6">
+              
+              <div className="relative mb-4 w-full max-w-[320px] mx-auto px-4 sm:px-0">
                 <div 
-                  className={`h-full bg-foreground rounded-full absolute top-0 ${
+                  ref={sliderRef}
+                  className="h-1 sm:h-0.5 bg-neu-600 rounded-md relative cursor-pointer shadow-sm w-full"
+                  onMouseDown={handleMouseDown}
+                  onTouchStart={handleTouchStart}
+                >
+                {/* End indicators using design system colors */}
+                <div className="w-5 h-5 sm:w-4 sm:h-4 bg-neu-700 rounded-full absolute top-[-6px] sm:top-[-4px] left-0 transform -translate-x-1/2 border border-neu-800" />
+                <div className="w-5 h-5 sm:w-4 sm:h-4 bg-neu-700 rounded-full absolute top-[-6px] sm:top-[-4px] right-0 transform translate-x-1/2 border border-neu-800" />
+                
+                {/* Fill from center to slider position with design system gradient */}
+                <div 
+                  className={`h-full rounded-md absolute top-0 ${
                     showFillAnimation ? 'animate-pulse' : ''
+                  } ${
+                    sliderMode === 0 ? 'bg-cta-500' : 
+                    sliderMode === 2 ? 'bg-acc-500' : 
+                    'bg-neu-800'
                   }`}
                   style={{
                     left: sliderMode === 1 ? '50%' : `${Math.min(50, isDragging ? dragPosition : modes[sliderMode].pos)}%`,
                     width: sliderMode === 1 ? '0%' : `${Math.abs((isDragging ? dragPosition : modes[sliderMode].pos) - 50)}%`,
                     transition: isDragging ? 'none' : showFillAnimation ? 'all 0.8s ease-out' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     transform: showFillAnimation ? 'scaleY(1.2)' : 'scaleY(1)',
-                    transformOrigin: 'center'
+                    transformOrigin: 'center',
+                    boxShadow: showFillAnimation ? '0 2px 8px rgba(0,0,0,0.15)' : '0 1px 3px rgba(0,0,0,0.06)'
                   }}
                 />
                 <div 
-                  className={`w-8 h-8 border-2 border-foreground rounded-full absolute top-[-13px] cursor-grab transform -translate-x-1/2 transition-all duration-300 ${
-                    showGlow ? 'shadow-lg shadow-foreground/50 animate-pulse' : ''
+                  className={`w-12 h-12 sm:w-10 sm:h-10 border-3 rounded-full absolute top-[-20px] sm:top-[-16px] cursor-grab transform -translate-x-1/2 transition-all duration-300 ${
+                    sliderMode === 0 ? 'border-cta-500 bg-cta-50 shadow-lg shadow-cta-500/30' :
+                    sliderMode === 2 ? 'border-acc-500 bg-acc-100 shadow-lg shadow-acc-500/30' :
+                    'border-neu-800 bg-neu-0 shadow-md'
+                  } ${
+                    showGlow ? 'animate-pulse-neon' : ''
                   }`}
                   style={{ 
                     left: `${isDragging ? dragPosition : modes[sliderMode].pos}%`,
                     transition: isDragging ? 'none' : 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: showGlow ? '0 0 20px rgba(var(--foreground), 0.6), 0 0 40px rgba(var(--foreground), 0.3)' : undefined
+                    borderWidth: '3px'
                   }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
@@ -344,46 +353,46 @@ const VibetorchDashboard: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex justify-center text-xs mb-4 pt-3 text-muted-foreground">
-              <span className={`${sliderMode !== 1 ? 'font-bold' : 'text-muted-foreground'} text-foreground text-2xl`}>
+            <div className="flex justify-center text-sm sm:text-base mb-4 pt-3 text-muted-foreground">
+              <span className={`${sliderMode !== 1 ? 'font-bold' : 'text-muted-foreground'} text-foreground text-xl sm:text-2xl`}>
                 {modes[sliderMode].name}
               </span>
             </div>
             
-            <div className="text-sm leading-relaxed text-center text-muted-foreground h-12 flex items-center justify-center">
+            {/* <div className="text-sm leading-relaxed text-center text-muted-foreground h-12 flex items-center justify-center">
               {modes[sliderMode].desc}
-            </div>
+            </div> */}
           </div>
-        </div>
-      </div>
-
-      {/* Repository Search */}
-      <div className="w-full mb-8">
-        <div className="rounded-lg bg-background border border-border p-6">
-          <RepositorySearch repositories={repositories} />
         </div>
       </div>
 
       {/* Repository Gallery */}
       <div className="w-full">
-        <div className="rounded-lg bg-background">
+        <div className="rounded-sm bg-transparent border border-border">
           <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-display font-semibold text-foreground">
+                <h2 className="text-base sm:text-lg md:text-xl font-display font-semibold text-foreground">
                   Your Repositories
                 </h2>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                   {repositories.length} repositories ({repositories.filter(r => isOrganizationRepo(r)).length} organization) • Agent mode: {modes[sliderMode].name}
                 </p>
               </div>
-              <button 
-                onClick={syncRepositories} 
-                disabled={isLoading}
-                className="px-4 py-2 text-sm bg-muted hover:bg-muted-foreground/20 text-foreground rounded-md transition-colors"
-              >
-                {isLoading ? 'Syncing...' : 'Sync Repos'}
-              </button>
+              
+              {/* Repository Search and Sync Button Group */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-1/2 mt-4 sm:mt-0">
+                <div className="flex-1">
+                  <RepositorySearch repositories={repositories} />
+                </div>
+                <button 
+                  onClick={syncRepositories} 
+                  disabled={isLoading}
+                  className="px-4 py-3 sm:py-2 text-sm bg-muted hover:bg-muted-foreground/20 text-foreground rounded-sm transition-colors whitespace-nowrap min-h-[44px] sm:min-h-auto"
+                >
+                  {isLoading ? 'Syncing...' : 'Sync Repos'}
+                </button>
+              </div>
             </div>
           </div>
           
@@ -404,28 +413,28 @@ const VibetorchDashboard: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {repositories.map((repo) => {
                   const activityStatus = getActivityStatus(repo.last_synced_at);
                   return (
-                    <Card key={repo.id} className="hover:shadow-md transition-all duration-200 cursor-pointer group border-border">
+                    <Card key={repo.id} className="bg-transparent hover:bg-muted/10 transition-all duration-200 cursor-pointer group border-border rounded-sm">
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center space-x-2">
                             <div 
-                              className={`w-3 h-3 rounded-full ${
-                                sliderMode === 0 ? 'bg-amber-500' : 
-                                sliderMode === 1 ? 'bg-muted-foreground' : 
-                                'bg-violet-500'
+                              className={`w-3 h-3 rounded-full border ${
+                                sliderMode === 0 ? 'border-foreground bg-transparent' : 
+                                sliderMode === 1 ? 'border-muted-foreground bg-transparent' : 
+                                'border-foreground bg-transparent'
                               }`}
                             />
                             <div className="flex items-center space-x-1">
                               {isOrganizationRepo(repo) ? (
-                                <Building className="w-3 h-3 text-acc-600" />
+                                <Building className="w-3 h-3 text-foreground" />
                               ) : (
-                                <User className="w-3 h-3 text-neu-700" />
+                                <User className="w-3 h-3 text-muted-foreground" />
                               )}
-                              <h3 className="font-medium text-foreground group-hover:text-cta-600 transition-colors text-sm">
+                              <h3 className="font-medium text-foreground group-hover:text-foreground transition-colors text-sm sm:text-base break-all">
                                 {repo.owner?.login ? `${repo.owner.login}/` : ''}{repo.repo_name}
                               </h3>
                             </div>
@@ -444,19 +453,19 @@ const VibetorchDashboard: React.FC = () => {
                           </div>
                         </div>
                         
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 h-10">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem] sm:min-h-[2.5rem]">
                           {repo.description || 'No description available'}
                         </p>
                         
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-2">
                             {isOrganizationRepo(repo) && (
-                              <span className="text-xs px-1.5 py-0.5 bg-acc-100 text-acc-700 rounded border border-acc-300">
+                              <span className="text-xs px-2 py-1 bg-transparent text-muted-foreground rounded-sm border border-border">
                                 Organization
                               </span>
                             )}
                             {getPermissionBadge(repo) && (
-                              <span className="text-xs px-1.5 py-0.5 bg-cta-100 text-cta-700 rounded border border-cta-300">
+                              <span className="text-xs px-2 py-1 bg-transparent text-foreground rounded-sm border border-foreground">
                                 {getPermissionBadge(repo)}
                               </span>
                             )}
@@ -467,7 +476,7 @@ const VibetorchDashboard: React.FC = () => {
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <span className={`text-xs px-2 py-1 rounded-full border font-medium ${getStatusBadge(activityStatus)}`}>
+                          <span className={`text-xs px-2 py-1 rounded-sm border font-medium ${getStatusBadge(activityStatus)}`}>
                             {activityStatus}
                           </span>
                           <span className="text-xs text-muted-foreground">
@@ -479,8 +488,9 @@ const VibetorchDashboard: React.FC = () => {
                         <div className="mt-3 pt-3 border-t border-border">
                           <Button
                             size="sm"
+                            variant="outline"
                             onClick={() => handleViewDetails(repo)}
-                            className="w-full bg-cta-500 hover:bg-cta-600 text-white"
+                            className="w-full bg-transparent hover:bg-muted/10 text-foreground border-foreground min-h-[44px] rounded-sm"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             View Details
