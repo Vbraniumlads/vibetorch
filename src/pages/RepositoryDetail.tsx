@@ -269,26 +269,26 @@ export default function RepositoryDetail() {
     <div className="min-h-screen bg-background px-4 py-6 sm:p-6 font-sans-pro">
       <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 w-full">
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="p-2"
+            className="p-2 flex-shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold text-foreground truncate">
               {owner}/{repo}
             </h1>
             {repository.description && (
-              <p className="text-muted-foreground mt-1">{repository.description}</p>
+              <p className="text-sm sm:text-base text-muted-foreground mt-1 truncate">{repository.description}</p>
             )}
           </div>
           <Button
             variant="outline"
             onClick={() => window.open(repository.repo_url, '_blank')}
-            className="ml-auto"
+            className="ml-auto hidden sm:flex flex-shrink-0"
           >
             <ExternalLink className="w-4 h-4 mr-2" />
             View on GitHub
