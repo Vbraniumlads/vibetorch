@@ -16,6 +16,11 @@ export function TokenExpiryNotification() {
       return;
     }
 
+    // Clear existing interval before setting new one
+    if (expiryCheckInterval) {
+      clearInterval(expiryCheckInterval);
+    }
+
     // 5분마다 토큰 만료 시간 확인
     const interval = setInterval(() => {
       const expiry = authService.getTokenExpiry();
@@ -55,7 +60,7 @@ export function TokenExpiryNotification() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isAuthenticated, logout, expiryCheckInterval]);
+  }, [isAuthenticated, logout]);
 
   // 컴포넌트는 UI를 렌더링하지 않음 (notification only)
   return null;

@@ -24,11 +24,11 @@ const VibetorchDashboard: React.FC = () => {
   
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  const modes = [
+  const modes = React.useMemo(() => [
     { name: 'Maintainer', desc: 'Let the AI maintain your repositories', pos: 0 },
     { name: 'Off', desc: 'AI agent is disabled for all repositories', pos: 50 },
     { name: 'Pioneer', desc: 'AI suggests new features, architecture improvements, and innovations', pos: 100 }
-  ];
+  ], []);
 
   // Fetch repositories on component mount
   useEffect(() => {
