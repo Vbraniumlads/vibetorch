@@ -122,14 +122,16 @@ export function GitHubConnectButton({
   }, [authPopup, onLoginSuccess, processedCodes]);
 
   return (
-    <Button 
-      onClick={handleConnect}
-      disabled={isLoading}
-      className="w-full py-4 px-6 bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 dark:text-gray-900 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden"
-    >
+    <div className="font-sans-pro">
+      <Button 
+        onClick={handleConnect}
+        disabled={isLoading}
+        variant="outline"
+        className="w-full py-4 px-6 bg-transparent border-foreground hover:bg-muted/10 text-foreground font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden rounded-sm"
+      >
       {isLoading ? (
         <>
-          <div className="w-5 h-5 border-2 border-white dark:border-gray-900 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-5 h-5 border-2 border-foreground border-t-transparent rounded-sm animate-spin"></div>
           <span className="flex items-center gap-2">
             Opening GitHub...
             <span className="animate-pulse">🚀</span>
@@ -147,8 +149,7 @@ export function GitHubConnectButton({
         </>
       )}
       
-      {/* Subtle gradient overlay for premium feel */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
     </Button>
+    </div>
   );
 }

@@ -50,7 +50,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`relative ${className}`}>
       {/* Search Input */}
       <div className="flex gap-2">
         <div className="relative flex-1">
@@ -74,9 +74,10 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
         )}
       </div>
 
-      {/* Results */}
+      {/* Results Overlay */}
       {query.trim() && (
-        <div className="space-y-4">
+        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-background border border-border rounded-lg shadow-lg">
+          <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
           {/* Results Header */}
           {filteredResults.length > 0 && (
             <div className="flex items-center justify-between">
@@ -88,7 +89,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
 
           {/* Results List */}
           {filteredResults.length > 0 ? (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div className="space-y-3">
               {filteredResults.map((repo) => (
                 <Card 
                   key={repo.id}
@@ -175,6 +176,7 @@ export function RepositorySearch({ repositories, className = '' }: RepositorySea
               </CardContent>
             </Card>
           )}
+          </div>
         </div>
       )}
     </div>

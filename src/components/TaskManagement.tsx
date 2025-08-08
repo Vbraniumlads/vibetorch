@@ -53,10 +53,10 @@ const TaskManagement: React.FC = () => {
 
   const getStatusClasses = (status: Task['status']) => {
     const statusStyles = {
-      pending: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
-      'in-progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-      completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
-      blocked: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+      pending: 'bg-transparent text-cta-600 border border-cta-600',
+      'in-progress': 'bg-transparent text-acc-600 border border-acc-600',
+      completed: 'bg-transparent text-foreground border border-foreground',
+      blocked: 'bg-transparent text-muted-foreground border border-muted-foreground'
     };
     return statusStyles[status];
   };
@@ -110,7 +110,7 @@ const TaskManagement: React.FC = () => {
   const counts = updateTaskCounts();
 
   return (
-    <div className="w-full font-body">
+    <div className="w-full font-sans-pro">
       <div className="border-t border-b border-border overflow-hidden shadow-sm bg-background">
         {/* Header */}
         <div className="px-4 sm:px-6 py-5 border-b border-border bg-card">
@@ -125,7 +125,8 @@ const TaskManagement: React.FC = () => {
             </div>
             <Button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-cta-500 hover:bg-cta-600 text-white font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg w-full sm:w-auto"
+              variant="outline"
+              className="bg-transparent text-foreground border-foreground hover:bg-muted/10 font-medium transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg w-full sm:w-auto rounded-sm"
             >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" className="mr-2">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
@@ -188,7 +189,7 @@ const TaskManagement: React.FC = () => {
                   </td>
                   <td className="px-2 sm:px-5 py-4 text-center">
                     <span 
-                      className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-200 hover:scale-105 ${getStatusClasses(task.status)}`}
+                      className={`inline-block px-2 sm:px-3 py-1 rounded-sm text-xs font-semibold uppercase tracking-wide cursor-pointer transition-all duration-200 hover:scale-105 ${getStatusClasses(task.status)}`}
                       onClick={() => toggleStatus(task.id)}
                     >
                       <span className="hidden sm:inline">{statusLabels[task.status]}</span>

@@ -132,61 +132,61 @@ export default function RepositoryDetail() {
   };
 
   const renderComments = (comments: GitHubComment[]) => (
-    <div className="mt-3 pt-3 border-t border-neu-600 space-y-3">
+    <div className="mt-3 pt-3 border-t border-border space-y-3">
       {comments.map(comment => (
         <div key={comment.id} className="bg-neu-500 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-neu-700 rounded-full flex items-center justify-center">
-              <User className="w-3 h-3 text-neu-0" />
+            <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
+              <User className="w-3 h-3 text-background" />
             </div>
-            <span className="text-sm font-bold text-neu-900">{comment.user.login}</span>
+            <span className="text-sm font-bold text-foreground">{comment.user.login}</span>
             <Badge 
               variant="outline" 
-              className="text-xs border-neu-700 text-neu-700"
+              className="text-xs border-border text-muted-foreground"
             >
               {comment.author_association.toLowerCase()}
             </Badge>
-            <span className="text-xs text-neu-700 ml-auto">
+            <span className="text-xs text-muted-foreground ml-auto">
               {new Date(comment.created_at).toLocaleDateString()}
             </span>
           </div>
-          <div className="text-sm text-neu-800 prose prose-sm max-w-none prose-neu">
+          <div className="text-sm text-foreground prose prose-sm max-w-none prose-neu">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 // Custom styling for markdown elements
-                h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-neu-900 mb-2" {...props} />,
-                h2: ({ node, ...props }) => <h2 className="text-base font-bold text-neu-900 mb-2" {...props} />,
-                h3: ({ node, ...props }) => <h3 className="text-sm font-bold text-neu-900 mb-1" {...props} />,
+                h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-foreground mb-2" {...props} />,
+                h2: ({ node, ...props }) => <h2 className="text-base font-bold text-foreground mb-2" {...props} />,
+                h3: ({ node, ...props }) => <h3 className="text-sm font-bold text-foreground mb-1" {...props} />,
                 p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                 ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-2 space-y-1" {...props} />,
                 ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-2 space-y-1" {...props} />,
                 li: ({ node, ...props }) => <li className="text-sm" {...props} />,
                 blockquote: ({ node, ...props }) => (
-                  <blockquote className="border-l-4 border-neu-600 pl-3 italic text-neu-700 mb-2" {...props} />
+                  <blockquote className="border-l-4 border-border pl-3 italic text-muted-foreground mb-2" {...props} />
                 ),
                 code: ({ node, inline, ...props }) => 
                   inline ? (
-                    <code className="bg-neu-600 text-neu-900 px-1 py-0.5 rounded text-xs font-mono" {...props} />
+                    <code className="bg-muted/50 text-foreground px-1 py-0.5 rounded text-xs font-mono" {...props} />
                   ) : (
-                    <code className="block bg-neu-600 text-neu-900 p-2 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
+                    <code className="block bg-muted/50 text-foreground p-2 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
                   ),
                 pre: ({ node, ...props }) => (
-                  <pre className="bg-neu-600 text-neu-900 p-3 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
+                  <pre className="bg-muted/50 text-foreground p-3 rounded text-xs font-mono overflow-x-auto mb-2" {...props} />
                 ),
                 a: ({ node, ...props }) => (
                   <a className="text-cta-600 hover:text-cta-700 underline" target="_blank" rel="noopener noreferrer" {...props} />
                 ),
                 table: ({ node, ...props }) => (
-                  <table className="w-full border border-neu-600 rounded mb-2" {...props} />
+                  <table className="w-full border border-border rounded mb-2" {...props} />
                 ),
                 th: ({ node, ...props }) => (
-                  <th className="border border-neu-600 bg-neu-600 px-2 py-1 text-left text-xs font-medium" {...props} />
+                  <th className="border border-border bg-muted/50 px-2 py-1 text-left text-xs font-medium" {...props} />
                 ),
                 td: ({ node, ...props }) => (
-                  <td className="border border-neu-600 px-2 py-1 text-xs" {...props} />
+                  <td className="border border-border px-2 py-1 text-xs" {...props} />
                 ),
-                hr: ({ node, ...props }) => <hr className="border-neu-600 my-3" {...props} />,
+                hr: ({ node, ...props }) => <hr className="border-border my-3" {...props} />,
                 img: ({ node, ...props }) => (
                   <img className="max-w-full h-auto rounded mb-2" {...props} />
                 ),
@@ -205,7 +205,7 @@ export default function RepositoryDetail() {
         </div>
       ))}
       {comments.length === 0 && (
-        <p className="text-sm text-neu-700 italic">No comments yet</p>
+        <p className="text-sm text-muted-foreground italic">No comments yet</p>
       )}
     </div>
   );
@@ -239,12 +239,12 @@ export default function RepositoryDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neu-0 to-neu-500 p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="max-w-6xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-neu-600 rounded w-1/4"></div>
-            <div className="h-32 bg-neu-600 rounded"></div>
-            <div className="h-64 bg-neu-600 rounded"></div>
+            <div className="h-8 bg-muted/50 rounded w-1/4"></div>
+            <div className="h-32 bg-muted/50 rounded"></div>
+            <div className="h-64 bg-muted/50 rounded"></div>
           </div>
         </div>
       </div>
@@ -253,7 +253,7 @@ export default function RepositoryDetail() {
 
   if (error || !repository) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neu-0 to-neu-500 p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="max-w-6xl mx-auto">
           <Card className="bg-status-error/10 border-status-error">
             <CardContent className="p-6">
@@ -269,7 +269,7 @@ export default function RepositoryDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neu-0 to-neu-500 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -281,11 +281,11 @@ export default function RepositoryDetail() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-neu-900">
+            <h1 className="text-3xl font-bold text-foreground">
               {owner}/{repo}
             </h1>
             {repository.description && (
-              <p className="text-neu-700 mt-1">{repository.description}</p>
+              <p className="text-muted-foreground mt-1">{repository.description}</p>
             )}
           </div>
           <Button
@@ -299,7 +299,7 @@ export default function RepositoryDetail() {
         </div>
 
         {/* Stats Card */}
-        <Card className="bg-gradient-to-r from-white to-neu-500 border border-neu-600">
+        <Card className="bg-gradient-to-r from-white to-neu-500 border border-border">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
@@ -320,43 +320,43 @@ export default function RepositoryDetail() {
                     Add Task
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-neu-0 border-neu-600">
+                <DialogContent className="bg-neu-0 border-border">
                   <DialogHeader>
-                    <DialogTitle className="text-neu-900">Create New Task</DialogTitle>
+                    <DialogTitle className="text-foreground">Create New Task</DialogTitle>
                   </DialogHeader>
                   
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="title" className="text-neu-800">Title *</Label>
+                      <Label htmlFor="title" className="text-foreground">Title *</Label>
                       <Input
                         id="title"
                         value={newIssue.title}
                         onChange={(e) => setNewIssue(prev => ({ ...prev, title: e.target.value }))}
                         placeholder="Enter task title..."
-                        className="border-neu-600 focus:border-cta-500"
+                        className="border-border focus:border-foreground rounded-sm"
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor="description" className="text-neu-800">Description *</Label>
+                      <Label htmlFor="description" className="text-foreground">Description *</Label>
                       <Textarea
                         id="description"
                         value={newIssue.description}
                         onChange={(e) => setNewIssue(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe the task... vibe-torch bot will generate a GitHub issue"
                         rows={4}
-                        className="border-neu-600 focus:border-cta-500"
+                        className="border-border focus:border-foreground rounded-sm"
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor="labels" className="text-neu-800">Labels (optional)</Label>
+                      <Label htmlFor="labels" className="text-foreground">Labels (optional)</Label>
                       <Input
                         id="labels"
                         value={newIssue.labels}
                         onChange={(e) => setNewIssue(prev => ({ ...prev, labels: e.target.value }))}
                         placeholder="bug, enhancement, feature (comma-separated)"
-                        className="border-neu-600 focus:border-cta-500"
+                        className="border-border focus:border-foreground rounded-sm"
                       />
                     </div>
                     
@@ -385,7 +385,7 @@ export default function RepositoryDetail() {
 
         {/* Issues and PRs */}
         <Tabs defaultValue="issues" className="w-full">
-          <TabsList className="bg-neu-600 text-neu-900">
+          <TabsList className="bg-muted text-foreground">
             <TabsTrigger value="issues" className="data-[state=active]:bg-cta-500 data-[state=active]:text-white">
               Issues ({issues.length})
             </TabsTrigger>
@@ -396,28 +396,28 @@ export default function RepositoryDetail() {
           
           <TabsContent value="issues" className="space-y-4">
             {issues.length === 0 ? (
-              <Card className="bg-gradient-to-r from-white to-neu-500 border border-neu-600">
+              <Card className="bg-gradient-to-r from-white to-neu-500 border border-border">
                 <CardContent className="p-8 text-center">
-                  <AlertCircle className="w-12 h-12 text-neu-700 mx-auto mb-4" />
-                  <p className="text-neu-700">No issues found</p>
+                  <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No issues found</p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-3">
                 {issues.map(issue => (
-                  <Card key={issue.id} className="bg-gradient-to-r from-white to-neu-500 border border-neu-600 hover:shadow-md transition-shadow">
+                  <Card key={issue.id} className="bg-gradient-to-r from-white to-neu-500 border border-border hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-neu-900 hover:text-cta-600">
+                            <h3 className="font-semibold text-foreground hover:text-cta-600">
                               <a href={issue.html_url} target="_blank" rel="noopener noreferrer">
                                 #{issue.number} {issue.title}
                               </a>
                             </h3>
                             <Badge 
                               variant={issue.state === 'open' ? 'default' : 'secondary'}
-                              className={issue.state === 'open' ? 'bg-status-success text-white' : 'bg-neu-700 text-neu-0'}
+                              className={issue.state === 'open' ? 'bg-status-success text-white' : 'bg-muted text-background'}
                             >
                               {issue.state}
                             </Badge>
@@ -438,7 +438,7 @@ export default function RepositoryDetail() {
                             </div>
                           )}
                           
-                          <div className="flex items-center gap-2 text-sm text-neu-700">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span>opened by {issue.user.login}</span>
                             <span>•</span>
                             <span>{new Date(issue.created_at).toLocaleDateString()}</span>
@@ -471,8 +471,8 @@ export default function RepositoryDetail() {
                       {expandedIssues.has(issue.number) && (
                         <div className="px-4 pb-4">
                           {loadingComments.has(issue.number) ? (
-                            <div className="flex items-center gap-2 text-sm text-neu-700 mt-3 pt-3 border-t border-neu-600">
-                              <div className="w-4 h-4 border-2 border-neu-700 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-3 pt-3 border-t border-border">
+                              <div className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin"></div>
                               Loading comments...
                             </div>
                           ) : issueComments[issue.number] ? (
@@ -489,28 +489,28 @@ export default function RepositoryDetail() {
           
           <TabsContent value="pulls" className="space-y-4">
             {pullRequests.length === 0 ? (
-              <Card className="bg-gradient-to-r from-white to-neu-500 border border-neu-600">
+              <Card className="bg-gradient-to-r from-white to-neu-500 border border-border">
                 <CardContent className="p-8 text-center">
-                  <GitPullRequest className="w-12 h-12 text-neu-700 mx-auto mb-4" />
-                  <p className="text-neu-700">No pull requests found</p>
+                  <GitPullRequest className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No pull requests found</p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-3">
                 {pullRequests.map(pr => (
-                  <Card key={pr.id} className="bg-gradient-to-r from-white to-neu-500 border border-neu-600 hover:shadow-md transition-shadow">
+                  <Card key={pr.id} className="bg-gradient-to-r from-white to-neu-500 border border-border hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-neu-900 hover:text-acc-600">
+                            <h3 className="font-semibold text-foreground hover:text-acc-600">
                               <a href={pr.html_url} target="_blank" rel="noopener noreferrer">
                                 #{pr.number} {pr.title}
                               </a>
                             </h3>
                             <div className="flex gap-2">
                               {pr.draft && (
-                                <Badge variant="outline" className="text-xs border-neu-700 text-neu-700">
+                                <Badge variant="outline" className="text-xs border-border text-muted-foreground">
                                   Draft
                                 </Badge>
                               )}
@@ -519,7 +519,7 @@ export default function RepositoryDetail() {
                                 className={
                                   pr.state === 'open' ? 'bg-status-success text-white' :
                                   pr.merged ? 'bg-acc-500 text-white' :
-                                  'bg-neu-700 text-neu-0'
+                                  'bg-muted text-background'
                                 }
                               >
                                 {pr.merged ? 'merged' : pr.state}
@@ -529,13 +529,13 @@ export default function RepositoryDetail() {
                           
                           {/* PR Description Preview */}
                           {pr.body && (
-                            <div className="text-sm text-neu-700 mb-3 line-clamp-2 prose prose-sm max-w-none">
+                            <div className="text-sm text-muted-foreground mb-3 line-clamp-2 prose prose-sm max-w-none">
                               <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
                                   p: ({ node, ...props }) => <p className="inline" {...props} />,
                                   code: ({ node, inline, ...props }) => 
-                                    <code className="bg-neu-600 text-neu-900 px-1 rounded text-xs" {...props} />,
+                                    <code className="bg-muted/50 text-foreground px-1 rounded text-xs" {...props} />,
                                   a: ({ node, ...props }) => 
                                     <a className="text-cta-600 hover:text-cta-700" {...props} />
                                 }}
@@ -545,13 +545,13 @@ export default function RepositoryDetail() {
                             </div>
                           )}
                           
-                          <div className="flex items-center gap-2 text-sm text-neu-700 mb-2">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                             <GitBranch className="w-4 h-4" />
                             <span>{pr.head.ref} → {pr.base.ref}</span>
                           </div>
                           
                           {/* PR Stats */}
-                          <div className="flex items-center gap-4 text-xs text-neu-700 mb-2">
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
                             {pr.commits !== undefined && (
                               <div className="flex items-center gap-1">
                                 <GitCommit className="w-3 h-3" />
@@ -584,7 +584,7 @@ export default function RepositoryDetail() {
                             </div>
                           )}
                           
-                          <div className="flex items-center gap-2 text-sm text-neu-700">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <User className="w-3 h-3" />
                             <span>opened by {pr.user.login}</span>
                             <span>•</span>
@@ -623,14 +623,14 @@ export default function RepositoryDetail() {
 
                       {/* Mergeable Status */}
                       {pr.mergeable !== undefined && pr.state === 'open' && (
-                        <div className="pt-3 border-t border-neu-600">
+                        <div className="pt-3 border-t border-border">
                           <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${
                               pr.mergeable === true ? 'bg-status-success' : 
                               pr.mergeable === false ? 'bg-status-error' : 
                               'bg-status-warning'
                             }`} />
-                            <span className="text-xs text-neu-700">
+                            <span className="text-xs text-muted-foreground">
                               {pr.mergeable === true ? 'Ready to merge' : 
                                pr.mergeable === false ? 'Merge conflicts' : 
                                'Checking merge status...'}
@@ -643,8 +643,8 @@ export default function RepositoryDetail() {
                       {expandedPRs.has(pr.number) && (
                         <div className="px-4 pb-4">
                           {loadingComments.has(pr.number) ? (
-                            <div className="flex items-center gap-2 text-sm text-neu-700 mt-3 pt-3 border-t border-neu-600">
-                              <div className="w-4 h-4 border-2 border-neu-700 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-3 pt-3 border-t border-border">
+                              <div className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin"></div>
                               Loading comments...
                             </div>
                           ) : prComments[pr.number] ? (
