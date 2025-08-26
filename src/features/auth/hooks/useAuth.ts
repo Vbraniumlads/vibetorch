@@ -55,8 +55,16 @@ export function useAuth() {
         return;
       }
 
+      // Add timeout protection to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Auth check timeout')), 10000)
+      );
+
       // 토큰이 있으면 서버에서 사용자 정보 검증 및 가져오기
-      const response = await authService.getCurrentUser();
+      const response = await Promise.race([
+        authService.getCurrentUser(),
+        timeoutPromise
+      ]) as Awaited<ReturnType<typeof authService.getCurrentUser>>;
 
       setState({
         isAuthenticated: true,

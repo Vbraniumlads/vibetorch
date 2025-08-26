@@ -1,8 +1,5 @@
-const CACHE_NAME = "vibetorch-v1";
+const CACHE_NAME = "vibetorch-v2";
 const urlsToCache = [
-  "/",
-  "/static/js/bundle.js",
-  "/static/css/main.css",
   "/torch.webp",
   "/favicon.ico",
 ];
@@ -14,21 +11,65 @@ self.addEventListener("install", (event) => {
       return cache.addAll(urlsToCache);
     })
   );
+  // Force the waiting service worker to become active
+  self.skipWaiting();
 });
 
-// Fetch event
+// Fetch event - Use network-first strategy for HTML, cache-first for assets
 self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // For HTML documents, use network-first strategy
+  if (request.mode === "navigate" || request.destination === "document" || 
+      request.headers.get("accept")?.includes("text/html")) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Clone the response before caching
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            // Only cache successful responses
+            if (response.status === 200) {
+              cache.put(request, responseToCache);
+            }
+          });
+          return response;
+        })
+        .catch(() => {
+          // Only use cache as fallback when network fails
+          return caches.match(request).then((response) => {
+            if (response) {
+              return response;
+            }
+            // Return a proper offline page if available
+            return new Response(
+              "<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>You are offline</h1><p>Please check your connection and reload.</p></body></html>",
+              { headers: { "Content-Type": "text/html" } }
+            );
+          });
+        })
+    );
+    return;
+  }
+
+  // For assets (images, JS, CSS), use cache-first strategy
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Return cached version or fetch from network
+    caches.match(request).then((response) => {
       if (response) {
         return response;
       }
-      return fetch(event.request).catch(() => {
-        // Return a fallback page when offline
-        if (event.request.destination === "document") {
-          return caches.match("/");
+      return fetch(request).then((response) => {
+        // Don't cache non-successful responses
+        if (!response || response.status !== 200 || response.type === "error") {
+          return response;
         }
+        // Clone the response before caching
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
+        return response;
       });
     })
   );
@@ -37,15 +78,21 @@ self.addEventListener("fetch", (event) => {
 // Activate event
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    Promise.all([
+      // Clear old caches
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Take control of all clients immediately
+      clients.claim()
+    ])
   );
 });
 
