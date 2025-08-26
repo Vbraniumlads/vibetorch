@@ -105,7 +105,7 @@ async function runClaudeCode(
       cwd: workDir,
       env,
       maxBuffer: 50 * 1024 * 1024,
-      timeout: 300000 // 5 minute timeout
+      timeout: 30 * 60 * 1000  // 30 minute timeout
     });
 
     console.log('Claude Code completed successfully');
@@ -116,31 +116,6 @@ async function runClaudeCode(
     return { stdout, stderr };
   } catch (error: any) {
     console.error('Claude Code execution error:', error);
-
-    // If the command fails, try with explicit non-interactive mode
-    if (error.code === 1 || error.message.includes('authentication')) {
-      console.log('Trying with explicit non-interactive flags...');
-
-      const altCommand = `CLAUDE_CODE_NON_INTERACTIVE=true claude -p '${escapedPrompt}'`;
-
-      try {
-        const { stdout, stderr } = await execAsync(altCommand, {
-          cwd: workDir,
-          env: {
-            ...env,
-            CLAUDE_CODE_NON_INTERACTIVE: 'true'
-          },
-          maxBuffer: 50 * 1024 * 1024,
-          timeout: 300000
-        });
-
-        console.log('Alternative command succeeded');
-        return { stdout, stderr };
-      } catch (altError: any) {
-        console.error('Alternative approach also failed:', altError.message);
-      }
-    }
-
     throw new Error(`Claude Code failed: ${error.message}`);
   }
 }
