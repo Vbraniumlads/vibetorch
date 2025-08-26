@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
@@ -33,7 +33,7 @@ interface RepoInfo {
   token: string;
 }
 
-async function runClaudeCode(
+async function runClaudeCodeWithStreaming(
   taskPrompt: string,
   claudeToken: string,
   workDir: string,
@@ -95,54 +95,78 @@ async function runClaudeCode(
   // Escape the prompt properly for shell
   const escapedPrompt = taskPrompt.replace(/'/g, "'\\''");
 
-  // Run Claude with permission bypass (non-root user allows this)
-  const command = `echo '${escapedPrompt}' | claude -p '${escapedPrompt}' --dangerously-skip-permissions`;
+  console.log('=== Starting Claude Code execution with real-time streaming ===');
 
-  console.log(`Command: ${command}`);
-
-  try {
-    const { stdout, stderr } = await execAsync(command, {
+  return new Promise<ClaudeResult>((resolve, reject) => {
+    // Use spawn for real-time streaming
+    const child = spawn('sh', ['-c', `echo '${escapedPrompt}' | claude -p '${escapedPrompt}' --dangerously-skip-permissions`], {
       cwd: workDir,
       env,
-      maxBuffer: 50 * 1024 * 1024,
-      timeout: 300000 // 5 minute timeout
+      stdio: ['pipe', 'pipe', 'pipe']
     });
 
-    console.log('Claude Code completed successfully');
-    if (stderr) {
-      console.error('Claude Code stderr:', stderr);
-    }
+    let stdout = '';
+    let stderr = '';
 
-    return { stdout, stderr };
-  } catch (error: any) {
-    console.error('Claude Code execution error:', error);
+    // Real-time stdout streaming
+    child.stdout?.on('data', (data: Buffer) => {
+      const chunk = data.toString();
+      stdout += chunk;
 
-    // If the command fails, try with explicit non-interactive mode
-    if (error.code === 1 || error.message.includes('authentication')) {
-      console.log('Trying with explicit non-interactive flags...');
+      // Print each line as it comes in with timestamp
+      const lines = chunk.split('\n');
+      lines.forEach((line, index) => {
+        if (line.trim() || index < lines.length - 1) {
+          console.log(`[${new Date().toISOString()}] CLAUDE: ${line}`);
+        }
+      });
+    });
 
-      const altCommand = `CLAUDE_CODE_NON_INTERACTIVE=true claude -p '${escapedPrompt}'`;
+    // Real-time stderr streaming
+    child.stderr?.on('data', (data: Buffer) => {
+      const chunk = data.toString();
+      stderr += chunk;
 
-      try {
-        const { stdout, stderr } = await execAsync(altCommand, {
-          cwd: workDir,
-          env: {
-            ...env,
-            CLAUDE_CODE_NON_INTERACTIVE: 'true'
-          },
-          maxBuffer: 50 * 1024 * 1024,
-          timeout: 300000
-        });
+      // Print stderr with different prefix
+      const lines = chunk.split('\n');
+      lines.forEach((line, index) => {
+        if (line.trim() || index < lines.length - 1) {
+          console.error(`[${new Date().toISOString()}] CLAUDE-ERR: ${line}`);
+        }
+      });
+    });
 
-        console.log('Alternative command succeeded');
-        return { stdout, stderr };
-      } catch (altError: any) {
-        console.error('Alternative approach also failed:', altError.message);
+    // Handle process completion
+    child.on('close', (code: number | null) => {
+      console.log(`[${new Date().toISOString()}] Claude Code process completed with exit code: ${code}`);
+
+      if (code === 0) {
+        console.log('=== Claude Code completed successfully ===');
+        resolve({ stdout, stderr });
+      } else {
+        console.error('=== Claude Code failed ===');
+        reject(new Error(`Claude Code failed with exit code: ${code}. stderr: ${stderr}`));
       }
-    }
+    });
 
-    throw new Error(`Claude Code failed: ${error.message}`);
-  }
+    // Handle process errors
+    child.on('error', (error: Error) => {
+      console.error(`[${new Date().toISOString()}] Claude Code process error:`, error);
+      reject(new Error(`Claude Code process error: ${error.message}`));
+    });
+
+    // Set timeout
+    const timeout = setTimeout(() => {
+      console.error(`[${new Date().toISOString()}] Claude Code execution timed out after 30 minutes`);
+      child.kill('SIGTERM');
+      reject(new Error('Claude Code execution timed out after 30 minutes'));
+    }, 30 * 60 * 1000); // 30 minutes
+
+    // Clear timeout on completion
+    child.on('close', () => {
+      clearTimeout(timeout);
+    });
+  });
 }
 
 async function cloneRepository(
@@ -238,7 +262,11 @@ app.post('/run', async (req: Request<{}, {}, RunRequest>, res: Response): Promis
 
     // Run Claude Code with GitHub token for gh CLI
     console.log('Running Claude Code...');
-    const { stdout } = await runClaudeCode(
+    console.log(`Repository: ${repository_url}`);
+    console.log(`Base branch: ${base_branch}`);
+    console.log(`Task prompt length: ${task_prompt.length} characters`);
+
+    const { stdout } = await runClaudeCodeWithStreaming(
       improved_task_prompt,
       claude_oauth_token,
       workDir,
@@ -246,6 +274,8 @@ app.post('/run', async (req: Request<{}, {}, RunRequest>, res: Response): Promis
     );
 
     const executionTime = Date.now() - startTime;
+
+    console.log(`Task completed in ${executionTime}ms`);
 
     res.json({
       success: true,
