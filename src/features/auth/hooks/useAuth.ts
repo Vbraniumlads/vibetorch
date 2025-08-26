@@ -13,13 +13,13 @@ export function useAuth() {
     try {
       // 토큰만 저장하고 사용자 정보는 저장하지 않음
       authService.setToken(token);
-      
+
       setState({
         isAuthenticated: true,
         user: userData,
         isLoading: false,
       });
-      
+
       console.log('✅ Login successful, token stored securely');
     } catch (error) {
       console.error('Login error:', error);
@@ -44,7 +44,7 @@ export function useAuth() {
   const checkAuth = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
-      
+
       const token = authService.getToken();
       if (!token) {
         setState({
@@ -57,17 +57,17 @@ export function useAuth() {
 
       // 토큰이 있으면 서버에서 사용자 정보 검증 및 가져오기
       const response = await authService.getCurrentUser();
-      
+
       setState({
         isAuthenticated: true,
         user: response.user,
         isLoading: false,
       });
-      
+
       console.log('✅ Auth verification successful, user data loaded from server');
     } catch (error) {
       console.error('Auth verification failed:', error);
-      
+
       // 토큰이 유효하지 않거나 서버 에러 시 완전 초기화
       authService.clearAuthData();
       setState({
@@ -82,18 +82,6 @@ export function useAuth() {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
-  // 페이지 포커스 시 토큰 유효성 재확인 (옵션)
-  useEffect(() => {
-    const handleFocus = () => {
-      if (state.isAuthenticated && authService.getToken()) {
-        checkAuth();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [state.isAuthenticated, checkAuth]);
 
   return {
     ...state,
