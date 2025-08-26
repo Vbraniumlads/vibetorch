@@ -13,9 +13,68 @@ import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import { githubService } from '../features/github/services/github.service';
 import type { GitHubRepository, GitHubIssue, GitHubPullRequest, GitHubComment } from '../features/github/types/github.types';
+import { TaskTable, TaskDrawer, useTasks } from '../features/tasks';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
 import { GitHubLoginButton } from '../features/auth/components/GitHubLoginButton';
+
+interface RepositoryTasksTabProps {
+  repository: GitHubRepository | null;
+}
+
+function RepositoryTasksTab({ repository }: RepositoryTasksTabProps) {
+  const {
+    tasks,
+    selectedTask,
+    isLoading,
+    error,
+    isDrawerOpen,
+    selectTask,
+    closeDrawer,
+    cancelTask
+  } = useTasks({ 
+    repo_id: repository?.id,
+    sortBy: 'created_at',
+    sortOrder: 'desc'
+  });
+
+  const handleCancelTask = async (id: number) => {
+    try {
+      await cancelTask(id);
+    } catch (error) {
+      console.error('Failed to cancel task:', error);
+    }
+  };
+
+  if (!repository) {
+    return (
+      <Card className="bg-transparent border border-border">
+        <CardContent className="p-6 text-center">
+          <p className="text-sm text-muted-foreground">Repository not loaded</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <TaskTable
+        tasks={tasks}
+        onTaskSelect={selectTask}
+        onCancelTask={handleCancelTask}
+        isLoading={isLoading}
+        showRepository={false}
+      />
+      
+      <TaskDrawer
+        task={selectedTask}
+        isOpen={isDrawerOpen}
+        onClose={closeDrawer}
+        onCancelTask={handleCancelTask}
+      />
+    </>
+  );
+}
 
 export default function RepositoryDetail() {
   const { owner, repo } = useParams<Record<string, string | undefined>>();
@@ -485,6 +544,9 @@ export default function RepositoryDetail() {
             <TabsTrigger value="pulls" className="data-[state=active]:bg-foreground data-[state=active]:text-background text-sm">
               Pull Requests ({pullRequests.length})
             </TabsTrigger>
+            <TabsTrigger value="tasks" className="data-[state=active]:bg-foreground data-[state=active]:text-background text-sm">
+              Tasks
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="issues" className="space-y-4">
@@ -759,6 +821,10 @@ export default function RepositoryDetail() {
                 ))}
               </div>
             )}
+          </TabsContent>
+          
+          <TabsContent value="tasks" className="space-y-4">
+            <RepositoryTasksTab repository={repository} />
           </TabsContent>
         </Tabs>
       </div>

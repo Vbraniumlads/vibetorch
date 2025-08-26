@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { TwentyFirstToolbar } from "@21st-extension/toolbar-react";
 import { ReactPlugin } from "@21st-extension/react";
 import Index from "./pages/Index";
+import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound";
 import OAuthCallback from "./pages/OAuthCallback";
 import RepositoryDetail from "./pages/RepositoryDetail";
@@ -55,6 +56,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/landing" element={<Index />} />
+          <Route path="/tasks" element={<Tasks />} />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
           <Route path="/repository/:owner/:repo" element={<RepositoryDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../../../shared/components/ui/button';
 import { UserProfile } from '../../auth';
-import { Menu, X, CreditCard, Settings, HelpCircle } from 'lucide-react';
+import { Menu, X, CreditCard, Settings, HelpCircle, ListTodo } from 'lucide-react';
 import type { User } from '../../auth/types/auth.types';
 
 interface FloatingNavbarProps {
@@ -41,6 +41,13 @@ export function FloatingNavbar({ user, isAuthenticated = false, onLogout }: Floa
                 className="text-muted-foreground hover:text-foreground transition-smooth text-sm"
               >
                 Docs
+              </a>
+              <a 
+                href="/tasks" 
+                className="text-muted-foreground hover:text-foreground transition-smooth text-sm flex items-center gap-2"
+              >
+                <ListTodo className="h-4 w-4" />
+                Tasks
               </a>
               <a 
                 href="#" 
@@ -97,6 +104,13 @@ export function FloatingNavbar({ user, isAuthenticated = false, onLogout }: Floa
                   className="text-muted-foreground hover:text-foreground transition-smooth py-3 text-base min-h-[44px] flex items-center"
                 >
                   Docs
+                </a>
+                <a 
+                  href="/tasks" 
+                  className="text-muted-foreground hover:text-foreground transition-smooth py-3 text-base min-h-[44px] flex items-center gap-2"
+                >
+                  <ListTodo className="h-4 w-4" />
+                  Tasks
                 </a>
                 <a 
                   href="#" 
