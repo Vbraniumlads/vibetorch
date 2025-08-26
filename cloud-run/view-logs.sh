@@ -60,6 +60,7 @@ view_filtered_logs() {
 # Function to tail logs (follow mode)
 tail_logs() {
     print_color "$GREEN" "Tailing logs (press Ctrl+C to stop)..."
+    print_color "$YELLOW" "Note: Claude Code execution now includes real-time streaming with [CLAUDE:] prefixes"
     
     gcloud run services logs tail $SERVICE_NAME \
         --region=$REGION \
@@ -86,6 +87,19 @@ view_error_logs() {
     print_color "$RED" "Fetching error logs..."
     
     local filter="resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"$SERVICE_NAME\" AND severity>=ERROR"
+    
+    gcloud logging read "$filter" \
+        --project=$PROJECT_ID \
+        --limit=$limit \
+        --format="table(timestamp.date('%Y-%m-%d %H:%M:%S'):label=TIME, severity:label=LEVEL, textPayload:label=MESSAGE:wrap)"
+}
+
+# Function to view Claude Code streaming logs only
+view_claude_logs() {
+    local limit=${1:-50}
+    print_color "$BLUE" "Fetching Claude Code streaming logs..."
+    
+    local filter="resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"$SERVICE_NAME\" AND (textPayload:\"CLAUDE:\" OR textPayload:\"CLAUDE-ERR:\" OR textPayload:\"Claude Code\")"
     
     gcloud logging read "$filter" \
         --project=$PROJECT_ID \
@@ -153,13 +167,14 @@ show_menu() {
     echo
     echo "1) View recent logs (last 50 entries)"
     echo "2) View recent logs (custom limit)"
-    echo "3) Tail logs (follow mode)"
+    echo "3) Tail logs (follow mode - real-time)"
     echo "4) View logs from last N minutes"
     echo "5) View error logs only"
-    echo "6) View logs by trace ID"
-    echo "7) Export logs to file"
-    echo "8) Open in Google Cloud Console"
-    echo "9) Exit"
+    echo "6) View Claude Code streaming logs"
+    echo "7) View logs by trace ID"
+    echo "8) Export logs to file"
+    echo "9) Open in Google Cloud Console"
+    echo "10) Exit"
     echo
 }
 
@@ -181,6 +196,9 @@ if [ $# -gt 0 ]; then
         errors)
             view_error_logs ${2:-50}
             ;;
+        claude)
+            view_claude_logs ${2:-50}
+            ;;
         trace)
             view_request_logs "$2"
             ;;
@@ -191,13 +209,14 @@ if [ $# -gt 0 ]; then
             show_console_url
             ;;
         *)
-            print_color "$YELLOW" "Usage: $0 [recent|tail|time|errors|trace|export|console] [args...]"
+            print_color "$YELLOW" "Usage: $0 [recent|tail|time|errors|claude|trace|export|console] [args...]"
             print_color "$YELLOW" ""
             print_color "$YELLOW" "Examples:"
             print_color "$YELLOW" "  $0 recent 100        # View last 100 log entries"
             print_color "$YELLOW" "  $0 tail              # Tail logs in real-time"
             print_color "$YELLOW" "  $0 time 30           # View logs from last 30 minutes"
             print_color "$YELLOW" "  $0 errors            # View error logs only"
+            print_color "$YELLOW" "  $0 claude            # View Claude Code streaming logs"
             print_color "$YELLOW" "  $0 trace TRACE_ID    # View logs for specific trace"
             print_color "$YELLOW" "  $0 export output.log # Export logs to file"
             print_color "$YELLOW" "  $0 console           # Open in browser"
@@ -229,18 +248,21 @@ else
                 view_error_logs 50
                 ;;
             6)
+                view_claude_logs 50
+                ;;
+            7)
                 read -p "Enter trace ID: " trace_id
                 view_request_logs "$trace_id"
                 ;;
-            7)
+            8)
                 read -p "Enter filename (or press Enter for default): " filename
                 read -p "Enter number of entries to export (default 100): " limit
                 export_logs "$filename" ${limit:-100}
                 ;;
-            8)
+            9)
                 show_console_url
                 ;;
-            9)
+            10)
                 print_color "$GREEN" "Goodbye!"
                 exit 0
                 ;;
