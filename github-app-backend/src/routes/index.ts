@@ -5,6 +5,9 @@ import { webhookController } from '../controllers/webhookController.js';
 import { prCommentController } from '../controllers/prCommentController.js';
 import { authRouter } from './auth.js';
 import { repositoriesRouter } from './repositories.js';
+import { tasksRouter } from './tasks.js';
+import { workerRouter } from './worker.js';
+import { eventsRouter } from './events.js';
 import { Octokit } from '@octokit/rest';
 import { issueCommentController } from '../controllers/issueCommentController.js';
 import { workflowDispatchRouter } from './workflow-dispatch.js';
@@ -15,6 +18,15 @@ export function setupRoutes(app: Express, webhooks: Webhooks | null): void {
 
   // GitHub repositories routes
   app.use('/api/repositories', repositoriesRouter);
+
+  // Task queue routes
+  app.use('/api/tasks', tasksRouter);
+
+  // Worker routes
+  app.use('/api/worker', workerRouter);
+
+  // Server-sent events for real-time updates
+  app.use('/api/events', eventsRouter);
 
   // Workflow dispatch via GitHub App (server-triggered)
   app.use('/api/workflows', workflowDispatchRouter);
