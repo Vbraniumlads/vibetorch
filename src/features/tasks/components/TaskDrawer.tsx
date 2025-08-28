@@ -296,11 +296,31 @@ export function TaskDrawer({ task, isOpen, onClose, onCancelTask }: TaskDrawerPr
                 </CardHeader>
                 <CardContent>
                   {task.result ? (
-                    <ScrollArea className="h-96">
-                      <pre className="text-sm bg-gray-50 p-4 rounded overflow-x-auto">
-                        {JSON.stringify(task.result, null, 2)}
-                      </pre>
-                    </ScrollArea>
+                    <div className="space-y-4">
+                      {task.result.claude_output && (
+                        <div>
+                          <h4 className="text-sm font-semibold mb-2">Claude Output:</h4>
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <pre className="text-sm whitespace-pre-wrap font-sans">
+                              {task.result.claude_output}
+                            </pre>
+                          </div>
+                        </div>
+                      )}
+                      {task.result.execution_time_ms && (
+                        <div className="text-sm text-gray-600">
+                          Execution time: {(task.result.execution_time_ms / 1000).toFixed(2)}s
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2">Full Result Data:</h4>
+                        <ScrollArea className="h-64">
+                          <pre className="text-sm bg-gray-50 p-4 rounded overflow-x-auto">
+                            {JSON.stringify(task.result, null, 2)}
+                          </pre>
+                        </ScrollArea>
+                      </div>
+                    </div>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       No result data yet

@@ -130,16 +130,16 @@ export function TaskFilters({
             </div>
 
             <Select
-              value={filters.status as string || ''}
+              value={filters.status as string || 'all'}
               onValueChange={(value) => onFiltersChange({ 
-                status: value || undefined 
+                status: value === 'all' ? undefined : value as any
               })}
             >
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 {STATUS_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -149,16 +149,16 @@ export function TaskFilters({
             </Select>
 
             <Select
-              value={filters.type || ''}
+              value={filters.type || 'all'}
               onValueChange={(value) => onFiltersChange({ 
-                type: value || undefined 
+                type: value === 'all' ? undefined : value 
               })}
             >
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 {TASK_TYPE_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -169,16 +169,16 @@ export function TaskFilters({
 
             {repositoryOptions.length > 0 && (
               <Select
-                value={filters.repo_id?.toString() || ''}
+                value={filters.repo_id?.toString() || 'all'}
                 onValueChange={(value) => onFiltersChange({ 
-                  repo_id: value ? parseInt(value) : undefined 
+                  repo_id: value === 'all' ? undefined : parseInt(value) 
                 })}
               >
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Repository" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Repositories</SelectItem>
+                  <SelectItem value="all">All Repositories</SelectItem>
                   {repositoryOptions.map((repo) => (
                     <SelectItem key={repo.id} value={repo.id.toString()}>
                       {repo.name}

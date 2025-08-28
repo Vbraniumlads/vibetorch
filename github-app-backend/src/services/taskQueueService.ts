@@ -3,11 +3,11 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { config } from 'dotenv';
-import { 
-  TaskQueue, 
+import {
+  TaskQueue,
   TaskEvent,
-  TaskCreateInput, 
-  TaskUpdateInput, 
+  TaskCreateInput,
+  TaskUpdateInput,
   TaskQueryOptions,
   WorkerPullOptions,
   TaskMetrics,
@@ -44,13 +44,13 @@ class TaskQueueService {
   private async initDatabase(): Promise<void> {
     try {
       const client = await this.pool.connect();
-      
+
       const migrationPath = path.join(__dirname, '../db/migrations/002_create_task_queue_pg.sql');
-      
+
       if (fs.existsSync(migrationPath)) {
         console.log('📦 Running task queue migration:', migrationPath);
         const migration = fs.readFileSync(migrationPath, 'utf8');
-        
+
         try {
           await client.query(migration);
           console.log('✅ Task queue migration executed successfully');
@@ -63,7 +63,7 @@ class TaskQueueService {
           }
         }
       }
-      
+
       client.release();
     } catch (error) {
       console.error('❌ Failed to initialize task queue database:', error);
@@ -87,12 +87,28 @@ class TaskQueueService {
       RETURNING *
     `;
 
+    // Ensure payload is properly serialized
+    let payloadJson = null;
+    if (data.payload) {
+      try {
+        payloadJson = JSON.stringify(data.payload);
+        // Check if stringification resulted in "[object Object]"
+        if (payloadJson === '"[object Object]"') {
+          console.error('Invalid payload object:', data.payload);
+          payloadJson = JSON.stringify({ error: 'Invalid payload format', original: String(data.payload) });
+        }
+      } catch (error) {
+        console.error('Failed to stringify payload:', error);
+        payloadJson = JSON.stringify({ error: 'Failed to serialize payload' });
+      }
+    }
+
     const values = [
       data.repo_id,
       data.type,
       data.priority || 0,
       'queued',
-      data.payload ? JSON.stringify(data.payload) : null,
+      payloadJson,
       data.created_by,
       data.max_attempts || 3,
       data.dedupe_key || null,
@@ -101,15 +117,24 @@ class TaskQueueService {
 
     const result = await this.pool.query(query, values);
     const task = this.transformDbRow(result.rows[0]);
-    
+
     this.notifyListeners('task_created', task);
     return task;
   }
 
   async findById(id: number): Promise<TaskQueue | null> {
-    const query = 'SELECT * FROM task_queue WHERE id = $1';
+    const query = `
+      SELECT 
+        tq.*,
+        r.repo_name,
+        r.owner_login,
+        r.owner_avatar_url
+      FROM task_queue tq
+      LEFT JOIN repositories r ON tq.repo_id = r.id
+      WHERE tq.id = $1
+    `;
     const result = await this.pool.query(query, [id]);
-    return result.rows[0] ? this.transformDbRow(result.rows[0]) : null;
+    return result.rows[0] ? this.transformDbRowWithRepository(result.rows[0]) : null;
   }
 
   async findByDedupeKey(dedupeKey: string): Promise<TaskQueue | null> {
@@ -119,38 +144,47 @@ class TaskQueueService {
   }
 
   async findTasks(options: TaskQueryOptions = {}): Promise<TaskQueue[]> {
-    let query = 'SELECT * FROM task_queue WHERE 1=1';
+    let query = `
+      SELECT 
+        tq.*,
+        r.repo_name,
+        r.owner_login,
+        r.owner_avatar_url
+      FROM task_queue tq
+      LEFT JOIN repositories r ON tq.repo_id = r.id
+      WHERE 1=1
+    `;
     const values: any[] = [];
     let paramCounter = 1;
 
     if (options.repo_id) {
-      query += ` AND repo_id = $${paramCounter++}`;
+      query += ` AND tq.repo_id = $${paramCounter++}`;
       values.push(options.repo_id);
     }
 
     if (options.status) {
       if (Array.isArray(options.status)) {
-        query += ` AND status = ANY($${paramCounter++})`;
+        query += ` AND tq.status = ANY($${paramCounter++})`;
         values.push(options.status);
       } else {
-        query += ` AND status = $${paramCounter++}`;
+        query += ` AND tq.status = $${paramCounter++}`;
         values.push(options.status);
       }
     }
 
     if (options.type) {
-      query += ` AND type = $${paramCounter++}`;
+      query += ` AND tq.type = $${paramCounter++}`;
       values.push(options.type);
     }
 
     if (options.created_by) {
-      query += ` AND created_by = $${paramCounter++}`;
+      query += ` AND tq.created_by = $${paramCounter++}`;
       values.push(options.created_by);
     }
 
     const orderBy = options.order_by || 'created_at';
     const orderDirection = options.order_direction || 'desc';
-    query += ` ORDER BY ${orderBy} ${orderDirection}`;
+    query += ` ORDER BY tq.${orderBy} ${orderDirection}`;
 
     if (options.limit) {
       query += ` LIMIT $${paramCounter++}`;
@@ -163,7 +197,7 @@ class TaskQueueService {
     }
 
     const result = await this.pool.query(query, values);
-    return result.rows.map(row => this.transformDbRow(row));
+    return result.rows.map(row => this.transformDbRowWithRepository(row));
   }
 
   async updateTask(id: number, data: TaskUpdateInput): Promise<TaskQueue | null> {
@@ -269,7 +303,7 @@ class TaskQueueService {
 
   async pullTasksForWorker(options: WorkerPullOptions): Promise<TaskQueue[]> {
     const client = await this.pool.connect();
-    
+
     try {
       await client.query('BEGIN');
 
@@ -279,7 +313,7 @@ class TaskQueueService {
         AND not_before_at <= CURRENT_TIMESTAMP
         AND (claimed_at IS NULL OR claimed_at < CURRENT_TIMESTAMP - INTERVAL '5 minutes')
       `;
-      
+
       const values: any[] = [];
       let paramCounter = 1;
 
@@ -298,7 +332,7 @@ class TaskQueueService {
       query += ' FOR UPDATE SKIP LOCKED';
 
       const selectResult = await client.query(query, values);
-      
+
       if (selectResult.rows.length === 0) {
         await client.query('COMMIT');
         return [];
@@ -320,7 +354,7 @@ class TaskQueueService {
 
       const tasks = updateResult.rows.map(row => this.transformDbRow(row));
       tasks.forEach(task => this.notifyListeners('task_claimed', task));
-      
+
       return tasks;
     } catch (error) {
       await client.query('ROLLBACK');
@@ -336,7 +370,7 @@ class TaskQueueService {
       SET claimed_at = CURRENT_TIMESTAMP
       WHERE id = $1 AND claimed_by = $2 AND status = 'running'
     `;
-    
+
     const result = await this.pool.query(query, [taskId, workerKey]);
     return result.rowCount === 1;
   }
@@ -352,11 +386,11 @@ class TaskQueueService {
     `;
 
     const queryResult = await this.pool.query(query, [
-      taskId, 
-      workerKey, 
+      taskId,
+      workerKey,
       result ? JSON.stringify(result) : null
     ]);
-    
+
     if (queryResult.rows[0]) {
       const task = this.transformDbRow(queryResult.rows[0]);
       this.notifyListeners('task_succeeded', task);
@@ -367,13 +401,13 @@ class TaskQueueService {
 
   async markTaskFailed(taskId: number, workerKey: string, error: string, shouldRetry = true): Promise<TaskQueue | null> {
     const client = await this.pool.connect();
-    
+
     try {
       await client.query('BEGIN');
 
       const getTaskQuery = 'SELECT * FROM task_queue WHERE id = $1 AND claimed_by = $2 AND status = \'running\'';
       const taskResult = await client.query(getTaskQuery, [taskId, workerKey]);
-      
+
       if (taskResult.rows.length === 0) {
         await client.query('ROLLBACK');
         return null;
@@ -440,7 +474,7 @@ class TaskQueueService {
       WHERE task_id = $1 
       ORDER BY created_at ASC
     `;
-    
+
     const result = await this.pool.query(query, [taskId]);
     return result.rows;
   }
@@ -471,8 +505,8 @@ class TaskQueueService {
     const row = result.rows[0];
 
     const totalCompleted = parseInt(row.succeeded_tasks) + parseInt(row.failed_tasks);
-    const successRate = totalCompleted > 0 ? 
-      (parseInt(row.succeeded_tasks) / totalCompleted) * 100 : 
+    const successRate = totalCompleted > 0 ?
+      (parseInt(row.succeeded_tasks) / totalCompleted) * 100 :
       undefined;
 
     const metrics: TaskMetrics = {
@@ -483,15 +517,15 @@ class TaskQueueService {
       failed_tasks: parseInt(row.failed_tasks),
       canceled_tasks: parseInt(row.canceled_tasks),
     };
-    
+
     if (row.average_runtime) {
       metrics.average_runtime = parseFloat(row.average_runtime);
     }
-    
+
     if (successRate !== undefined) {
       metrics.success_rate = successRate;
     }
-    
+
     return metrics;
   }
 
@@ -516,9 +550,27 @@ class TaskQueueService {
   private transformDbRow(row: any): TaskQueue {
     return {
       ...row,
-      payload: row.payload ? JSON.parse(row.payload) : undefined,
-      result: row.result ? JSON.parse(row.result) : undefined,
+      payload: row.payload || undefined,
+      result: row.result || undefined,
     };
+  }
+
+  private transformDbRowWithRepository(row: any): TaskQueue {
+    const task = this.transformDbRow(row);
+    
+    // Add repository information if available
+    if (row.repo_name) {
+      (task as any).repository = {
+        id: row.repo_id,
+        repo_name: row.repo_name,
+        owner: row.owner_login ? {
+          login: row.owner_login,
+          avatar_url: row.owner_avatar_url
+        } : undefined
+      };
+    }
+    
+    return task;
   }
 
   async close(): Promise<void> {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
@@ -147,18 +148,29 @@ export function TaskTable({
 
                   {showRepository && (
                     <TableCell>
-                      <div className="flex items-center space-x-2">
-                        {task.repository?.owner?.avatar_url && (
-                          <img
-                            src={task.repository.owner.avatar_url}
-                            alt=""
-                            className="w-5 h-5 rounded-full"
-                          />
-                        )}
-                        <span className="truncate max-w-xs">
-                          {task.repository?.repo_name || `Repo ${task.repo_id}`}
-                        </span>
-                      </div>
+                      {task.repository?.owner?.login && task.repository?.repo_name ? (
+                        <Link 
+                          to={`/repository/${task.repository.owner.login}/${task.repository.repo_name}`}
+                          className="flex items-center space-x-2 hover:text-blue-600 transition-colors"
+                        >
+                          {task.repository.owner.avatar_url && (
+                            <img
+                              src={task.repository.owner.avatar_url}
+                              alt={task.repository.owner.login}
+                              className="w-5 h-5 rounded-full"
+                            />
+                          )}
+                          <span className="truncate max-w-xs underline-offset-2 hover:underline">
+                            {`${task.repository.owner.login}/${task.repository.repo_name}`}
+                          </span>
+                        </Link>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-gray-500">
+                          <span className="truncate max-w-xs">
+                            Repo #{task.repo_id}
+                          </span>
+                        </div>
+                      )}
                     </TableCell>
                   )}
 

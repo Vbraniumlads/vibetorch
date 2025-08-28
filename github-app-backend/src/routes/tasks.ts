@@ -1,6 +1,7 @@
 import express from 'express';
 import { taskQueueService } from '../services/taskQueueService.js';
 import { TaskCreateInput, TaskQueryOptions } from '../db/models/TaskQueue.js';
+import { sanitizeTask, sanitizeTasks, sanitizeTaskEvents } from '../utils/sanitizer.js';
 
 const router = express.Router();
 
@@ -48,7 +49,11 @@ router.get('/', async (req, res) => {
     };
 
     const tasks = await taskQueueService.findTasks(options);
-    return res.json(tasks);
+    
+    // Sanitize tasks using the utility function
+    const sanitizedTasks = sanitizeTasks(tasks);
+    
+    return res.json(sanitizedTasks);
   } catch (error: any) {
     console.error('Error fetching tasks:', error);
     return res.status(500).json({ error: error.message });
@@ -64,9 +69,44 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
-    return res.json(task);
+    // Sanitize task using the utility function
+    const sanitized = sanitizeTask(task);
+
+    return res.json(sanitized);
   } catch (error: any) {
     console.error('Error fetching task:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/:id/status', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const task = await taskQueueService.findById(id);
+    
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // Sanitize the task first
+    const sanitized = sanitizeTask(task);
+
+    // Return simplified status response with sanitized data
+    return res.json({
+      id: sanitized.id,
+      status: sanitized.status,
+      type: sanitized.type,
+      priority: sanitized.priority,
+      created_at: sanitized.created_at,
+      started_at: sanitized.started_at,
+      finished_at: sanitized.finished_at,
+      attempt: sanitized.attempt,
+      max_attempts: sanitized.max_attempts,
+      result: sanitized.result,
+      error: sanitized.error
+    });
+  } catch (error: any) {
+    console.error('Error fetching task status:', error);
     return res.status(500).json({ error: error.message });
   }
 });
@@ -95,7 +135,11 @@ router.get('/:id/events', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const events = await taskQueueService.getTaskEvents(id);
-    return res.json(events);
+    
+    // Sanitize events to remove sensitive information
+    const sanitizedEvents = sanitizeTaskEvents(events);
+    
+    return res.json(sanitizedEvents);
   } catch (error: any) {
     console.error('Error fetching task events:', error);
     return res.status(500).json({ error: error.message });
