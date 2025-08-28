@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { dispatchWorkflow, isAppInstalledForRepo } from '../services/githubAppAuthService.js';
+import { repositoryService } from '../services/repositoryService.js';
 
 export const workflowDispatchRouter = Router();
 
@@ -18,6 +19,16 @@ workflowDispatchRouter.post('/dispatch', async (req: Request, res: Response): Pr
     }
 
     console.log(`🚀 Workflow dispatch requested for ${owner}/${repo} (${workflowId})`);
+    
+    // Look up internal repository ID from GitHub repo ID
+    const repository = await repositoryService.findByRepositoryId(repositoryId);
+    if (!repository) {
+      res.status(404).json({ 
+        error: 'Repository not found', 
+        message: `Repository with GitHub ID ${repositoryId} not found in database. Please sync your repositories.` 
+      });
+      return;
+    }
 
     const result = await dispatchWorkflow({
       owner,
@@ -25,7 +36,7 @@ workflowDispatchRouter.post('/dispatch', async (req: Request, res: Response): Pr
       workflowId,
       ref,
       inputs,
-      repositoryId
+      repositoryId: repository.id // Use internal database ID
     });
 
     // Return immediate response with task tracking information

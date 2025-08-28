@@ -1,12 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
-import { Octokit } from '@octokit/rest';
-import { issueGeneratorController } from './controllers/issueGeneratorController.js';
-import { issueCommentController } from './controllers/issueCommentController.js';
-import { prCommentController } from './controllers/prCommentController.js';
 import { setupRoutes } from './routes/index.js';
-import { ensureAppConfig, createAppJwt, createRepositoryClient } from './services/githubAppAuthService.js';
+import { taskQueueWorker } from './services/taskQueueWorker.js';
 
 config();
 
@@ -34,7 +30,7 @@ app.get('/callback', (_req, res) => {
 });
 
 // Start server
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`🚀 GitHub API server running on port ${port}`);
   console.log(`📋 Ready to process GitHub API requests!`);
   console.log(`🔗 Health check: http://localhost:${port}/health`);
@@ -42,4 +38,12 @@ app.listen(port, () => {
   console.log(`  POST /generate-issue - Create GitHub issues`);
   console.log(`  POST /issue-comment - Comment on issues`);
   console.log(`  POST /pr-comment - Comment on pull requests`);
+  
+  // Start the task queue worker
+  try {
+    await taskQueueWorker.start();
+    console.log(`✅ Task queue worker started successfully`);
+  } catch (error) {
+    console.error(`❌ Failed to start task queue worker:`, error);
+  }
 });

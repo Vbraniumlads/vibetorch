@@ -31,7 +31,14 @@ class CloudRunTrigger {
   /**
    * Trigger a Cloud Run task and start polling for results
    */
-  async triggerAndPoll(taskRequest: CloudRunTaskRequest): Promise<{ taskId: number; localTaskId: number }> {
+  async triggerAndPoll(taskRequest: CloudRunTaskRequest): Promise<{ 
+    taskId: number; 
+    localTaskId: number; 
+    claude_output?: string;
+    success?: boolean;
+    message?: string;
+    execution_time_ms?: number;
+  }> {
     try {
       // For Cloud Run /run endpoint, we send the task_data directly
       const cloudRunPayload = {
@@ -61,7 +68,11 @@ class CloudRunTrigger {
 
       return {
         taskId: cloudRunTask.id,
-        localTaskId: 1
+        localTaskId: 1,
+        claude_output: cloudRunResponse.claude_output,
+        success: cloudRunResponse.success,
+        message: cloudRunResponse.message,
+        execution_time_ms: cloudRunResponse.execution_time_ms
       };
 
     } catch (error) {
@@ -84,7 +95,14 @@ class CloudRunTrigger {
     owner: string;
     repo: string;
     action_type: string;
-  }): Promise<{ taskId: number; localTaskId: number }> {
+  }): Promise<{ 
+    taskId: number; 
+    localTaskId: number;
+    claude_output?: string;
+    success?: boolean;
+    message?: string;
+    execution_time_ms?: number;
+  }> {
     return this.triggerAndPoll({
       repository_id: repositoryId,
       task_data: workflowData,

@@ -1,8 +1,5 @@
-const CACHE_NAME = "vibetorch-v2";
-const urlsToCache = [
-  "/torch.webp",
-  "/favicon.ico",
-];
+const CACHE_NAME = "vibetorch-v3";
+const urlsToCache = ["/torch.webp", "/favicon.ico"];
 
 // Install event
 self.addEventListener("install", (event) => {
@@ -20,9 +17,18 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Skip caching for API requests and other dynamic content
+  if (url.pathname.startsWith("/api/")) {
+    // Let these requests go directly to network
+    return;
+  }
+
   // For HTML documents, use network-first strategy
-  if (request.mode === "navigate" || request.destination === "document" || 
-      request.headers.get("accept")?.includes("text/html")) {
+  if (
+    request.mode === "navigate" ||
+    request.destination === "document" ||
+    request.headers.get("accept")?.includes("text/html")
+  ) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -84,14 +90,14 @@ self.addEventListener("activate", (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME) {
-              console.log('Deleting old cache:', cacheName);
+              console.log("Deleting old cache:", cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       }),
       // Take control of all clients immediately
-      clients.claim()
+      clients.claim(),
     ])
   );
 });

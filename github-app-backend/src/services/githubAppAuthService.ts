@@ -2,7 +2,8 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { Octokit } from '@octokit/rest';
 import { repositoryService } from './repositoryService.js';
-import { cloudRunTrigger } from './cloudRunTrigger.js';
+import { taskQueueService } from './taskQueueService.js';
+import { config as appConfig } from '../config.js';
 
 export interface WorkflowDispatchParams {
   owner: string;
@@ -122,25 +123,37 @@ export async function dispatchWorkflow(params: WorkflowDispatchParams): Promise<
     action_type: inputs.action_type || 'create-pr'
   };
 
-  // TODO: Step 1: Add task to queue
+  // Step 1: Add task to queue
+  const queuedTask = await taskQueueService.createTask({
+    repo_id: repositoryId,
+    type: 'cloud_run_dispatch',
+    priority: inputs.priority || appConfig.taskQueue.priorities.medium, // Medium priority by default
+    payload: {
+      repository_id: repositoryId,
+      task_data: taskData,
+      workflow_params: {
+        owner,
+        repo,
+        workflowId,
+        ref,
+        inputs
+      }
+    },
+    created_by: inputs.userId || 0, // Use 0 for system-initiated tasks when userId is not available
+    max_attempts: appConfig.taskQueue.worker.maxRetries,
+    dedupe_key: `workflow_dispatch_${owner}_${repo}_${workflowId}_${Date.now()}` // Prevent duplicate submissions
+  });
 
-  console.log(`📋 Task added to queue`);
+  console.log(`📋 Task added to queue with ID: ${queuedTask.id}`);
 
-  // Step 2: Return 202 immediately (task will be processed async)
+  // Step 2: Return 202 immediately (task will be processed async by worker)
   const response = {
     success: true,
     message: 'Workflow dispatch task queued successfully',
-    task_id: 1,
-    local_task_id: 1,
-    status_endpoint: `/api/results/task/1`
+    task_id: queuedTask.id,
+    local_task_id: queuedTask.id,
+    status_endpoint: `/api/tasks/${queuedTask.id}/status`
   };
-
-  // Step 3: Trigger Cloud Run asynchronously (don't await)
-  cloudRunTrigger.triggerAndPoll({
-    repository_id: repositoryId,
-    task_data: taskData,
-    priority: 1
-  });
 
   return response;
 }
